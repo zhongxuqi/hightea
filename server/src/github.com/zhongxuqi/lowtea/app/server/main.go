@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/kataras/iris"
-	"github.com/zhongxuqi/hightea/app/server/config"
+	"github.com/zhongxuqi/lowtea/app/server/config"
 )
 
 func main() {
