@@ -2,3 +2,6 @@
 /server/pkg
 /lowtea
 
+# node
+**/node_modules
+
