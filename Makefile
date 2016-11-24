@@ -1,5 +1,7 @@
 all: build-server
 
 build-server:
-	cd server/src/github.com/zhongxuqi/lowtea/app/server && go build -o lowtea
-	mv server/src/github.com/zhongxuqi/lowtea/app/server/lowtea .
+	GOPATH=$(GOPATH):${CURDIR}/server && go build -o ./bin/lowtea zhongxuqi/lowtea/app/server
+
+run: build-server
+	cd ./bin && ./lowtea
