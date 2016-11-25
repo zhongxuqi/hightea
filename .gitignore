@@ -5,6 +5,6 @@
 /server/pkg
 /lowtea
 
-# node
+# front
+/front/dist/js
 **/node_modules
-
