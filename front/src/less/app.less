@@ -1,3 +1,141 @@
-div.zxq-menu {
-    background: green;
+// base
+.lowtea-default-font {
+    color: white;
+}
+
+.lowtea-show-username {
+    font-weight: 600;
+}
+
+.lowtea-show-userintro {
+    font-size: 11px;
+}
+
+@green: #55b070;
+@cutline-color: #e5e5e5;
+
+// app
+body {
+    background-color: white;
+    color: white;
+}
+
+div.lowtea-menu {
+    background-color: #222d32;
+    padding: 0px;
+    border-top: 3px solid @green;
+    height: 100%;
+
+    .lowtea-user-panel {
+        padding: 10px;
+
+        .lowtea-headimg {
+            max-width: 50px;
+        }
+
+        div.lowtea-menu-userinfo {
+            padding-left: 10px;
+
+            .lowtea-menu-username {
+                .lowtea-show-username;
+                margin-bottom: 9px;
+            }
+
+            .lowtea-menu-userintro {
+                .lowtea-show-userintro;
+                margin: 0px;
+            }
+        }
+    }
+
+    ul.lowtea-menu-list {
+        list-style-type: none;
+        padding: 0px;
+        margin: 0px;
+
+        li {
+            padding: 12px 5px 12px 15px;
+
+            a, a:hover {
+                color: white;
+                font-weight: 400;
+                font-size: 14px;
+                text-decoration: none;
+
+                span {
+                    width: 24px;
+                    height: 14px;
+                }
+            }
+        }
+
+        li:hover, li.active {
+            background-color: white;
+
+            a, a:hover {
+                color: black;
+            }
+        }
+    }
+}
+
+.lowtea-page-overview {
+    padding: 0px;
+    overflow-x: hidden;
+    
+    .navigation {
+        background-color: #f7f7f7;
+        border-bottom: @cutline-color solid 1px;
+        padding-top: 6px;
+
+        ul {
+            list-style-type: none;
+            padding: 0px;
+            margin: 0px 0px 0px 30px;
+
+            li {
+                float: left;
+                height: 40px;
+
+                border-radius: 3px 3px 0px 0px;
+                border-width: 3px 1px 1px;
+                border: solid transparent;
+                margin-bottom: -1px;
+
+                a, a:hover {
+                    color: black;
+                    font-weight: 400;
+                    font-size: 14px;
+                    text-decoration: none;
+                    line-height: 40px;
+                    padding: 0px 15px;
+                }
+            }
+
+            li.active {
+                background-color: white;
+                border-width: 3px 1px 1px;
+                border-top-color: @green;
+                border-left-color: @cutline-color;
+                border-right-color: @cutline-color;
+                border-bottom-color: transparent;
+            }
+        }
+
+        .lowtea-searchbar {
+            width: 230px;
+            margin-bottom: 0px;
+            margin-right: 10px;
+
+            input {
+                width: 100%;
+            }
+        }
+    }
+
+    .page-list {
+        background-color: white;
+        -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
 }
