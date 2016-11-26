@@ -17,7 +17,6 @@
 // app
 body {
     background-color: white;
-    color: white;
 }
 
 div.lowtea-menu {
@@ -25,6 +24,7 @@ div.lowtea-menu {
     padding: 0px;
     border-top: 3px solid @green;
     height: 100%;
+    color: white;
 
     .lowtea-user-panel {
         padding: 10px;
@@ -82,60 +82,22 @@ div.lowtea-menu {
 .lowtea-page-overview {
     padding: 0px;
     overflow-x: hidden;
-    
-    .navigation {
-        background-color: #f7f7f7;
-        border-bottom: @cutline-color solid 1px;
-        padding-top: 6px;
+    color: black;
 
-        ul {
-            list-style-type: none;
-            padding: 0px;
-            margin: 0px 0px 0px 30px;
-
-            li {
-                float: left;
-                height: 40px;
-
-                border-radius: 3px 3px 0px 0px;
-                border-width: 3px 1px 1px;
-                border: solid transparent;
-                margin-bottom: -1px;
-
-                a, a:hover {
-                    color: black;
-                    font-weight: 400;
-                    font-size: 14px;
-                    text-decoration: none;
-                    line-height: 40px;
-                    padding: 0px 15px;
-                }
-            }
-
-            li.active {
-                background-color: white;
-                border-width: 3px 1px 1px;
-                border-top-color: @green;
-                border-left-color: @cutline-color;
-                border-right-color: @cutline-color;
-                border-bottom-color: transparent;
-            }
-        }
-
+    .page-list-container {
         .lowtea-searchbar {
-            width: 230px;
-            margin-bottom: 0px;
-            margin-right: 10px;
-
-            input {
-                width: 100%;
-            }
+            padding: 15px 20px;
+            border-bottom: 1px solid @cutline-color;
         }
-    }
 
-    .page-list {
-        background-color: white;
-        -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        h4 {
+            padding: 10px 0px;
+            border-bottom: 1px solid @cutline-color;
+        }
+
+        .page-list {
+            padding: 0px 10px;
+        }
+
     }
 }
