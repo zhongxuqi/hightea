@@ -1,27 +1,9 @@
-// base
-.lowtea-default-font {
-    color: white;
-}
-
-.lowtea-show-username {
-    font-weight: 600;
-}
-
-.lowtea-show-userintro {
-    font-size: 11px;
-}
-
-@green: #55b070;
-@cutline-color: #e5e5e5;
-
-// app
-body {
-    background-color: white;
-}
+@import '../../../base/css/base.less';
 
 div.lowtea-menu {
     background-color: #222d32;
     padding: 0px;
+    margin: 0px;
     border-top: 3px solid @green;
     height: 100%;
     color: white;
@@ -54,9 +36,13 @@ div.lowtea-menu {
         margin: 0px;
 
         li {
-            padding: 12px 5px 12px 15px;
+            width: 100%;
+            padding: 0px;
 
             a, a:hover {
+                display: block;
+                width: 100%;
+                padding: 12px 5px 12px 15px;
                 color: white;
                 font-weight: 400;
                 font-size: 14px;
@@ -64,7 +50,6 @@ div.lowtea-menu {
 
                 span {
                     width: 24px;
-                    height: 14px;
                 }
             }
         }
@@ -76,28 +61,5 @@ div.lowtea-menu {
                 color: black;
             }
         }
-    }
-}
-
-.lowtea-page-overview {
-    padding: 0px;
-    overflow-x: hidden;
-    color: black;
-
-    .page-list-container {
-        .lowtea-searchbar {
-            padding: 15px 20px;
-            border-bottom: 1px solid @cutline-color;
-        }
-
-        h4 {
-            padding: 10px 0px;
-            border-bottom: 1px solid @cutline-color;
-        }
-
-        .page-list {
-            padding: 0px 10px;
-        }
-
     }
 }
