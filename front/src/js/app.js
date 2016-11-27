@@ -12,6 +12,8 @@ import PersonalDraftsList from './components/personaldrafts_list/personaldrafts_
 import UserSettings from './components/user_settings/user_settings.jsx'
 import UsersManager from './components/users_manager/users_manager.jsx'
 
+import PageEditor from './components/page_editor/page_editor.jsx'
+
 render((
   <Router history={hashHistory}>
     <Route path="/" component={Main}>
@@ -21,6 +23,8 @@ render((
       <Route path="personaldrafts_list" component={PersonalDraftsList}/>
       <Route path="users_manager" component={UsersManager}/>
       <Route path="user_settings" component={UserSettings}/>
+
+      <Route path="page_editor" component={PageEditor}/>
     </Route>
   </Router>
 ), document.getElementById('app'));

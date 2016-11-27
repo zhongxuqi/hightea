@@ -1,0 +1,47 @@
+@import '../../../base/css/base.less';
+
+.lowtea-page-editor {
+    height: 100%;
+    overflow-y: scroll;
+
+    .page-title {
+        width: 100%;
+        padding: 15px 15px;
+        border-bottom: 1px solid @cutline-color;
+        display: table;
+        box-sizing:border-box;
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: middle;
+            padding: 0px 10px;
+
+            ul.dropdown-menu {
+                left: auto;
+                right: 0px;
+            }
+        }
+
+        .page-title-input{
+            border: none;
+            outline: medium;
+            font-size: 20px;
+            width: 100%;
+            display: inline-block;
+        }
+    }
+
+    .page-content-editer {
+        height: 100%;
+        padding: 10px 10px;
+        box-sizing:border-box;
+        -moz-box-sizing:border-box; /* Firefox */
+        -webkit-box-sizing:border-box; /* Safari */
+
+        .CodeMirror {
+            height: 100%;
+        }
+    }
+}

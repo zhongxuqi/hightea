@@ -6,70 +6,74 @@ export default class UsersManager extends React.Component {
     render() {
         return (
             <div className="users_manager clearfix">
-                <div className="panel panel-default col-md-7 lowtea-table">
-                    <div className="panel-heading">社区成员</div>
+                <div className="col-md-8 lowtea-table">
+                    <div className="panel panel-default">
+                        <div className="panel-heading">社区成员</div>
 
-                    <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>用户名</th>
-                                <th>用户角色</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>钟徐琦</td>
-                                <td>管理员</td>
-                                <td>
-                                    <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
-                                    <button type="button" className="btn btn-danger btn-xs">删除</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>王笑笑</td>
-                                <td>管理员</td>
-                                <td>
-                                    <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
-                                    <button type="button" className="btn btn-danger btn-xs">删除</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <table className="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>用户角色</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>钟徐琦</td>
+                                    <td>管理员</td>
+                                    <td>
+                                        <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
+                                        <button type="button" className="btn btn-danger btn-xs">删除</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>王笑笑</td>
+                                    <td>管理员</td>
+                                    <td>
+                                        <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
+                                        <button type="button" className="btn btn-danger btn-xs">删除</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
-                <div className="panel panel-default col-md-4 pull-right lowtea-table">
-                    <div className="panel-heading">加入申请</div>
+                <div className="col-md-4 lowtea-table">
+                    <div className="panel panel-default">
+                        <div className="panel-heading">加入申请</div>
 
-                    <table className="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>用户名</th>
-                                <th>时间</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>钟徐琦</td>
-                                <td>1天前</td>
-                                <td>
-                                    <button type="button" className="btn btn-info btn-xs">详情</button>
-                                    <button type="button" className="btn btn-danger btn-xs">拒绝</button>
-                                    <button type="button" className="btn btn-warning btn-xs">同意</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>王笑笑</td>
-                                <td>2天前</td>
-                                <td>
-                                    <button type="button" className="btn btn-info btn-xs">详情</button>
-                                    <button type="button" className="btn btn-danger btn-xs">拒绝</button>
-                                    <button type="button" className="btn btn-warning btn-xs">同意</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <table className="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>用户名</th>
+                                    <th>时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>钟徐琦</td>
+                                    <td>1天前</td>
+                                    <td>
+                                        <button type="button" className="btn btn-info btn-xs">详情</button>
+                                        <button type="button" className="btn btn-danger btn-xs">拒绝</button>
+                                        <button type="button" className="btn btn-warning btn-xs">同意</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>王笑笑</td>
+                                    <td>2天前</td>
+                                    <td>
+                                        <button type="button" className="btn btn-info btn-xs">详情</button>
+                                        <button type="button" className="btn btn-danger btn-xs">拒绝</button>
+                                        <button type="button" className="btn btn-warning btn-xs">同意</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div className="modal fade" id="userInfoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

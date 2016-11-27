@@ -14,7 +14,6 @@ export default class Menu extends React.Component {
     }
 
     onMenuItemClick(newState) {
-        console.log(newState)
         this.state.menuState = newState;
     }
 
@@ -28,7 +27,12 @@ export default class Menu extends React.Component {
                         <p className="lowtea-menu-userintro"><span className="label label-info">管理员</span></p>
                     </div>
 
-                    <button type="button" className="btn btn-success btn-sm pull-right lowtea-btn-new-page"><span className="glyphicon glyphicon-plus"></span>新建</button>
+                    <a type="button" 
+                            className="btn btn-success btn-sm pull-right lowtea-btn-new-page" 
+                            href="#/page_editor"
+                            onClick={this.onMenuItemClick.bind(this, 'page_editor')}>
+                        <span className="glyphicon glyphicon-plus"></span>新建
+                    </a>
                 </div>
 
                 <ul className="lowtea-menu-list clearfix">
