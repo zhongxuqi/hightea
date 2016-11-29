@@ -28,7 +28,7 @@ export default class UsersManager extends React.Component {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>王笑笑</td>
+                                    <td>钟徐琦</td>
                                     <td>管理员</td>
                                     <td>
                                         <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
@@ -63,8 +63,8 @@ export default class UsersManager extends React.Component {
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>王笑笑</td>
-                                    <td>2天前</td>
+                                    <td>钟徐琦</td>
+                                    <td>1天前</td>
                                     <td>
                                         <button type="button" className="btn btn-info btn-xs">详情</button>
                                         <button type="button" className="btn btn-danger btn-xs">拒绝</button>

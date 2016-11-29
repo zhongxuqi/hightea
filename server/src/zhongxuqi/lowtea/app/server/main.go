@@ -1,15 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"net/http"
+	"time"
+
+	"zhongxuqi/lowtea/app/server/config"
+	"zhongxuqi/lowtea/app/server/servermodel"
 )
 
 func main() {
-	http.HandleFunc("/api/test", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "{\"status\":200, \"message\": \"success\"}")
-	})
-	http.Handle("/", http.FileServer(http.Dir("../front/dist")))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	mainServer := &servermodel.MainServer{
+		Mux: http.NewServeMux(),
+	}
+	config.InitEnv(mainServer)
+	config.InitRouter(mainServer)
+	config.InitDB(mainServer)
+
+	httpServer := &http.Server{
+		Addr:           "0.0.0.0:8080",
+		Handler:        mainServer.Mux,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
+	httpServer.ListenAndServe()
 }
