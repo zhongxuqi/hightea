@@ -1,11 +1,13 @@
 package model
 
 const (
-	// ADMIN the admin flag for User.Role
+	// ROOT the user flag for User.Role
+	ROOT = "root"
+	// ADMIN the user flag for User.Role
 	ADMIN = "admin"
-	// MEMBER the admin flag for User.Role
+	// MEMBER the user flag for User.Role
 	MEMBER = "member"
-	// GUEST the admin flag for User.Role
+	// GUEST the user flag for User.Role
 	GUEST = "guest"
 
 	// MALE the gender flag for User.Gender
@@ -17,7 +19,8 @@ const (
 // User the struct of user
 type User struct {
 	BaseMgo
-	UserName  string `json:"username" bson:"username"`
+	Account   string `json:"account" bson:"account"`
+	NickName  string `json:"nickname" bson:"nickname"`
 	PassWord  string `json:"password" bson:"password"`
 	UserIntro string `json:"userintro" bson:"userintro"`
 	Gender    string `json:"gender" bson:"gender"`

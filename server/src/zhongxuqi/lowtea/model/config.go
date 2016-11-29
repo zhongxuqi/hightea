@@ -8,6 +8,7 @@ type Config struct {
 
 // DBConfig env of the db
 type DBConfig struct {
-	Host     string `json:"host"`
-	UserColl string `json:"userColl"`
+	Host         string `json:"host"`
+	UserColl     string `json:"userColl"`
+	ReqisterColl string `json:"reqisterColl"`
 }

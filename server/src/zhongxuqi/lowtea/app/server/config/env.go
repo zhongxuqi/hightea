@@ -5,11 +5,11 @@ import (
 	"flag"
 	"io/ioutil"
 
-	"zhongxuqi/lowtea/app/server/servermodel"
+	"zhongxuqi/lowtea/app/server/handler"
 )
 
 // InitEnv init the env varibles
-func InitEnv(mainServer *servermodel.MainServer) {
+func InitEnv(mainHandler *handler.MainHandler) {
 	var configfile string
 
 	flag.StringVar(&configfile, "f", "../configs/default.conf", "the config file of server")
@@ -20,7 +20,7 @@ func InitEnv(mainServer *servermodel.MainServer) {
 		panic(err)
 	}
 
-	err = json.Unmarshal(b, &(mainServer.Config))
+	err = json.Unmarshal(b, &(mainHandler.Config))
 	if err != nil {
 		panic(err)
 	}
