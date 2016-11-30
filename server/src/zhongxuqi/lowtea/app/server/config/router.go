@@ -12,19 +12,21 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	// init open api handler
 	openAPIHandler := http.NewServeMux()
 	openAPIHandler.HandleFunc("/openapi/login", mainHandler.Login)
-	mainHandler.Mux.HandleFunc("/openapi", func(w http.ResponseWriter, r *http.Request) {
+	openAPIHandler.HandleFunc("/openapi/register", mainHandler.Register)
+	openAPIHandler.HandleFunc("/openapi/logout", mainHandler.Logout)
+	mainHandler.Mux.HandleFunc("/openapi/", func(w http.ResponseWriter, r *http.Request) {
 		openAPIHandler.ServeHTTP(w, r)
 	})
 
 	// init api handler
 	apiHandler := http.NewServeMux()
 	apiHandler.HandleFunc("/api/user/userinfo", mainHandler.GetUserInfo)
-	mainHandler.Mux.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
+	mainHandler.Mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
 
 		// check cookie
 		err := mainHandler.CheckSession(w, r)
 		if err != nil {
-			http.Error(w, "[Handle /api] "+err.Error(), 400)
+			http.Error(w, "[Handle /api/] "+err.Error(), 400)
 			return
 		}
 

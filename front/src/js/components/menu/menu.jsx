@@ -3,18 +3,32 @@
 import React from 'react'
 import {Link} from 'react-router'
 
+import UserBadge from '../user_badge/user_badge.jsx'
+import HttpUtil from '../../utils/http.jsx'
 
 import './menu.less';
 
 export default class Menu extends React.Component {
-    constructor() {
-        super();
-        this.state = {}
+    constructor(props) {
+        super(props)
+        this.state = {nickname: this.props.nickname, role: this.props.role}
         this.state.menuState=window.location.hash.substring(2);
+    }
+
+    onLogoutClick() {
+        HttpUtil.get("/openapi/logout", {}, (data) => {
+            window.location.pathname = "/login.html"
+        }, (data) => {
+            HttpUtil.alert("["+data.status+"]: "+data.responseText)
+        })
     }
 
     onMenuItemClick(newState) {
         this.state.menuState = newState;
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({nickname: newProps.nickname, role: newProps.role})
     }
 
     render() {
@@ -23,16 +37,19 @@ export default class Menu extends React.Component {
                 <div className="lowtea-user-panel clearfix">
                     <div className="pull-left"><img className="lowtea-headimg" src="/img/heads/1.png"/></div>
                     <div className="pull-left lowtea-menu-userinfo">
-                        <p className="lowtea-menu-username">用户名</p>
-                        <p className="lowtea-menu-userintro"><span className="label label-info">管理员</span></p>
+                        <UserBadge nickname={this.state.nickname} role={this.state.role}></UserBadge>
                     </div>
 
-                    <a type="button" 
-                            className="btn btn-success btn-sm pull-right lowtea-btn-new-page" 
-                            href="#/page_editor"
-                            onClick={this.onMenuItemClick.bind(this, 'page_editor')}>
-                        <span className="glyphicon glyphicon-plus"></span>新建
-                    </a>
+                    <div className="btn-group pull-right lowtea-btn-new-page">
+                        <a className="btn btn-success btn-sm" href="#/page_editor">新建</a>
+                        <button type="button" className="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+                            <span className="caret"></span>
+                            <span className="sr-only">Toggle Dropdown</span>
+                        </button>
+                        <ul className="dropdown-menu" role="menu">
+                            <li><a href="" onClick={this.onLogoutClick}><span className="glyphicon glyphicon-log-out" style={{margin:"0px 10px 0px 0px"}}></span>退出</a></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <ul className="lowtea-menu-list clearfix">

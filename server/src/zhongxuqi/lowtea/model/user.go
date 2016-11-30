@@ -18,11 +18,19 @@ const (
 
 // User the struct of user
 type User struct {
-	BaseMgo
+	MgoBase
 	Account   string `json:"account" bson:"account"`
 	NickName  string `json:"nickname" bson:"nickname"`
-	PassWord  string `json:"password" bson:"password"`
+	PassWord  string `json:"-" bson:"password"`
 	UserIntro string `json:"userintro" bson:"userintro"`
 	Gender    string `json:"gender" bson:"gender"`
 	Role      string `json:"role" bson:"role"`
+}
+
+// Register the struct of register
+type Register struct {
+	MgoBase
+	Account  string `json:"account" bson:"account"`
+	Resume   string `json:"resume" bson:"resume"`
+	PassWord string `json:"password" bson:"password"`
 }

@@ -27,21 +27,21 @@ export default class PageEditor extends React.Component {
                     </div>
                     <div className="table-cell" style={{width:"1%"}}>
                         <div className="dropdown">
-                            <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                            <button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                                 操作
                                 <span className="caret"></span>
                             </button>
 
                             <ul className="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">撤回(回到草稿)</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">发布(仅自己可见)</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">发布(仅成员可见)</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">发布(对外公开)</a></li>
+                                <li role="presentation"><a role="menuitem" href="#">撤回(回到草稿)</a></li>
+                                <li role="presentation"><a role="menuitem" href="#">发布(仅自己可见)</a></li>
+                                <li role="presentation"><a role="menuitem" href="#">发布(仅成员可见)</a></li>
+                                <li role="presentation"><a role="menuitem" href="#">发布(对外公开)</a></li>
                             </ul>
                         </div>
                     </div>
                     <div className="table-cell" style={{width:"1%"}}>
-                        <button type="button" className="btn btn-default">保存</button>
+                        <button type="button" className="btn btn-default"><span className="glyphicon glyphicon-floppy-disk" style={{marginRight:"5px"}}></span>保存</button>
                     </div>
                 </div>
 

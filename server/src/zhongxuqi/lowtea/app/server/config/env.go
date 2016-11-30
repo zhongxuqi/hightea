@@ -24,4 +24,9 @@ func InitEnv(mainHandler *handler.MainHandler) {
 	if err != nil {
 		panic(err)
 	}
+
+	// check dbname
+	if mainHandler.Config.DBConfig.DBName == "" {
+		mainHandler.Config.DBConfig.DBName = APPNAME
+	}
 }

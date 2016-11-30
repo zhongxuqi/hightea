@@ -2,7 +2,8 @@ var webpack = require('webpack')
 
 module.exports = {
     entry: {
-        app: './src/js/app.js'
+        app: './src/js/app.jsx',
+        login: './src/js/login/app.jsx',
     },
     output: {
         filename: '[name].bundle.js',
@@ -11,13 +12,14 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /\.jsx?$/,
+                test: /\.jsx$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ['latest', 'react']
+                    presets: ['latest', 'react'],
                 }
             }, 
             {test: /\.less$/, loader: 'style!css!less'},
+            {test: /\.css$/, loader: 'style!css'},
         ]
     },
     plugins: [

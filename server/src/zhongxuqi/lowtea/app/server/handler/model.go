@@ -10,13 +10,11 @@ import (
 
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"sync"
 	"time"
 	"zhongxuqi/lowtea/config"
 	"zhongxuqi/lowtea/model"
-	"zhongxuqi/lowtea/utils"
 )
 
 var (
@@ -46,30 +44,37 @@ func New() (handler *MainHandler) {
 	// GC for session
 	go func() {
 		for {
-			handler.SessMapMutex.Lock()
-			keys := make([]string, 0)
-			now := time.Now().Unix()
-			for k, v := range handler.SessMap {
-				if v < now {
-					keys = append(keys, k)
-				}
-			}
-			for _, k := range keys {
-				delete(handler.SessMap, k)
-			}
-			handler.SessMapMutex.Unlock()
-
+			handler.clearSession()
 			time.Sleep(5 * time.Minute)
 		}
 	}()
 	return
 }
 
+func (p *MainHandler) clearSession() {
+	p.SessMapMutex.Lock()
+	keys := make([]string, 0)
+	now := time.Now().Unix()
+	for k, v := range p.SessMap {
+		if v < now {
+			keys = append(keys, k)
+		}
+	}
+	for _, k := range keys {
+		delete(p.SessMap, k)
+	}
+	p.SessMapMutex.Unlock()
+}
+
 // CheckSession check the session of request
 func (p *MainHandler) CheckSession(w http.ResponseWriter, r *http.Request) (err error) {
 	var tokenCookie, accountCookie *http.Cookie
 	tokenCookie, err = r.Cookie("token")
+	if err != nil {
+		return
+	}
 	p.SessMapMutex.Lock()
+	defer p.SessMapMutex.Unlock()
 	if expireTime, ok := p.SessMap[tokenCookie.Value]; !ok || expireTime < time.Now().Unix() {
 		err = ERROR_SESSION_INVALID
 		return
@@ -77,10 +82,10 @@ func (p *MainHandler) CheckSession(w http.ResponseWriter, r *http.Request) (err 
 		accountCookie, err = r.Cookie("account")
 		p.UpdateSession(w, accountCookie.Value)
 	}
-	p.SessMapMutex.Unlock()
 	return
 }
 
+// sign string is account+password+expireTime
 func (p *MainHandler) getSignStr(account string, expireTime int64) (rawStr string, err error) {
 	rawStr = ""
 	if account == model.ROOT {
@@ -99,7 +104,8 @@ func (p *MainHandler) getSignStr(account string, expireTime int64) (rawStr strin
 func (p *MainHandler) checkSign(account string, expireTime int64, sign string) (err error) {
 	var rawStr string
 	rawStr, err = p.getSignStr(account, expireTime)
-	if hex.EncodeToString(md5.New().Sum([]byte(rawStr))[:]) != sign {
+	sum := md5.Sum([]byte(rawStr))
+	if hex.EncodeToString(sum[:]) != sign {
 		err = ERROR_TOKEN_INVALID
 	}
 	return
@@ -109,13 +115,13 @@ func (p *MainHandler) checkSign(account string, expireTime int64, sign string) (
 func (p *MainHandler) CalculateSign(account string, expireTime int64) (ret string, err error) {
 	var rawStr string
 	rawStr, err = p.getSignStr(account, expireTime)
-	return hex.EncodeToString(md5.New().Sum([]byte(rawStr))[:]), err
+	sum := md5.Sum([]byte(rawStr))
+	return hex.EncodeToString(sum[:]), err
 }
 
 // UpdateSession update the session of http header
 func (p *MainHandler) UpdateSession(w http.ResponseWriter, account string) {
-	expireTime := time.Now()
-	expireTime.Add(config.EXPIRE_TIME)
+	expireTime := time.Now().Add(config.EXPIRE_TIME)
 	token, err := p.CalculateSign(account, expireTime.Unix())
 	if err != nil {
 		http.Error(w, err.Error(), 400)
@@ -125,63 +131,33 @@ func (p *MainHandler) UpdateSession(w http.ResponseWriter, account string) {
 		Name:     "account",
 		Value:    account,
 		Path:     "/",
-		Expires:  expireTime,
 		HttpOnly: true,
 	}
-	w.Header().Set("Set-Cookie", accountCookie.String())
+	w.Header().Add("Set-Cookie", accountCookie.String())
 	tokenCookie := &http.Cookie{
 		Name:     "token",
 		Value:    token,
 		Path:     "/",
-		Expires:  expireTime,
 		HttpOnly: true,
 	}
-	w.Header().Set("Set-Cookie", tokenCookie.String())
+	w.Header().Add("Set-Cookie", tokenCookie.String())
 	p.SessMap[token] = expireTime.Unix()
 }
 
-// Login do login
-func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
-	var dataStruct struct {
-		Account    string `json:"account"`
-		ExpireTime int64  `json:"expireTime"`
-		Sign       string `json:"sign"`
+// ClearSession update the session of http header
+func (p *MainHandler) ClearSession(w http.ResponseWriter) {
+	accountCookie := &http.Cookie{
+		Name:     "account",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
 	}
-	err := utils.ReadReq2Struct(r, &dataStruct)
-	if err != nil {
-		http.Error(w, "[Login] data read and unmarshal fail: "+err.Error(), 400)
-		return
+	w.Header().Add("Set-Cookie", accountCookie.String())
+	tokenCookie := &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
 	}
-
-	if dataStruct.ExpireTime < time.Now().Unix() {
-		http.Error(w, "[Login] "+ERROR_TIME_EXPIRED.Error(), 400)
-		return
-	}
-
-	err = p.checkSign(dataStruct.Account, dataStruct.ExpireTime, dataStruct.Sign)
-	if err != nil {
-		http.Error(w, "[Login] check sign fail: "+err.Error(), 400)
-		return
-	}
-
-	// if pass check sign, update session
-	p.UpdateSession(w, dataStruct.Account)
-
-	var user *model.User
-	if user.Account == model.ROOT {
-		user = &model.User{
-			Account:  model.ROOT,
-			NickName: model.ROOT,
-			Role:     model.ROOT,
-		}
-	}
-
-	var ret struct {
-		User *model.User `json:"user"`
-	}
-	ret.User = user
-
-	retStr, _ := json.Marshal(ret)
-	w.WriteHeader(200)
-	w.Write(retStr)
+	w.Header().Add("Set-Cookie", tokenCookie.String())
 }
