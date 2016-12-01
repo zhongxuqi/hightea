@@ -2,6 +2,7 @@ package model
 
 // Config env of the server
 type Config struct {
+	RootEmail    string   `json:"rootemail"`
 	RootPassword string   `json:"rootpassword"`
 	DBConfig     DBConfig `json:"dbConfig"`
 }
@@ -11,5 +12,5 @@ type DBConfig struct {
 	Host         string `json:"host"`
 	DBName       string `json:"dbname"`
 	UserColl     string `json:"userColl"`
-	ReqisterColl string `json:"reqisterColl"`
+	RegisterColl string `json:"reqisterColl"`
 }

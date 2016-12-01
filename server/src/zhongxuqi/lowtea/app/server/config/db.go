@@ -20,5 +20,5 @@ func InitDB(mainHander *handler.MainHandler) {
 		bson.M{"app": APPNAME}, bson.M{"$set": bson.M{"version": VERSION}})
 
 	mainHander.UserColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.UserColl)
-	mainHander.ReqisterColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.ReqisterColl)
+	mainHander.RegisterColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.RegisterColl)
 }

@@ -1,5 +1,7 @@
 package model
 
+import "gopkg.in/mgo.v2/bson"
+
 const (
 	// ROOT the user flag for User.Role
 	ROOT = "root"
@@ -18,19 +20,22 @@ const (
 
 // User the struct of user
 type User struct {
-	MgoBase
-	Account   string `json:"account" bson:"account"`
-	NickName  string `json:"nickname" bson:"nickname"`
-	PassWord  string `json:"-" bson:"password"`
-	UserIntro string `json:"userintro" bson:"userintro"`
-	Gender    string `json:"gender" bson:"gender"`
-	Role      string `json:"role" bson:"role"`
+	ID        bson.ObjectId `json:"id" bson:"_id"`
+	Account   string        `json:"account" bson:"account"`
+	Email     string        `json:"email" bson:"email"`
+	NickName  string        `json:"nickname" bson:"nickname"`
+	PassWord  string        `json:"-" bson:"password"`
+	UserIntro string        `json:"userintro" bson:"userintro"`
+	Gender    string        `json:"gender" bson:"gender"`
+	Role      string        `json:"role" bson:"role"`
 }
 
 // Register the struct of register
 type Register struct {
-	MgoBase
-	Account  string `json:"account" bson:"account"`
-	Resume   string `json:"resume" bson:"resume"`
-	PassWord string `json:"password" bson:"password"`
+	ID       bson.ObjectId `json:"id" bson:"_id"`
+	Account  string        `json:"account" bson:"account"`
+	Email    string        `json:"email" bson:"email"`
+	NickName string        `json:"nickname" bson:"nickname"`
+	Resume   string        `json:"resume" bson:"resume"`
+	PassWord string        `json:"password" bson:"password"`
 }

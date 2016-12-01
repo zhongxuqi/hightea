@@ -21,7 +21,7 @@ export default class Main extends React.Component {
                     <Menu nickname={this.state.nickname} role={this.state.role}></Menu>
                 </div>
                 <div className="col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
-                    {this.props.children}
+                    {React.cloneElement(this.props.children, {nickname: this.state.nickname, role: this.state.role})}
                 </div>
             </div>
         )

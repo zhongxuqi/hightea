@@ -26,8 +26,13 @@ function alert(errMsg) {
     $.growl.error({ message: errMsg });
 }
 
+function notice(noticeMsg) {
+    $.growl.notice({ message: noticeMsg });
+}
+
 export default {
     get: get,
     post: post,
     alert: alert,
+    notice: notice,
 }

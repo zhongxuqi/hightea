@@ -41,5 +41,23 @@ func (p *MainHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	ret.Message = "success"
 	retbyte, _ := json.Marshal(ret)
 	w.Write(retbyte)
-	w.WriteHeader(200)
+}
+
+// GetUsers get users
+func (p *MainHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
+	var ret struct {
+		model.RespBase
+		Users []model.User `json:"users"`
+	}
+	ret.Users = make([]model.User, 0)
+	err := p.UserColl.Find(bson.M{}).All(&(ret.Users))
+	if err != nil {
+		http.Error(w, "users find error: "+err.Error(), 500)
+		return
+	}
+	ret.Status = 200
+	ret.Message = "success"
+	retStr, _ := json.Marshal(ret)
+	w.Write(retStr)
+	return
 }

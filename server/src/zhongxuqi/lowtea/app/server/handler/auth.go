@@ -13,8 +13,34 @@ import (
 )
 
 var (
-	ERROR_USERNAME_EXISTS = errors.New("username exists")
+	ERROR_USERNAME_EXISTS   = errors.New("username exists")
+	ERROR_PERMISSION_DENIED = errors.New("permission denied")
 )
+
+// CheckAdmin
+func (p *MainHandler) CheckAdmin(r *http.Request) (err error) {
+	var accountCookie *http.Cookie
+	accountCookie, err = r.Cookie("account")
+	if err != nil {
+		return
+	}
+
+	// check root
+	if accountCookie.Value == model.ROOT {
+		return
+	}
+
+	// check admin
+	var user model.User
+	err = p.UserColl.Find(bson.M{"account": accountCookie.Value}).One(&user)
+	if err != nil {
+		return
+	}
+	if user.Role != model.ADMIN {
+		err = ERROR_PERMISSION_DENIED
+	}
+	return
+}
 
 // Login do login
 func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
@@ -67,25 +93,24 @@ func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
 	ret.User = &user
 
 	retStr, _ := json.Marshal(ret)
-	w.WriteHeader(200)
 	w.Write(retStr)
 }
 
 // Register do register
 func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var data model.Register
-	err := utils.ReadReq2Struct(r, data)
+	data := bson.M{}
+	err := utils.ReadReq2Struct(r, &data)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	// check the account
-	if data.Account == model.ROOT {
+	if data["account"] == model.ROOT {
 		http.Error(w, ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
-	n, err := p.UserColl.Find(bson.M{"account": data.Account}).Count()
+	n, err := p.UserColl.Find(bson.M{"account": data["account"]}).Count()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -93,7 +118,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
-	n, err = p.ReqisterColl.Find(bson.M{"account": data.Account}).Count()
+	n, err = p.RegisterColl.Find(bson.M{"account": data["account"]}).Count()
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -102,13 +127,14 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = p.ReqisterColl.Insert(data)
+	delete(data, "_id")
+	delete(data, "id")
+	err = p.RegisterColl.Insert(data)
 	if err != nil {
 		http.Error(w, "[Register] insert error: "+err.Error(), 400)
 		return
 	}
 
-	w.WriteHeader(200)
 	retStr, _ := json.Marshal(&model.RespBase{
 		Status:  200,
 		Message: "success",

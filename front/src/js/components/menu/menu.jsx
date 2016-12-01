@@ -41,7 +41,7 @@ export default class Menu extends React.Component {
                     </div>
 
                     <div className="btn-group pull-right lowtea-btn-new-page">
-                        <a className="btn btn-success btn-sm" href="#/page_editor">新建</a>
+                        <a className="btn btn-success btn-sm" href="#/page_editor"><span className="glyphicon glyphicon-plus"></span></a>
                         <button type="button" className="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
                             <span className="caret"></span>
                             <span className="sr-only">Toggle Dropdown</span>

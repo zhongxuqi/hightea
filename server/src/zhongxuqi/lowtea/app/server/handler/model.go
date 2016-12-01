@@ -30,7 +30,7 @@ type MainHandler struct {
 	SessMapMutex *sync.Mutex
 	Config       model.Config
 	UserColl     *mgo.Collection
-	ReqisterColl *mgo.Collection
+	RegisterColl *mgo.Collection
 }
 
 // New new MainHandler
