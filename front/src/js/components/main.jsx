@@ -7,8 +7,17 @@ export default class Main extends React.Component {
     constructor(props) {
         super(props)
         this.state = {}
-        HttpUtil.get('/api/user/userinfo', {}, ((data) => {
-            this.setState({nickname: data.user.nickname, role: data.user.role})
+        this.updateUserInfo()
+    }
+
+    updateUserInfo() {
+        HttpUtil.get('/api/member/self', {}, ((data) => {
+            console.log(data)
+            this.setState({
+                nickname: data.user.nickname, 
+                role: data.user.role, 
+                language: data.user.language,
+            })
         }).bind(this), ((data) => {
             window.location.pathname = "/login.html"
         }).bind(this))
@@ -17,11 +26,17 @@ export default class Main extends React.Component {
     render() {
         return (
             <div style={{height:'100%'}}>
-                <div className="col-xs-2" style={{padding:"0px", margin:"0px", height:'100%'}}>
+                <div className="col-md-2 col-xs-2" style={{padding:"0px", margin:"0px", height:'100%'}}>
                     <Menu nickname={this.state.nickname} role={this.state.role}></Menu>
                 </div>
-                <div className="col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
-                    {React.cloneElement(this.props.children, {nickname: this.state.nickname, role: this.state.role})}
+                <div className="col-md-10 col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
+                    {
+                        React.cloneElement(this.props.children, {
+                            nickname: this.state.nickname, 
+                            role: this.state.role, 
+                            language: this.state.language,
+                        })
+                    }
                 </div>
             </div>
         )

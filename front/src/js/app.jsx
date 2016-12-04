@@ -18,13 +18,13 @@ render((
   <Router history={hashHistory}>
     <Route path="/" component={Main}>
       <IndexRoute component={PagesOverView}/>
-      <Route path="personalpages_list" component={PersonalPagesList}/>
+      <Route path="page_editor" component={PageEditor}/>
       <Route path="favoritepages_list" component={FavoritePagesList}/>
-      <Route path="personaldrafts_list" component={PersonalDraftsList}/>
+      <Route path="personalpages_list" component={PersonalPagesList}/>
       <Route path="users_manager" component={UsersManager}/>
       <Route path="user_settings" component={UserSettings}/>
 
-      <Route path="page_editor" component={PageEditor}/>
+      <Route path="personaldrafts_list" component={PersonalDraftsList}/>
     </Route>
   </Router>
 ), document.getElementById('app'));

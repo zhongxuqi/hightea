@@ -67,7 +67,7 @@ class LoginApp extends React.Component {
                 expireTime: expireTime,
                 sign: sign,
             }, (data) => {
-                window.location.pathname = "/"
+                window.location = "/?lang="+data.user.language
             }, (data) => {
                 HttpUtils.alert("["+data.status+"]: "+data.responseText)
             })

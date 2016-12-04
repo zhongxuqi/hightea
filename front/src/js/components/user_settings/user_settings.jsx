@@ -1,8 +1,37 @@
 import React from 'react';
 
+import HttpUtils from '../../utils/http.jsx'
+
 import './user_settings.less'
 
 export default class UserSettings extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            nickname: this.props.nickname, 
+            role: this.props.role,
+            language: this.props.language,
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({
+            nickname: newProps.nickname, 
+            role: newProps.role, 
+            language: newProps.language,
+        })
+    }
+
+    onLanguageClick(event) {
+        HttpUtils.post("/api/member/self", {
+            language: event.target.value,
+        }, ((data) => {
+            window.location = "/?lang="+data.language+"#/user_settings"
+        }).bind(this), ((data) => {
+            HttpUtils.alert("["+data.status+"] "+data.responseText)
+        }).bind(this))
+    }
+
     render() {
         return (
             <div className="lowtea-user-settings clearfix">
@@ -33,11 +62,11 @@ export default class UserSettings extends React.Component {
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">语言选择</label>
+                        <label className="col-sm-2 control-label">Language</label>
                         <div className="col-sm-10">
-                            <select className="form-control">
-                                <option>English</option>
-                                <option>Chinese</option>
+                            <select className="form-control" value={this.state.language} onChange={this.onLanguageClick.bind(this)}>
+                                <option value="">English</option>
+                                <option value="cn">中文</option>
                             </select>
                         </div>
                     </div>

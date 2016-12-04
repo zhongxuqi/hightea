@@ -22,6 +22,18 @@ function post(url, data, successFunc, errorFunc) {
     })
 }
 
+function deleteAction(url, data, successFunc, errorFunc) {
+    $.ajax({
+        type: 'DELETE',
+        url: url,
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        success: successFunc,
+        error: errorFunc,
+    })
+}
+
 function alert(errMsg) {
     $.growl.error({ message: errMsg });
 }
@@ -33,6 +45,7 @@ function notice(noticeMsg) {
 export default {
     get: get,
     post: post,
+    delete: deleteAction,
     alert: alert,
     notice: notice,
 }

@@ -28,6 +28,7 @@ type User struct {
 	UserIntro string        `json:"userintro" bson:"userintro"`
 	Gender    string        `json:"gender" bson:"gender"`
 	Role      string        `json:"role" bson:"role"`
+	Language  string        `json:"language" bson:"language"`
 }
 
 // Register the struct of register

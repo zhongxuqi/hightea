@@ -2,19 +2,14 @@ package handler
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 	"time"
 
+	"labix.org/v2/mgo/bson"
+
+	"zhongxuqi/lowtea/errors"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
-
-	"labix.org/v2/mgo/bson"
-)
-
-var (
-	ERROR_USERNAME_EXISTS   = errors.New("username exists")
-	ERROR_PERMISSION_DENIED = errors.New("permission denied")
 )
 
 // CheckAdmin
@@ -37,7 +32,22 @@ func (p *MainHandler) CheckAdmin(r *http.Request) (err error) {
 		return
 	}
 	if user.Role != model.ADMIN {
-		err = ERROR_PERMISSION_DENIED
+		err = errors.ERROR_PERMISSION_DENIED
+	}
+	return
+}
+
+// CheckRoot
+func (p *MainHandler) CheckRoot(r *http.Request) (err error) {
+	var accountCookie *http.Cookie
+	accountCookie, err = r.Cookie("account")
+	if err != nil {
+		return
+	}
+
+	// check root
+	if accountCookie.Value != model.ROOT {
+		err = errors.ERROR_PERMISSION_DENIED
 	}
 	return
 }
@@ -75,6 +85,7 @@ func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
 			Account:  model.ROOT,
 			NickName: model.ROOT,
 			Role:     model.ROOT,
+			Language: p.Config.RootLanguage,
 		}
 	} else {
 		err = p.UserColl.Find(bson.M{"account": dataStruct.Account}).One(&user)
@@ -107,7 +118,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	// check the account
 	if data["account"] == model.ROOT {
-		http.Error(w, ERROR_USERNAME_EXISTS.Error(), 400)
+		http.Error(w, errors.ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
 	n, err := p.UserColl.Find(bson.M{"account": data["account"]}).Count()
@@ -115,7 +126,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	} else if n > 0 {
-		http.Error(w, ERROR_USERNAME_EXISTS.Error(), 400)
+		http.Error(w, errors.ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
 	n, err = p.RegisterColl.Find(bson.M{"account": data["account"]}).Count()
@@ -123,7 +134,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	} else if n > 0 {
-		http.Error(w, ERROR_USERNAME_EXISTS.Error(), 400)
+		http.Error(w, errors.ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
 

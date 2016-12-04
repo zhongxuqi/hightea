@@ -7,7 +7,6 @@ import './users_manager.less'
 export default class UsersManager extends React.Component {
     constructor(props) {
         super(props)
-        console.log(props)
         this.state = {
             users: [],
             registers: [],
@@ -18,10 +17,51 @@ export default class UsersManager extends React.Component {
         }
     }
 
+    copyUser(user) {
+        return {
+            role: user.role,
+        }
+    }
+
+    cancelUserEdit(user) {
+        user.isEdit = false
+        user.copy = this.copyUser(user)
+        this.setState({})
+    }
+
+    showUserEdit(user) {
+        user.isEdit = true
+        this.setState({})
+    }
+
+    saveUserEdit(userObj) {
+        $.confirm({
+            title: 'warning',
+            content: "save the change of "+userObj.account,
+            buttons: {
+                confirm: () => {
+                    HttpUtils.post("/api/admin/user/"+userObj.account, {
+                        role: userObj.copy.role,
+                    }, ((data) => {
+                        this.updateUsersList()
+                    }).bind(this), ((data) => {
+                        HttpUtils.alert("["+data.status+"] "+data.responseText)
+                    }))
+                },
+                cancel: () => {},
+            }
+        })
+    }
+
     updateUsersList() {
-        HttpUtils.get("/api/user/users", {}, ((data) => {
+        HttpUtils.get("/api/member/users", {}, ((data) => {
             if (data['users'] == undefined) data['users'] = []
-            this.setState({users: data['users']})
+            let users = data['users']
+            for (let i=0;i<users.length;i++) {
+                users[i].isEdit = false
+                users[i].copy = this.copyUser(users[i])
+            }
+            this.setState({users: users})
         }).bind(this), ((data) => {
             HttpUtils.alert("["+data.status+"] "+data.responseText)
         }))
@@ -43,12 +83,33 @@ export default class UsersManager extends React.Component {
         this.setState(newProps)
     }
 
+    onClickActionUser(action, userItem) {
+        if (action == "info") {
+            this.setState({currUser: userItem})
+            $("#userInfoModal").modal("show")
+        } else {
+            $.confirm({
+                title: 'danger',
+                content: action+" the user of "+userItem.account,
+                buttons: {
+                    confirm: () => {
+                        HttpUtils.delete("/api/admin/user/"+userItem.account, {}, ((data) => {
+                            this.updateUsersList()
+                        }).bind(this), ((data) => {
+                            HttpUtils.alert("["+data.status+"] "+data.responseText)
+                        }))
+                    },
+                    cancel: () => {},
+                }
+            })
+        }
+    }
+
     onClickActionRegister(action, registerItem) {
         if (action == "info") {
             this.setState({currRegister: registerItem})
             $("#registerInfoModal").modal("show")
         } else {
-            console.log(registerItem)
             $.confirm({
                 title: 'warning',
                 content: action+" the register of "+registerItem.email,
@@ -89,12 +150,21 @@ export default class UsersManager extends React.Component {
                                 {
                                     this.state.users.map((user) => {
                                         return (
-                                            <tr>
+                                            <tr key={user.account}>
                                                 <td>{user.nickname}</td>
-                                                <td>{user.role}</td>
+                                                <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.role}</td>
+                                                <td style={{display:{true: "table-cell", false:"none"}[user.isEdit]}}>
+                                                    <select className="form-control" style={{height:"auto"}} value={user.copy.role} onChange={(event)=>{user.copy.role = event.target.value}}>
+                                                        <option value="member">成员</option>
+                                                        <option value="admin">管理员</option>
+                                                    </select>
+                                                </td>
                                                 <td>
-                                                    <button type="button" className="btn btn-warning btn-xs" data-toggle="modal" data-target="#userInfoModal">修改</button>
-                                                    <button type="button" className="btn btn-danger btn-xs">删除</button>
+                                                    <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>详情</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>编辑</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.cancelUserEdit.bind(this, user)}>取消</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.saveUserEdit.bind(this, user)}>保存</button>
+                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>删除</button>
                                                 </td>
                                             </tr>
                                         )
@@ -120,7 +190,7 @@ export default class UsersManager extends React.Component {
                                 {
                                     this.state.registers.map((registerItem) => {
                                         return (
-                                            <tr>
+                                            <tr key={registerItem.account}>
                                                 <td>{registerItem.email}</td>
                                                 <td>
                                                     <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionRegister.bind(this, "info", registerItem)}>详情</button>
@@ -139,17 +209,32 @@ export default class UsersManager extends React.Component {
                 <div className="modal fade" id="userInfoModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                        <div className="modal-header">
-                            <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                            <h4 className="modal-title" id="myModalLabel">Modal title</h4>
-                        </div>
-                        <div className="modal-body">
-                            ...
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
-                        </div>
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title" id="myModalLabel">{"currUser" in this.state ? this.state.currUser.account:''}的用户详情</h4>
+                            </div>
+                            <div className="modal-body">
+                                <table className="lowtea-userinfo-table">
+                                    <tbody>
+                                        <tr>
+                                            <td className="line-key">Email:</td>
+                                            <td className="line-value">{"currUser" in this.state ? this.state.currUser.email:''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="line-key">Role:</td>
+                                            <td className="line-value">{"currUser" in this.state ? this.state.currUser.role:''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="line-key">用户简介:</td>
+                                            <td className="line-value">{"currUser" in this.state ? this.state.currUser.userintro:''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="line-key">Gender:</td>
+                                            <td className="line-value">{"currUser" in this.state ? this.state.currUser.gender:''}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

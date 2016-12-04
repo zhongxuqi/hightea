@@ -28,7 +28,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	//
 	//---------------------------------
 	apiHandler := http.NewServeMux()
-	userHandler := http.NewServeMux()
+	memberHandler := http.NewServeMux()
 	adminHandler := http.NewServeMux()
 
 	// setup /api/ handler
@@ -44,16 +44,17 @@ func InitRouter(mainHandler *handler.MainHandler) {
 		apiHandler.ServeHTTP(w, r)
 	})
 
-	// setup /api/user/ handler
-	userHandler.HandleFunc("/api/user/userinfo", mainHandler.GetUserInfo)
-	userHandler.HandleFunc("/api/user/users", mainHandler.GetUsers)
-	apiHandler.HandleFunc("/api/user/", func(w http.ResponseWriter, r *http.Request) {
-		userHandler.ServeHTTP(w, r)
+	// setup /api/member/ handler
+	memberHandler.HandleFunc("/api/member/self", mainHandler.ActionSelf)
+	memberHandler.HandleFunc("/api/member/users", mainHandler.GetUsers)
+	apiHandler.HandleFunc("/api/member/", func(w http.ResponseWriter, r *http.Request) {
+		memberHandler.ServeHTTP(w, r)
 	})
 
 	// setup /api/admin/ handler
 	adminHandler.HandleFunc("/api/admin/registers", mainHandler.GetRegisters)
 	adminHandler.HandleFunc("/api/admin/register", mainHandler.ActionRegister)
+	adminHandler.HandleFunc("/api/admin/user/", mainHandler.AdminActionUser)
 	apiHandler.HandleFunc("/api/admin/", func(w http.ResponseWriter, r *http.Request) {
 
 		// check permission

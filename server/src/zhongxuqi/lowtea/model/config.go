@@ -4,6 +4,7 @@ package model
 type Config struct {
 	RootEmail    string   `json:"rootemail"`
 	RootPassword string   `json:"rootpassword"`
+	RootLanguage string   `json:"rootlanguage"`
 	DBConfig     DBConfig `json:"dbConfig"`
 }
 

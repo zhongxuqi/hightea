@@ -9,18 +9,37 @@ div.lowtea-menu {
     color: white;
 
     .lowtea-user-panel {
-        padding: 10px;
+        display: table;
+
+        .table-cell {
+            display: table-cell;
+            vertical-align: middle;
+        }
 
         .lowtea-headimg {
             max-width: 50px;
+            margin: 10px 5px 10px 10px;
         }
 
-        div.lowtea-menu-userinfo {
-            padding-left: 10px;
+        .lowtea-menu-userinfo {
+            margin: 10px 0px;
+            width: 90%;
         }
 
-        .lowtea-btn-new-page {
-            margin: 5px 3px;
+        .btn-dropdown-menu {
+            height: 100%;
+            background: transparent;
+            color: white;
+            border-radius: 0px;
+            border: none;
+        }
+
+        .btn-dropdown-menu:hover {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 0px;
+            border: none;
         }
     }
 
