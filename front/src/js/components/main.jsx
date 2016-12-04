@@ -15,6 +15,8 @@ export default class Main extends React.Component {
             console.log(data)
             this.setState({
                 nickname: data.user.nickname, 
+                userintro: data.user.userintro,
+                gender: data.user.gender, 
                 role: data.user.role, 
                 language: data.user.language,
             })
@@ -33,8 +35,11 @@ export default class Main extends React.Component {
                     {
                         React.cloneElement(this.props.children, {
                             nickname: this.state.nickname, 
-                            role: this.state.role, 
+                            userintro: this.state.userintro,
+                            gender: this.state.gender,
+                            role: this.state.role,
                             language: this.state.language,
+                            updateUserInfo: this.updateUserInfo.bind(this),
                         })
                     }
                 </div>

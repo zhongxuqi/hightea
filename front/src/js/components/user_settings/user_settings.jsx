@@ -8,17 +8,33 @@ export default class UserSettings extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            nickname: this.props.nickname, 
-            role: this.props.role,
+            user: {
+                nickname: this.props.nickname, 
+                userintro: this.props.role,
+                gender: this.props.gender,
+            },
+            userinfoEdit: false,
             language: this.props.language,
         }
+        this.state.copy = this.copyUser(this.state.user)
+        this.updateUserInfo = this.props.updateUserInfo
     }
 
     componentWillReceiveProps(newProps) {
         this.setState({
-            nickname: newProps.nickname, 
-            role: newProps.role, 
+            user: {
+                nickname: newProps.nickname, 
+                userintro: newProps.userintro, 
+                gender: newProps.gender,
+            },
             language: newProps.language,
+        })
+        this.setState({
+            copy: this.copyUser({
+                nickname: newProps.nickname, 
+                userintro: newProps.userintro, 
+                gender: newProps.gender,
+            }),
         })
     }
 
@@ -32,16 +48,39 @@ export default class UserSettings extends React.Component {
         }).bind(this))
     }
 
+    copyUser(user) {
+        return {
+            nickname: user.nickname,
+            userintro: user.userintro,
+            gender: user.gender,
+        }
+    }
+
+    onGenderClick(event) {
+        let copyUser = this.state.copy
+        copyUser.gender = event.target.value
+        this.setState({
+            copy: copyUser,
+        })
+    }
+
     render() {
         return (
             <div className="lowtea-user-settings clearfix">
-                <h4 className="lowtea-group-title">用户信息</h4>
+                <div className="lowtea-group-title clearfix">
+                    <h4 className="pull-left">用户信息</h4>
+
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={()=>{this.setState({userinfoEdit: false})}}>保存</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={()=>{this.setState({userinfoEdit: false})}}>取消</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}} onClick={()=>{this.setState({userinfoEdit: true})}}>编辑</button>
+                </div>
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">用户名</label>
+                        <label className="col-sm-2 control-label">昵称</label>
                         <div className="col-sm-10">
-                            <input className="form-control"/>
+                            <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.user.nickname}/>
+                            <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.copy.nickname}</p>
                         </div>
                     </div>
                     <div className="form-group">
@@ -51,14 +90,34 @@ export default class UserSettings extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">个性签名</label>
+                        <label className="col-sm-2 control-label">个人签名</label>
                         <div className="col-sm-10">
-                            <input className="form-control"/>
+                            <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.user.userintro}/>
+                            <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.copy.userintro}</p>
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="col-sm-2 control-label">性别</label>
+                        <div className="col-sm-10" style={{height:"27px"}}>
+                            <div className="radio" style={{padding:"0px", display:{true:"block", false:"none"}[this.state.userinfoEdit]}}>
+                                <label className="radio-inline">
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="unknow" checked={this.state.copy.gender==""} onChange={this.onGenderClick.bind(this)}/> 未知
+                                </label>
+                                <label className="radio-inline">
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="female" checked={this.state.copy.gender=="female"} onChange={this.onGenderClick.bind(this)}/> 女
+                                </label>
+                                <label className="radio-inline">
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="male" checked={this.state.copy.gender=="male"} onChange={this.onGenderClick.bind(this)}/> 男
+                                </label>
+                            </div>
+                            <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{{true:"女", false:{true:"男", false: "未知"}[this.state.copy.gender=="male"]}[this.state.copy.gender=="female"]}</p>
                         </div>
                     </div>
                 </form>
 
-                <h4 className="lowtea-group-title">其它设置</h4>
+                <div className="lowtea-group-title">
+                    <h4>其它设置</h4>
+                </div>
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
