@@ -60,7 +60,7 @@ func (p *MainHandler) ActionRegister(w http.ResponseWriter, r *http.Request) {
 		user["account"] = registerObj.Account
 		user["password"] = registerObj.PassWord
 		user["nickname"] = registerObj.NickName
-		user["email"] = ""
+		user["email"] = registerObj.Email
 		user["gender"] = ""
 		user["userintro"] = ""
 		user["role"] = model.MEMBER

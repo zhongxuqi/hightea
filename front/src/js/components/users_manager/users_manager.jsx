@@ -10,6 +10,7 @@ export default class UsersManager extends React.Component {
         this.state = {
             users: [],
             registers: [],
+            confirmModal: {},
         }
         this.updateUsersList()
         if ('role' in this.props && (this.props.role == "root" || this.props.role == "admin")) {
@@ -35,20 +36,27 @@ export default class UsersManager extends React.Component {
     }
 
     saveUserEdit(userObj) {
-        $.confirm({
-            title: 'warning',
-            content: "save the change of "+userObj.account,
-            buttons: {
-                confirm: () => {
-                    HttpUtils.post("/api/admin/user/"+userObj.account, {
-                        role: userObj.copy.role,
-                    }, ((data) => {
-                        this.updateUsersList()
-                    }).bind(this), ((data) => {
-                        HttpUtils.alert("["+data.status+"] "+data.responseText)
-                    }))
-                },
-                cancel: () => {},
+        $("#confirmModal").on("show.bs.modal", () => {
+            $("#confirmModal #confirmAffirmBtn").on("click", () => {
+                HttpUtils.post("/api/admin/user/"+userObj.account, {
+                    role: userObj.copy.role,
+                }, ((data) => {
+                    this.updateUsersList()
+                }).bind(this), ((data) => {
+                    HttpUtils.alert("["+data.status+"] "+data.responseText)
+                }))
+                $("#confirmModal #confirmAffirmBtn").off("click")
+                $("#confirmModal").modal("hide")
+            })
+        })
+        $("#confirmModal").on("hide", () => {
+            $("#confirmModal #confirmAffirmBtn").off("click")
+        })
+        $("#confirmModal").modal("show")
+        this.setState({
+            confirmModal: {
+                title: "Warning",
+                message: "save the change of "+userObj.account,
             }
         })
     }
@@ -88,18 +96,25 @@ export default class UsersManager extends React.Component {
             this.setState({currUser: userItem})
             $("#userInfoModal").modal("show")
         } else {
-            $.confirm({
-                title: 'danger',
-                content: action+" the user of "+userItem.account,
-                buttons: {
-                    confirm: () => {
-                        HttpUtils.delete("/api/admin/user/"+userItem.account, {}, ((data) => {
-                            this.updateUsersList()
-                        }).bind(this), ((data) => {
-                            HttpUtils.alert("["+data.status+"] "+data.responseText)
-                        }))
-                    },
-                    cancel: () => {},
+            $("#confirmModal").on("show.bs.modal", () => {
+                $("#confirmModal #confirmAffirmBtn").on("click", () => {
+                    HttpUtils.delete("/api/admin/user/"+userItem.account, {}, ((data) => {
+                        this.updateUsersList()
+                    }).bind(this), ((data) => {
+                        HttpUtils.alert("["+data.status+"] "+data.responseText)
+                    }))
+                    $("#confirmModal #confirmAffirmBtn").off("click")
+                    $("#confirmModal").modal("hide")
+                })
+            })
+            $("#confirmModal").on("hide", () => {
+                $("#confirmModal #confirmAffirmBtn").off("click")
+            })
+            $("#confirmModal").modal("show")
+            this.setState({
+                confirmModal: {
+                    title: "Danger",
+                    message: action+" the user of "+userItem.account+" ?",
                 }
             })
         }
@@ -110,22 +125,29 @@ export default class UsersManager extends React.Component {
             this.setState({currRegister: registerItem})
             $("#registerInfoModal").modal("show")
         } else {
-            $.confirm({
-                title: 'warning',
-                content: action+" the register of "+registerItem.email,
-                buttons: {
-                    confirm: () => {
-                        HttpUtils.post("/api/admin/register", {
-                            action: action,
-                            account: registerItem.account,
-                        }, ((data) => {
-                            this.updateUsersList()
-                            this.updateRegistersList()
-                        }).bind(this), ((data) => {
-                            HttpUtils.alert("["+data.status+"] "+data.responseText)
-                        }))
-                    },
-                    cancel: () => {},
+            $("#confirmModal").on("show.bs.modal", () => {
+                $("#confirmModal #confirmAffirmBtn").on("click", () => {
+                    HttpUtils.post("/api/admin/register", {
+                        action: action,
+                        account: registerItem.account,
+                    }, ((data) => {
+                        this.updateUsersList()
+                        this.updateRegistersList()
+                    }).bind(this), ((data) => {
+                        HttpUtils.alert("["+data.status+"] "+data.responseText)
+                    }))
+                    $("#confirmModal #confirmAffirmBtn").off("click")
+                    $("#confirmModal").modal("hide")
+                })
+            })
+            $("#confirmModal").on("hide", () => {
+                $("#confirmModal #confirmAffirmBtn").off("click")
+            })
+            $("#confirmModal").modal("show")
+            this.setState({
+                confirmModal: {
+                    title: "Waring",
+                    message: action+" the register of "+registerItem.email+" ?",
                 }
             })
         }
@@ -251,6 +273,24 @@ export default class UsersManager extends React.Component {
                             </div>
                             <div className="modal-body">
                                 { "currRegister" in this.state ? this.state.currRegister.resume:''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="confirmModal" className="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-sm">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title">{this.state.confirmModal.title}</h4>
+                            </div>
+                            <div className="modal-body">
+                                <p>{this.state.confirmModal.message}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">关闭</button>
+                                <button id="confirmAffirmBtn" type="button" className="btn btn-primary">确定</button>
                             </div>
                         </div>
                     </div>

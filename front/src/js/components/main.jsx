@@ -13,11 +13,11 @@ export default class Main extends React.Component {
     updateUserInfo() {
         HttpUtil.get('/api/member/self', {}, ((data) => {
             this.setState({
-                nickname: data.user.nickname, 
-                email: data.user.email, 
+                nickname: data.user.nickname,
+                email: data.user.email,
                 userintro: data.user.userintro,
-                gender: data.user.gender, 
-                role: data.user.role, 
+                gender: data.user.gender,
+                role: data.user.role,
                 language: data.user.language,
             })
         }).bind(this), ((data) => {
@@ -34,8 +34,8 @@ export default class Main extends React.Component {
                 <div className="col-md-10 col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
                     {
                         React.cloneElement(this.props.children, {
-                            nickname: this.state.nickname, 
-                            email: this.state.email, 
+                            nickname: this.state.nickname,
+                            email: this.state.email,
                             userintro: this.state.userintro,
                             gender: this.state.gender,
                             role: this.state.role,
