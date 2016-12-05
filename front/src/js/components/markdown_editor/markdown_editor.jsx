@@ -15,6 +15,12 @@ export default class MarkdownEditor extends React.Component {
     render() {
         return (
             <div className="lowtea-markdown-editor">
+                <div className="toolbar">
+                    <a className="fa fa-bold"></a>
+                    <a className="fa fa-italic"></a>
+                    <a className="fa fa-header"></a>
+                    <i className="separator">|</i>
+                </div>
                 <textarea id="markdown-editor"></textarea>
             </div>
         )

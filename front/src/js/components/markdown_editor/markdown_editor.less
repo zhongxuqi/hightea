@@ -4,6 +4,35 @@
     width: 100%;
     padding: 10px;
 
+    .toolbar {
+        border-radius: 4px 4px 0px 0px;
+        border-top: 1px solid @cutline-color;
+        border-left: 1px solid @cutline-color;
+        border-right: 1px solid @cutline-color;
+        border-bottom-width: 0px;
+        padding: 3px;
+        margin: 0px;
+
+        a {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            color: #2c3e50;
+            display: inline-block;
+        }
+
+        i {
+            width: 1px;
+            line-height: 30px;
+            display: inline-block;
+            margin: 0px 6px;
+            background-color: @cutline-color;
+            text-align: center;
+            color: transparent;
+        }
+    }
+
     textarea {
         width: 100%;
         min-height: 500px;
