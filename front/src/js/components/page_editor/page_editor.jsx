@@ -1,18 +1,19 @@
 import React from 'react';
 
 import PageSideShortcut from '../page_side_shortcut/page_side_shortcut.jsx'
+import MarkdownEditor from '../markdown_editor/markdown_editor.jsx'
 
 import './page_editor.less';
 
 export default class PageEditor extends React.Component {
-    componentDidMount() {
-        $(".page-content-editer").height($(window).height() - $(".page-title").height() - 120)
+    // componentDidMount() {
+    //     $(".page-content-editer").height($(window).height() - $(".page-title").height() - 120)
 
-        let simplemde = new SimpleMDE({
-            element: $("#editor")[0],
-            spellChecker: false,
-        })
-    }
+    //     let simplemde = new SimpleMDE({
+    //         element: $("#editor")[0],
+    //         spellChecker: false,
+    //     })
+    // }
 
     render() {
         return (
@@ -60,9 +61,7 @@ export default class PageEditor extends React.Component {
                         </div>
                     </div>
 
-                    <div className="page-content-editer">
-                        <textarea id="editor"></textarea>
-                    </div>
+                    <MarkdownEditor></MarkdownEditor>
                 </div>
             </div>
         )
