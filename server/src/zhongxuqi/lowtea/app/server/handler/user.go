@@ -67,7 +67,11 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if r.Method == http.MethodPost {
 		var data struct {
-			Language string `json:"language"`
+			NickName  string `json:"nickname"`
+			Email     string `json:"email"`
+			UserIntro string `json:"userintro"`
+			Gender    string `json:"gender"`
+			Language  string `json:"language"`
 		}
 		err := utils.ReadReq2Struct(r, &data)
 		if err != nil {
@@ -78,9 +82,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 		if self.Role == model.ROOT {
 			p.Config.RootLanguage = data.Language
 		} else {
-			err = p.UserColl.Update(bson.M{"account": self.Account}, bson.M{"$set": bson.M{
-				"language": data.Language,
-			}})
+			err = p.UserColl.Update(bson.M{"account": self.Account}, bson.M{"$set": data})
 			if err != nil {
 				http.Error(w, "user info update error: "+err.Error(), 500)
 				return
@@ -104,6 +106,54 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 		Message: "success",
 	})
 	w.Write(retStr)
+	return
+}
+
+// ActionSelfPassword edit the password of self
+func (p *MainHandler) ActionSelfPassword(w http.ResponseWriter, r *http.Request) {
+	var accountCookie *http.Cookie
+	var err error
+	accountCookie, err = r.Cookie("account")
+	if err != nil {
+		http.Error(w, "cookie find error: "+err.Error(), 500)
+		return
+	}
+	if accountCookie.Value == model.ROOT {
+		http.Error(w, errors.ERROR_SET_ROOTPASSWORD.Error(), 400)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		var data struct {
+			PassWord    string `json:"password"`
+			NewPassWord string `json:"newPassword"`
+		}
+		err := utils.ReadReq2Struct(r, &data)
+		if err != nil {
+			http.Error(w, "user post json unmarshal error: "+err.Error(), 400)
+			return
+		}
+
+		err = p.UserColl.Update(bson.M{"account": accountCookie.Value, "password": data.PassWord}, bson.M{
+			"$set": bson.M{
+				"password": data.NewPassWord,
+			},
+		})
+		if err != nil {
+			http.Error(w, "password update error: "+err.Error(), 500)
+			return
+		}
+
+		p.UpdateSession(w, accountCookie.Value)
+		retStr, _ := json.Marshal(model.RespBase{
+			Status:  200,
+			Message: "success",
+		})
+		w.Write(retStr)
+		return
+	}
+
+	http.Error(w, errors.ERROR_INVAIL_METHOD.Error(), 400)
 	return
 }
 

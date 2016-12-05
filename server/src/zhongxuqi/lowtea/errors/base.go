@@ -11,5 +11,7 @@ var (
 	ERROR_OBJECTID_INVALID = errors.New("objectID is invalid")
 	ERROR_ACTION_INVALID   = errors.New("action is invalid")
 
-	ERROR_SET_ROOT = errors.New("error to set root")
+	ERROR_SET_ROOTPASSWORD = errors.New("error to set root password")
+
+	ERROR_INVAIL_METHOD = errors.New("method is invalid")
 )
