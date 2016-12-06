@@ -12,6 +12,7 @@
         border-bottom-width: 0px;
         padding: 3px;
         margin: 0px;
+        background-color: white;
 
         a {
             width: 30px;
@@ -20,6 +21,23 @@
             line-height: 30px;
             color: #2c3e50;
             display: inline-block;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        a:hover {
+            width: 30px;
+            height: 30px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            text-decoration: none;
+            border: 1px solid @cutline-color;
+            border-radius: 4px;
         }
 
         i {
@@ -40,5 +58,42 @@
 
     .CodeMirror {
         padding: 0px;
+    }
+}
+
+.toolbar-fullscreen {
+    .toolbar {
+        position: fixed;
+        border-radius: 0px;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        height: 50px;
+
+        a {
+            width: 43px;
+            height: 43px;
+            line-height: 43px;
+            display: inline-block;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        a:hover {
+            width: 43px;
+            height: 43px;
+            line-height: 43px;
+            display: inline-block;
+            border: 1px solid @cutline-color;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        i {
+            height: 43px;
+            line-height: 43px;
+            display: inline-block;
+        }
     }
 }
