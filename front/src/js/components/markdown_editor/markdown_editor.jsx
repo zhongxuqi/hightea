@@ -187,7 +187,6 @@ export default class MarkdownEditor extends React.Component {
     }
 
     componentDidMount() {
-        console.log("good2")
         this.codemirror = CodeMirror.fromTextArea(document.getElementById("markdown-editor"), {
             lineNumbers: false,
             mode: {
@@ -199,7 +198,7 @@ export default class MarkdownEditor extends React.Component {
         });
         let preView = document.getElementById("preview"),
             cm = this.codemirror;
-        cm.on("change", ()=>{
+        cm.on("update", ()=>{
             preView.innerHTML = marked(cm.getValue())
         })
     }
