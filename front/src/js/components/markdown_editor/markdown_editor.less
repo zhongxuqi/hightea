@@ -29,6 +29,12 @@
             cursor: pointer;
         }
 
+        a.active {
+            border: 1px solid @cutline-color;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
         a:hover {
             width: 30px;
             height: 30px;
@@ -57,11 +63,39 @@
     }
 
     .CodeMirror {
+        min-height: 500px;
         padding: 0px;
+        display: block;
+
+        .cm-header {
+            color: black;
+        }
+    }
+
+    #preview {
+        width: 100%;
+        min-height: 500px;
+        display: none;
+        padding: 4px;
+        background-color: #f7f7f9;
+        border: 1px solid #ddd;
+        border-radius: 0px 0px 4px 4px;
     }
 }
 
-.toolbar-fullscreen {
+.lowtea-markdown-editor-preview {
+    .CodeMirror {
+        display: none;
+    }
+
+    #preview {
+        width: 100%;
+        min-height: 500px;
+        display: block;
+    }
+}
+
+.lowtea-markdown-editor-fullscreen {
     .toolbar {
         position: fixed;
         border-radius: 0px;
@@ -95,5 +129,31 @@
             line-height: 43px;
             display: inline-block;
         }
+    }
+}
+
+.lowtea-markdown-editor-preview.lowtea-markdown-editor-fullscreen {
+    #preview {
+        position: fixed;
+        top: 50px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+    }
+}
+
+.lowtea-markdown-editor-columns {
+    .CodeMirror {
+        right: 50%;
+        display: block;
+    }
+
+    #preview {
+        position: fixed;
+        top: 50px;
+        left: 50%;
+        right: 0px;
+        bottom: 0px;
+        display: block;
     }
 }

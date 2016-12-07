@@ -49,7 +49,6 @@ export default class PageEditor extends React.Component {
                                 </button>
 
                                 <ul className="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                    <li role="presentation"><a role="menuitem" href="#">撤回(回到草稿)</a></li>
                                     <li role="presentation"><a role="menuitem" href="#">发布(仅自己可见)</a></li>
                                     <li role="presentation"><a role="menuitem" href="#">发布(仅成员可见)</a></li>
                                     <li role="presentation"><a role="menuitem" href="#">发布(对外公开)</a></li>

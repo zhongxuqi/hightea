@@ -2,6 +2,17 @@ import React from 'react'
 import CodeMirror from 'codemirror'
 import 'codemirror/mode/gfm/gfm.js'
 import 'codemirror/addon/display/fullscreen.js'
+import marked from 'marked'
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: true,
+  tables: true,
+  breaks: true,
+  pedantic: false,
+  sanitize: true,
+  smartLists: true,
+  smartypants: false
+});
 
 import './markdown_editor.less'
 
@@ -170,10 +181,13 @@ export default class MarkdownEditor extends React.Component {
         super(props)
         this.state = {
             isFullScreen: false,
+            isColumns: false,
+            isPreView: false,
         }
     }
 
     componentDidMount() {
+        console.log("good2")
         this.codemirror = CodeMirror.fromTextArea(document.getElementById("markdown-editor"), {
             lineNumbers: false,
             mode: {
@@ -183,6 +197,11 @@ export default class MarkdownEditor extends React.Component {
             },
             tabSize: 4,
         });
+        let preView = document.getElementById("preview"),
+            cm = this.codemirror;
+        cm.on("change", ()=>{
+            preView.innerHTML = marked(cm.getValue())
+        })
     }
 
     toggleBlock(type) {
@@ -197,16 +216,40 @@ export default class MarkdownEditor extends React.Component {
     }
 
     toggleFullScreen() {
-        this.setState({
-            isFullScreen: true,
-        })
+        let options = {
+            isFullScreen: !this.state.isFullScreen,
+        }
+        if (!options.isFullScreen) options["isColumns"] = false
+        this.setState(options)
+
         let cm = this.codemirror
         cm.setOption("fullScreen", !cm.getOption("fullScreen"));
     }
 
+    togglePreView() {
+        let options = {
+            isPreView: !this.state.isPreView,
+        }
+        if (options.isPreView) options["isColumns"] = false
+        this.setState(options)
+    }
+
+    toggleColumns() {
+        if (this.state.isFullScreen) {
+            let options = {
+                isColumns: !this.state.isColumns,
+            }
+            if (options.isColumns) options["isPreView"] = false
+            this.setState(options)
+        }
+    }
+
     render() {
         return (
-            <div className={["lowtea-markdown-editor", {true: "toolbar-fullscreen", false: ""}[this.state.isFullScreen]].join(" ")}>
+            <div className={["lowtea-markdown-editor", 
+                    {true: "lowtea-markdown-editor-fullscreen", false: ""}[this.state.isFullScreen], 
+                    {true:"lowtea-markdown-editor-preview", false:""}[this.state.isPreView],
+                    {true:"lowtea-markdown-editor-columns", false:""}[this.state.isColumns]].join(" ")}>
                 <div className="toolbar">
                     <a className="fa fa-bold" onClick={this.toggleBlock.bind(this, "bold")}></a>
                     <a className="fa fa-italic" onClick={this.toggleBlock.bind(this, "italic")}></a>
@@ -218,11 +261,15 @@ export default class MarkdownEditor extends React.Component {
                     <i className="separator">|</i>
                     <a className="fa fa-link"></a>
                     <a className="fa fa-picture-o"></a>
-                    <a className="fa fa-arrows-alt" onClick={this.toggleFullScreen.bind(this)}></a>
+                    <i className="separator">|</i>
+                    <a className={["fa fa-eye", {true:"active",false:""}[this.state.isPreView]].join(" ")} onClick={this.togglePreView.bind(this)}></a>
+                    <a className={["fa fa-columns", {true:"active",false:""}[this.state.isColumns]].join(" ")} style={{display:{true:"inline-block", false:"none"}[this.state.isFullScreen]}} onClick={this.toggleColumns.bind(this)}></a>
+                    <a className={["fa fa-arrows-alt", {true:"active",false:""}[this.state.isFullScreen]].join(" ")} onClick={this.toggleFullScreen.bind(this)}></a>
                     <i className="separator">|</i>
                     <a className="fa fa-question-circle" href="https://simplemde.com/markdown-guide" target="_blank"></a>
                 </div>
                 <textarea id="markdown-editor"></textarea>
+                <div id="preview"></div>
             </div>
         )
     }
