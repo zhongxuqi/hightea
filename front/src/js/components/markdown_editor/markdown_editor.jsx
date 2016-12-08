@@ -136,7 +136,6 @@ function _toggleHeading(editor) {
 
     if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
 		return;
-    
 
 	let startPoint = cm.getCursor("start");
 	let endPoint = cm.getCursor("end");
@@ -172,6 +171,38 @@ function _toggleHeading(editor) {
                     ch: MaxLineLen
                 })
             }
+        }
+    }
+}
+
+function _toggleQuote(editor) {
+    let cm = editor.codemirror
+
+    if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
+		return;
+
+	let startPoint = cm.getCursor("start");
+	let endPoint = cm.getCursor("end");
+
+    for(let i = startPoint.line; i <= endPoint.line; i++) {
+        let lineStr = cm.getLine(i)
+
+        if (/^> /.test(lineStr)) {
+            cm.replaceRange(lineStr.substring(2), {
+                line: i,
+                ch: 0,
+            }, {
+                line: i,
+                ch: MaxLineLen,
+            })
+        } else {
+            cm.replaceRange("> "+lineStr, {
+                line: i,
+                ch: 0,
+            }, {
+                line: i,
+                ch: MaxLineLen,
+            })
         }
     }
 }
@@ -243,6 +274,10 @@ export default class MarkdownEditor extends React.Component {
         }
     }
 
+    toggleQuote() {
+        _toggleQuote(this)
+    }
+
     render() {
         return (
             <div className={["lowtea-markdown-editor", 
@@ -254,7 +289,7 @@ export default class MarkdownEditor extends React.Component {
                     <a className="fa fa-italic" onClick={this.toggleBlock.bind(this, "italic")}></a>
                     <a className="fa fa-header" onClick={this.toggleHeading.bind(this)}></a>
                     <i className="separator">|</i>
-                    <a className="fa fa-quote-left"></a>
+                    <a className="fa fa-quote-left" onClick={this.toggleQuote.bind(this)}></a>
                     <a className="fa fa-list-ul"></a>
                     <a className="fa fa-list-ol"></a>
                     <i className="separator">|</i>
