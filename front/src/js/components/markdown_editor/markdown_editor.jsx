@@ -4,14 +4,14 @@ import 'codemirror/mode/gfm/gfm.js'
 import 'codemirror/addon/display/fullscreen.js'
 import marked from 'marked'
 marked.setOptions({
-  renderer: new marked.Renderer(),
-  gfm: true,
-  tables: true,
-  breaks: true,
-  pedantic: false,
-  sanitize: true,
-  smartLists: true,
-  smartypants: false
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: false,
+    sanitize: true,
+    smartLists: true,
+    smartypants: false
 });
 
 import './markdown_editor.less'
@@ -175,19 +175,23 @@ function _toggleHeading(editor) {
     }
 }
 
-function _toggleQuote(editor) {
+function _toggleLineHeader(editor, header) {
     let cm = editor.codemirror
 
     if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
 		return;
 
-	let startPoint = cm.getCursor("start");
-	let endPoint = cm.getCursor("end");
+	let re
+    if (header == "*") re = new RegExp("^\\"+header+" ")
+    else re = new RegExp("^"+header+" ")
 
+    let startPoint = cm.getCursor("start"),
+	    endPoint = cm.getCursor("end");
+    
     for(let i = startPoint.line; i <= endPoint.line; i++) {
         let lineStr = cm.getLine(i)
 
-        if (/^> /.test(lineStr)) {
+        if (re.test(lineStr)) {
             cm.replaceRange(lineStr.substring(2), {
                 line: i,
                 ch: 0,
@@ -196,7 +200,7 @@ function _toggleQuote(editor) {
                 ch: MaxLineLen,
             })
         } else {
-            cm.replaceRange("> "+lineStr, {
+            cm.replaceRange(header+" "+lineStr, {
                 line: i,
                 ch: 0,
             }, {
@@ -207,6 +211,56 @@ function _toggleQuote(editor) {
     }
 }
 
+function _toggleOrderedList(editor) {
+    let cm = editor.codemirror
+
+    if(/editor-preview-active/.test(cm.getWrapperElement().lastChild.className))
+		return;
+
+    let startPoint = cm.getCursor("start"),
+	    endPoint = cm.getCursor("end");
+    
+    let replaceStr = ""
+    if (/^[0-9]\. /.test(cm.getLine(startPoint.line))) {
+        for (let i = startPoint.line; i <= endPoint.line; i++) {
+            replaceStr += cm.getLine(i).replace(/^[0-9]+\. /, "") + "\n"
+        }
+    } else {
+        let startIndex = 1
+        if (startPoint.line > 0) {
+            let prevLine = cm.getLine(startPoint.line - 1)
+            let res = prevLine.match(/^[0-9]+/)
+            if (res != null && res.length > 0) {
+                startIndex = Number.parseInt(res[0]) + 1
+            }
+        }
+        
+        for (let i = startPoint.line; i <= endPoint.line; i++) {
+            let lineStr = cm.getLine(i)
+            if (/^[0-9]+\. /.test(lineStr)) {
+                replaceStr += lineStr.replace(/^[0-9]+/, startIndex.toString()) + "\n"
+            } else {
+                replaceStr += startIndex.toString() + ". " + lineStr + "\n"
+            }
+            startIndex++
+        }
+    }
+    cm.replaceRange(replaceStr, {
+        line: startPoint.line,
+        ch: 0,
+    }, {
+        line: endPoint.line,
+        ch: MaxLineLen,
+    })
+    cm.setSelection({
+        line: startPoint.line,
+        ch: 0,
+    }, {
+        line: endPoint.line,
+        ch: MaxLineLen,
+    })
+}
+
 export default class MarkdownEditor extends React.Component {
     constructor(props) {
         super(props)
@@ -214,6 +268,10 @@ export default class MarkdownEditor extends React.Component {
             isFullScreen: false,
             isColumns: false,
             isPreView: false,
+            link: {
+                title: "",
+                url: "",
+            },
         }
     }
 
@@ -275,7 +333,32 @@ export default class MarkdownEditor extends React.Component {
     }
 
     toggleQuote() {
-        _toggleQuote(this)
+        _toggleLineHeader(this, ">")
+    }
+
+    toggleUnorderedList() {
+        _toggleLineHeader(this, "*")
+    }
+
+    toggleOrderedList() {
+        _toggleOrderedList(this)
+    }
+
+    modalLink() {
+        $("#linkModal").modal("show")
+    }
+
+    insertLink() {
+        let url = this.state.link.url
+        if (!/:\/\//.test(url)) url = "http://"+url
+        this.codemirror.replaceSelection("["+this.state.link.title+"]("+url+")", this.codemirror.getCursor("start"))
+        this.setState({
+            link: {
+                title: "",
+                url: "",
+            },
+        })
+        $("#linkModal").modal("hide")
     }
 
     render() {
@@ -290,10 +373,10 @@ export default class MarkdownEditor extends React.Component {
                     <a className="fa fa-header" onClick={this.toggleHeading.bind(this)}></a>
                     <i className="separator">|</i>
                     <a className="fa fa-quote-left" onClick={this.toggleQuote.bind(this)}></a>
-                    <a className="fa fa-list-ul"></a>
-                    <a className="fa fa-list-ol"></a>
+                    <a className="fa fa-list-ul" onClick={this.toggleUnorderedList.bind(this)}></a>
+                    <a className="fa fa-list-ol" onClick={this.toggleOrderedList.bind(this)}></a>
                     <i className="separator">|</i>
-                    <a className="fa fa-link"></a>
+                    <a className="fa fa-link" onClick={this.modalLink.bind(this)}></a>
                     <a className="fa fa-picture-o"></a>
                     <i className="separator">|</i>
                     <a className={["fa fa-eye", {true:"active",false:""}[this.state.isPreView]].join(" ")} onClick={this.togglePreView.bind(this)}></a>
@@ -304,6 +387,33 @@ export default class MarkdownEditor extends React.Component {
                 </div>
                 <textarea id="markdown-editor"></textarea>
                 <div id="preview"></div>
+
+                <div className="modal fade" id="linkModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title" id="myModalLabel">Insert Link</h4>
+                            </div>
+                            <div className="modal-body">
+                                <form role="form">
+                                    <div className="form-group">
+                                        <label>LinkTitle</label>
+                                        <input className="form-control" placeholder="Enter link title" value={this.state.link.title} onChange={((event)=>{this.setState({link:{title:event.target.value,url:this.state.link.url}})}).bind(this)}/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Link address</label>
+                                        <input className="form-control" placeholder="Enter link address" value={this.state.link.url} onChange={((event)=>{this.setState({link:{title:this.state.link.title,url:event.target.value}})}).bind(this)}/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                              <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                              <button type="button" className="btn btn-primary" onClick={this.insertLink.bind(this)}>Affirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
