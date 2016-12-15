@@ -379,7 +379,14 @@ export default class MarkdownEditor extends React.Component {
     insertLink() {
         let url = this.state.link.url
         if (!/:\/\//.test(url)) url = "http://"+url
-        this.codemirror.replaceSelection("["+this.state.link.title+"]("+url+")", this.codemirror.getCursor("start"))
+        let startPoint = this.codemirror.getCursor("start"),
+            insertContent = "["+this.state.link.title+"]("+url+")"
+        this.codemirror.replaceSelection(insertContent, startPoint)
+        this.codemirror.setSelection({
+            line: startPoint.line,
+            ch: startPoint.ch + insertContent.length,
+        })
+        this.codemirror.focus()
         $("#linkModal").modal("hide")
     }
 
@@ -412,9 +419,6 @@ export default class MarkdownEditor extends React.Component {
                 let startPoint = this.codemirror.getCursor("start")
                 this.codemirror.replaceSelection("<img src=\""+resp.imageUrl+"\" alt=\""+title+"\" width=\"50%\"></img>\n", startPoint)
                 this.codemirror.setSelection({
-                    line: startPoint.line+1,
-                    ch: 0,
-                }, {
                     line: startPoint.line+1,
                     ch: 0,
                 })
