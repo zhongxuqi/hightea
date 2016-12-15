@@ -390,8 +390,14 @@ export default class MarkdownEditor extends React.Component {
     insertImage() {
         let title = this.state.image.title,
             imagefile = document.getElementById("imageFile").files[0]
-        console.log(title)
-        console.log(imagefile)
+        if (title == null || title.length == 0) {
+            HttpUtils.alert("请输入标题")
+            return
+        }
+        if (imagefile == null) {
+            HttpUtils.alert("请选择图片")
+            return
+        }
         
         let formData = new FormData()
         formData.append("imagefile", imagefile)
@@ -403,7 +409,17 @@ export default class MarkdownEditor extends React.Component {
             contentType: false,
             dataType: "json",
             success: (resp) => {
-                console.log(resp.imageUrl)
+                let startPoint = this.codemirror.getCursor("start")
+                this.codemirror.replaceSelection("<img src=\""+resp.imageUrl+"\" alt=\""+title+"\" width=\"50%\"></img>\n", startPoint)
+                this.codemirror.setSelection({
+                    line: startPoint.line+1,
+                    ch: 0,
+                }, {
+                    line: startPoint.line+1,
+                    ch: 0,
+                })
+                this.codemirror.focus()
+                $("#imageModal").modal("hide")
             },
             error: (resp) => {
                 HttpUtils.alert("["+resp.status+"] "+resp.responseText)
