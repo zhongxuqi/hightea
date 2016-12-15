@@ -13,6 +13,7 @@ import (
 
 const (
 	imagePath = "../media/lowtea_img"
+	audioPath = "../media/lowtea_audio"
 	videoPath = "../media/lowtea_video"
 )
 
@@ -31,6 +32,7 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	var dirInfo os.FileInfo
 	var err error
 
+	// init img dir
 	dirInfo, err = os.Stat(imagePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -41,6 +43,20 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	} else {
 		if !dirInfo.IsDir() {
 			panic(errors.New(imagePath + " is not a directionary"))
+		}
+	}
+
+	// init audio dir
+	dirInfo, err = os.Stat(audioPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			os.MkdirAll(audioPath, 0750)
+		} else {
+			panic(err)
+		}
+	} else {
+		if !dirInfo.IsDir() {
+			panic(errors.New(audioPath + " is not a directionary"))
 		}
 	}
 
@@ -60,6 +76,9 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 
 	// init img handler
 	handler.Handle("/lowtea_img/", http.FileServer(http.Dir("../media")))
+
+	// init audio handler
+	handler.Handle("/lowtea_audio/", http.FileServer(http.Dir("../media")))
 
 	// init video handler
 	handler.Handle("/lowtea_video/", http.FileServer(http.Dir("../media")))
@@ -83,6 +102,27 @@ func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) 
 	}
 
 	url = "/lowtea_img/" + filename
+	return
+}
+
+func (p *LocalOss) SaveAudio(audioBody *multipart.File) (url string, err error) {
+	filename := bson.NewObjectId().Hex()
+	var audiofile *os.File
+	audiofile, err = os.Create("../media/lowtea_audio/" + filename)
+	if err != nil {
+		return
+	}
+	var audioByte []byte
+	audioByte, err = ioutil.ReadAll(*audioBody)
+	if err != nil {
+		return
+	}
+	_, err = audiofile.Write(audioByte)
+	if err != nil {
+		return
+	}
+
+	url = "/lowtea_audio/" + filename
 	return
 }
 
