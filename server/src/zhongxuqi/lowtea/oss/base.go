@@ -10,6 +10,7 @@ import (
 type OssIBase interface {
 	InitOss(handler *http.ServeMux, cfg *model.OSSConfig)
 	SaveImage(file *multipart.File) (url string, err error)
+	SaveVideo(file *multipart.File) (url string, err error)
 }
 
 func NewOss(handler *http.ServeMux, cfg *model.OSSConfig) (ret OssIBase) {

@@ -61,15 +61,19 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	// init img handler
 	handler.Handle("/lowtea_img/", http.FileServer(http.Dir("../media")))
 
+	// init video handler
+	handler.Handle("/lowtea_video/", http.FileServer(http.Dir("../media")))
 }
 
 func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
-	imagefile, err := os.Create("../media/lowtea_img/" + filename)
+	var imagefile *os.File
+	imagefile, err = os.Create("../media/lowtea_img/" + filename)
 	if err != nil {
 		return
 	}
-	imageByte, err := ioutil.ReadAll(*imageBody)
+	var imageByte []byte
+	imageByte, err = ioutil.ReadAll(*imageBody)
 	if err != nil {
 		return
 	}
@@ -79,5 +83,26 @@ func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) 
 	}
 
 	url = "/lowtea_img/" + filename
+	return
+}
+
+func (p *LocalOss) SaveVideo(videoBody *multipart.File) (url string, err error) {
+	filename := bson.NewObjectId().Hex()
+	var videofile *os.File
+	videofile, err = os.Create("../media/lowtea_video/" + filename)
+	if err != nil {
+		return
+	}
+	var videoByte []byte
+	videoByte, err = ioutil.ReadAll(*videoBody)
+	if err != nil {
+		return
+	}
+	_, err = videofile.Write(videoByte)
+	if err != nil {
+		return
+	}
+
+	url = "/lowtea_video/" + filename
 	return
 }

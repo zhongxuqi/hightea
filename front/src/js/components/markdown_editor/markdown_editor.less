@@ -62,12 +62,15 @@
     }
 
     .CodeMirror {
-        min-height: 500px;
         padding: 0px;
         display: block;
 
         .cm-header {
             color: black;
+        }
+
+        .CodeMirror-scroll {
+            min-height: 500px;
         }
     }
 
@@ -79,6 +82,7 @@
         background-color: #fafafa;
         border: 1px solid #ddd;
         border-radius: 0px 0px 4px 4px;
+        overflow: scroll;
     }
 }
 

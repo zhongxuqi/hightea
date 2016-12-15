@@ -276,7 +276,12 @@ export default class MarkdownEditor extends React.Component {
                 url: "",
             },
             image: {
-                title: "",
+                isFile: true,
+                imageUrl: "",
+            },
+            video: {
+                isFile: true,
+                videoUrl: "",
             },
         }
     }
@@ -313,10 +318,21 @@ export default class MarkdownEditor extends React.Component {
         $("#imageModal").on("hidden.bs.modal", () => {
             this.setState({
                 image: {
-                    title: "",
+                    imageUrl: "",
+                    isFile: true,
                 },
             })
             document.getElementById("imageFile").value = ""
+        })
+
+        $("#videoModal").on("hidden.bs.modal", () => {
+            this.setState({
+                video: {
+                    videoUrl: "",
+                    isFile: true,
+                },
+            })
+            document.getElementById("videoFile").value = ""
         })
     }
 
@@ -395,40 +411,113 @@ export default class MarkdownEditor extends React.Component {
     }
 
     insertImage() {
-        let title = this.state.image.title,
-            imagefile = document.getElementById("imageFile").files[0]
-        if (title == null || title.length == 0) {
-            HttpUtils.alert("请输入标题")
-            return
+        if (this.state.image.isFile) {
+            let imagefile = document.getElementById("imageFile").files[0]
+
+            if (imagefile == null) {
+                HttpUtils.alert("请选择图片")
+                return
+            } else if (!(/\.(png|jpeg|jpg)$/.test(imagefile.name))) {
+                HttpUtils.alert("所选文件不是图片")
+                return
+            }
+            
+            let formData = new FormData()
+            formData.append("imagefile", imagefile)
+            $.ajax({
+                type: "POST",
+                url: "/api/member/upload_image",
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: (resp) => {
+                    let startPoint = this.codemirror.getCursor("start")
+                    this.codemirror.replaceSelection("<img src=\""+resp.imageUrl+"\" style=\"max-width:90%\"></img>\n", startPoint)
+                    this.codemirror.setSelection({
+                        line: startPoint.line+1,
+                        ch: 0,
+                    })
+                    this.codemirror.focus()
+                    $("#imageModal").modal("hide")
+                },
+                error: (resp) => {
+                    HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+                },
+            })
+        } else {
+            let imageUrl = this.state.image.imageUrl
+            
+            if (imageUrl == null || imageUrl.length == 0) {
+                HttpUtils.alert("请输入图片URL")
+                return
+            }
+            let startPoint = this.codemirror.getCursor("start")
+            this.codemirror.replaceSelection("<img src=\""+imageUrl+"\" style=\"max-width:90%\"></img>\n", startPoint)
+            this.codemirror.setSelection({
+                line: startPoint.line+1,
+                ch: 0,
+            })
+            this.codemirror.focus()
+            $("#imageModal").modal("hide")
         }
-        if (imagefile == null) {
-            HttpUtils.alert("请选择图片")
-            return
+    }
+    
+    modalVideo() {
+        $("#videoModal").modal("show")
+    }
+
+    insertVideo() {
+        if (this.state.video.isFile) {
+            let videofile = document.getElementById("videoFile").files[0]
+
+            if (videofile == null) {
+                HttpUtils.alert("请选择图片")
+                return
+            } else if (!(/\.(mp4)$/.test(videofile.name))) {
+                HttpUtils.alert("所选文件不是MP4")
+                return
+            }
+            
+            let formData = new FormData()
+            formData.append("videofile", videofile)
+            $.ajax({
+                type: "POST",
+                url: "/api/member/upload_video",
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: (resp) => {
+                    let startPoint = this.codemirror.getCursor("start")
+                    this.codemirror.replaceSelection("<video src=\""+resp.videoUrl+"\" controls=\"controls\" style=\"max-width:90%\"></video>\n", startPoint)
+                    this.codemirror.setSelection({
+                        line: startPoint.line+1,
+                        ch: 0,
+                    })
+                    this.codemirror.focus()
+                    $("#videoModal").modal("hide")
+                },
+                error: (resp) => {
+                    HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+                },
+            })
+        } else {
+            let videoUrl = this.state.video.videoUrl
+            
+            if (videoUrl == null || videoUrl.length == 0) {
+                HttpUtils.alert("请输入视频URL")
+                return
+            }
+            let startPoint = this.codemirror.getCursor("start")
+            this.codemirror.replaceSelection("<video src=\""+videoUrl+"\" controls=\"controls\" style=\"max-width:90%\"></video>\n", startPoint)
+            this.codemirror.setSelection({
+                line: startPoint.line+1,
+                ch: 0,
+            })
+            this.codemirror.focus()
+            $("#videoModal").modal("hide")
         }
-        
-        let formData = new FormData()
-        formData.append("imagefile", imagefile)
-        $.ajax({
-            type: "POST",
-            url: "/api/member/upload_image",
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            success: (resp) => {
-                let startPoint = this.codemirror.getCursor("start")
-                this.codemirror.replaceSelection("<img src=\""+resp.imageUrl+"\" alt=\""+title+"\" width=\"50%\"></img>\n", startPoint)
-                this.codemirror.setSelection({
-                    line: startPoint.line+1,
-                    ch: 0,
-                })
-                this.codemirror.focus()
-                $("#imageModal").modal("hide")
-            },
-            error: (resp) => {
-                HttpUtils.alert("["+resp.status+"] "+resp.responseText)
-            },
-        })
     }
 
     render() {
@@ -448,6 +537,7 @@ export default class MarkdownEditor extends React.Component {
                     <i className="separator">|</i>
                     <a className="fa fa-link" onClick={this.modalLink.bind(this)}></a>
                     <a className="fa fa-picture-o" onClick={this.modalImage.bind(this)}></a>
+                    <a className="fa fa-file-video-o" onClick={this.modalVideo.bind(this)}></a>
                     <i className="separator">|</i>
                     <a className={["fa fa-eye", {true:"active",false:""}[this.state.isPreView]].join(" ")} onClick={this.togglePreView.bind(this)}></a>
                     <a className={["fa fa-columns", {true:"active",false:""}[this.state.isColumns]].join(" ")} style={{display:{true:"inline-block", false:"none"}[this.state.isFullScreen]}} onClick={this.toggleColumns.bind(this)}></a>
@@ -490,15 +580,18 @@ export default class MarkdownEditor extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                                <h4 className="modal-title" id="myModalLabel">插入图片</h4>
+                                <ul className="nav nav-pills" role="tablist">
+                                    <li role="presentation" className={{true:"active", false:""}[this.state.image.isFile]}><a href="javascript:void(0)" onClick={(()=>{this.setState({image:{isFile:true, imageUrl:this.state.image.imageUrl}})}).bind(this)}>上传图片</a></li>
+                                    <li role="presentation" className={{true:"", false:"active"}[this.state.image.isFile]}><a href="javascript:void(0)" onClick={(()=>(this.setState({image:{isFile:false, imageUrl:this.state.image.imageUrl}})))}>图片链接</a></li>
+                                </ul>
                             </div>
                             <div className="modal-body">
                                 <form role="form">
-                                    <div className="form-group">
-                                        <label>图片标题</label>
-                                        <input type="text" className="form-control" placeholder="Enter Image Title" value={this.state.image.title} onChange={((event)=>{this.setState({image:{title:event.target.value,file:this.state.image.file}})}).bind(this)}/>
+                                    <div className="form-group" style={{display:{true:"none",false:"block"}[this.state.image.isFile]}}>
+                                        <label>图片链接</label>
+                                        <input type="text" className="form-control" placeholder="Enter Image URL" value={this.state.image.imageUrl} onChange={((event)=>{this.setState({image:{imageUrl:event.target.value,isFile:this.state.image.isFile}})}).bind(this)}/>
                                     </div>
-                                    <div className="form-group">
+                                    <div className="form-group" style={{display:{true:"block",false:"none"}[this.state.image.isFile]}}>
                                         <label>图片地址</label>
                                         <input type="file" id="imageFile"/>
                                     </div>
@@ -507,6 +600,36 @@ export default class MarkdownEditor extends React.Component {
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                                 <button type="button" className="btn btn-primary" onClick={this.insertImage.bind(this)}>Affirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="modal fade" id="videoModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <ul className="nav nav-pills" role="tablist">
+                                    <li role="presentation" className={{true:"active", false:""}[this.state.video.isFile]}><a href="javascript:void(0)" onClick={(()=>{this.setState({video:{isFile:true, videoUrl:this.state.video.videoUrl}})}).bind(this)}>上传MP4</a></li>
+                                    <li role="presentation" className={{true:"", false:"active"}[this.state.video.isFile]}><a href="javascript:void(0)" onClick={(()=>(this.setState({video:{isFile:false, videoUrl:this.state.video.videoUrl}})))}>MP4链接</a></li>
+                                </ul>
+                            </div>
+                            <div className="modal-body">
+                                <form role="form">
+                                    <div className="form-group" style={{display:{true:"none",false:"block"}[this.state.video.isFile]}}>
+                                        <label>MP4链接</label>
+                                        <input type="text" className="form-control" placeholder="Enter Video URL" value={this.state.video.videoUrl} onChange={((event)=>{this.setState({video:{videoUrl:event.target.value,isFile:this.state.video.isFile}})}).bind(this)}/>
+                                    </div>
+                                    <div className="form-group" style={{display:{true:"block",false:"none"}[this.state.video.isFile]}}>
+                                        <label>MP4地址</label>
+                                        <input type="file" id="videoFile"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={this.insertVideo.bind(this)}>Affirm</button>
                             </div>
                         </div>
                     </div>
