@@ -1,11 +1,10 @@
 package config
 
 import (
-	"labix.org/v2/mgo"
-
 	"zhongxuqi/lowtea/app/server/handler"
 
-	"labix.org/v2/mgo/bson"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // InitDB init the db env
@@ -13,6 +12,14 @@ func InitDB(mainHander *handler.MainHandler) {
 	sess, err := mgo.Dial(mainHander.Config.DBConfig.Host)
 	if err != nil {
 		panic(err)
+	}
+
+	// do login
+	if len(mainHander.Config.DBConfig.User) > 0 {
+		err = sess.DB("admin").Login(mainHander.Config.DBConfig.User, mainHander.Config.DBConfig.Password)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// init db

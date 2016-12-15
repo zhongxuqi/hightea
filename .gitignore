@@ -11,3 +11,9 @@
 # front
 /front/dist/js
 **/node_modules
+
+# config
+/configs/mylowtea.conf
+
+# res
+/media

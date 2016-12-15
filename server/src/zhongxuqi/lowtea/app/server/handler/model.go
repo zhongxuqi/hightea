@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
-	"labix.org/v2/mgo"
 
 	"crypto/md5"
 	"encoding/hex"
@@ -15,6 +14,7 @@ import (
 	"time"
 	"zhongxuqi/lowtea/config"
 	"zhongxuqi/lowtea/model"
+	"zhongxuqi/lowtea/oss"
 )
 
 var (
@@ -29,6 +29,7 @@ type MainHandler struct {
 	SessMap      map[string]int64
 	SessMapMutex *sync.Mutex
 	Config       model.Config
+	Oss          oss.OssIBase
 	UserColl     *mgo.Collection
 	RegisterColl *mgo.Collection
 }

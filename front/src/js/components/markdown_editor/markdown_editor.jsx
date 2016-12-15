@@ -3,13 +3,16 @@ import CodeMirror from 'codemirror'
 import 'codemirror/mode/gfm/gfm.js'
 import 'codemirror/addon/display/fullscreen.js'
 import marked from 'marked'
+
+import HttpUtils from '../../utils/http.jsx'
+
 marked.setOptions({
     renderer: new marked.Renderer(),
     gfm: true,
     tables: true,
     breaks: true,
     pedantic: false,
-    sanitize: true,
+    sanitize: false,
     smartLists: true,
     smartypants: false
 });
@@ -272,6 +275,9 @@ export default class MarkdownEditor extends React.Component {
                 title: "",
                 url: "",
             },
+            image: {
+                title: "",
+            },
         }
     }
 
@@ -289,6 +295,28 @@ export default class MarkdownEditor extends React.Component {
             cm = this.codemirror;
         cm.on("update", ()=>{
             preView.innerHTML = marked(cm.getValue())
+
+            $("#preview a").each((i, element)=>{
+                $(element).attr("target", "_blank")
+            })
+        })
+        
+        $("#linkModal").on("hidden.bs.modal", () => {
+            this.setState({
+                link: {
+                    title: "",
+                    url: "",
+                },
+            })
+        })
+        
+        $("#imageModal").on("hidden.bs.modal", () => {
+            this.setState({
+                image: {
+                    title: "",
+                },
+            })
+            document.getElementById("imageFile").value = ""
         })
     }
 
@@ -352,13 +380,35 @@ export default class MarkdownEditor extends React.Component {
         let url = this.state.link.url
         if (!/:\/\//.test(url)) url = "http://"+url
         this.codemirror.replaceSelection("["+this.state.link.title+"]("+url+")", this.codemirror.getCursor("start"))
-        this.setState({
-            link: {
-                title: "",
-                url: "",
+        $("#linkModal").modal("hide")
+    }
+
+    modalImage() {
+        $("#imageModal").modal("show")
+    }
+
+    insertImage() {
+        let title = this.state.image.title,
+            imagefile = document.getElementById("imageFile").files[0]
+        console.log(title)
+        console.log(imagefile)
+        
+        let formData = new FormData()
+        formData.append("imagefile", imagefile)
+        $.ajax({
+            type: "POST",
+            url: "/api/member/upload_image",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: (resp) => {
+                console.log(resp.imageUrl)
+            },
+            error: (resp) => {
+                HttpUtils.alert("["+resp.status+"] "+resp.responseText)
             },
         })
-        $("#linkModal").modal("hide")
     }
 
     render() {
@@ -377,7 +427,7 @@ export default class MarkdownEditor extends React.Component {
                     <a className="fa fa-list-ol" onClick={this.toggleOrderedList.bind(this)}></a>
                     <i className="separator">|</i>
                     <a className="fa fa-link" onClick={this.modalLink.bind(this)}></a>
-                    <a className="fa fa-picture-o"></a>
+                    <a className="fa fa-picture-o" onClick={this.modalImage.bind(this)}></a>
                     <i className="separator">|</i>
                     <a className={["fa fa-eye", {true:"active",false:""}[this.state.isPreView]].join(" ")} onClick={this.togglePreView.bind(this)}></a>
                     <a className={["fa fa-columns", {true:"active",false:""}[this.state.isColumns]].join(" ")} style={{display:{true:"inline-block", false:"none"}[this.state.isFullScreen]}} onClick={this.toggleColumns.bind(this)}></a>
@@ -410,6 +460,33 @@ export default class MarkdownEditor extends React.Component {
                             <div className="modal-footer">
                               <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                               <button type="button" className="btn btn-primary" onClick={this.insertLink.bind(this)}>Affirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="modal fade" id="imageModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title" id="myModalLabel">插入图片</h4>
+                            </div>
+                            <div className="modal-body">
+                                <form role="form">
+                                    <div className="form-group">
+                                        <label>图片标题</label>
+                                        <input type="text" className="form-control" placeholder="Enter Image Title" value={this.state.image.title} onChange={((event)=>{this.setState({image:{title:event.target.value,file:this.state.image.file}})}).bind(this)}/>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>图片地址</label>
+                                        <input type="file" id="imageFile"/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={this.insertImage.bind(this)}>Affirm</button>
                             </div>
                         </div>
                     </div>

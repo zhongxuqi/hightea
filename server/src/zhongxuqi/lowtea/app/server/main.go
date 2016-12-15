@@ -14,6 +14,7 @@ func main() {
 	config.InitEnv(mainHandler)
 	config.InitRouter(mainHandler)
 	config.InitDB(mainHandler)
+	config.InitOss(mainHandler)
 
 	httpServer := &http.Server{
 		Addr:           "0.0.0.0:8080",

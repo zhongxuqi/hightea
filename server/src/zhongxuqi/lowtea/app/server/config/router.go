@@ -48,6 +48,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	memberHandler.HandleFunc("/api/member/self", mainHandler.ActionSelf)
 	memberHandler.HandleFunc("/api/member/self_password", mainHandler.ActionSelfPassword)
 	memberHandler.HandleFunc("/api/member/users", mainHandler.GetUsers)
+	memberHandler.HandleFunc("/api/member/upload_image", mainHandler.ActionUpLoadImage)
 	apiHandler.HandleFunc("/api/member/", func(w http.ResponseWriter, r *http.Request) {
 		memberHandler.ServeHTTP(w, r)
 	})
