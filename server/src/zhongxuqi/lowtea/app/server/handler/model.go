@@ -32,6 +32,7 @@ type MainHandler struct {
 	Oss          oss.OssIBase
 	UserColl     *mgo.Collection
 	RegisterColl *mgo.Collection
+	DocumentColl *mgo.Collection
 }
 
 // New new MainHandler

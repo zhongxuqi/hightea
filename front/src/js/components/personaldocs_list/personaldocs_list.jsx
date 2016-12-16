@@ -1,24 +1,30 @@
 import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
-import PagesList from '../pages_list/pages_list.jsx'
+import DocsList from '../docs_list/docs_list.jsx'
 import LiketopList from '../liketop_list/liketop_list.jsx'
 
-import './personalpages_list.less'
+import './personaldocs_list.less'
 
-export default class PersonalPagesList extends React.Component {
+export default class PersonalDocsList extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            documents: [],
+        }
+    }
     render() {
         return (
-            <div className="lowtea-personnalpages-list">
-                <div className="col-md-9 personnalpages-list-container">
+            <div className="lowtea-personnaldocs-list">
+                <div className="col-md-9 personnaldocs-list-container">
                     <div className="searchbar-container">
                         <SearchBar></SearchBar>
                     </div>
 
                     <div className="clearfix" style={{margin:"0px 30px"}}>
-                        <h4 className="personnalpages-list-title">一共找到了858篇文章</h4>
+                        <h4 className="personnaldocs-list-title">一共找到了858篇文章</h4>
 
-                        <PagesList></PagesList>
+                        <DocsList documents={this.state.documents}></DocsList>
 
                         <nav className="pull-right">
                             <ul className="pagination">

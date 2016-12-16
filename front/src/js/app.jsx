@@ -5,24 +5,26 @@ import { render } from 'react-dom';
 import './app.less';
 
 import Main from './components/main.jsx';
-import PagesOverView from './components/pages_overview/pages_overview.jsx';
-import PersonalPagesList from './components/personalpages_list/personalpages_list.jsx'
-import FavoritePagesList from './components/favoritepages_list/favoritepages_list.jsx'
+import DocsOverView from './components/docs_overview/docs_overview.jsx';
+import PersonalDocsList from './components/personaldocs_list/personaldocs_list.jsx'
+import FavoriteDocsList from './components/favoritedocs_list/favoritedocs_list.jsx'
 import PersonalDraftsList from './components/personaldrafts_list/personaldrafts_list.jsx'
 import UserSettings from './components/user_settings/user_settings.jsx'
 import UsersManager from './components/users_manager/users_manager.jsx'
+import DocReader from './components/doc_reader/doc_reader.jsx'
 
-import PageEditor from './components/page_editor/page_editor.jsx'
+import DocEditor from './components/doc_editor/doc_editor.jsx'
 
 render((
   <Router history={hashHistory}>
     <Route path="/" component={Main}>
-      <IndexRoute component={PagesOverView}/>
-      <Route path="page_editor" component={PageEditor}/>
-      <Route path="favoritepages_list" component={FavoritePagesList}/>
-      <Route path="personalpages_list" component={PersonalPagesList}/>
+      <IndexRoute component={DocsOverView}/>
+      <Route path="doc_editor" component={DocEditor}/>
+      <Route path="favoritedocs_list" component={FavoriteDocsList}/>
+      <Route path="personaldocs_list" component={PersonalDocsList}/>
       <Route path="users_manager" component={UsersManager}/>
       <Route path="user_settings" component={UserSettings}/>
+      <Route path="doc_reader/:id" component={DocReader}/>
 
       <Route path="personaldrafts_list" component={PersonalDraftsList}/>
     </Route>

@@ -28,4 +28,7 @@ func InitDB(mainHander *handler.MainHandler) {
 
 	mainHander.UserColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.UserColl)
 	mainHander.RegisterColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.RegisterColl)
+
+	mainHander.DocumentColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.DocumentColl)
+	mainHander.DocumentColl.EnsureIndexKey("createTime")
 }

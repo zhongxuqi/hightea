@@ -1,24 +1,47 @@
 import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
-import PagesList from '../pages_list/pages_list.jsx'
+import DocsList from '../docs_list/docs_list.jsx'
 import RecommendList from '../recommend_list/recommend_list.jsx'
 import LiketopList from '../liketop_list/liketop_list.jsx'
+import HttpUtils from '../../utils/http.jsx'
 
-import './pages_overview.less'
+import './docs_overview.less'
 
-export default class PagesOverView extends React.Component {
+export default class DocsOverView extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            documents: [],
+            pageSize: 10,
+            pageIndex: 0,
+        }
+        this.getDocuments(this.state.pageSize, this.state.pageIndex)
+    }
+
+    getDocuments(pageSize, pageIndex) {
+        HttpUtils.get("/api/member/documents", {
+            pageSize: pageSize,
+            pageIndex: pageIndex,
+        }, ((resp) => {
+            console.log(resp)
+            if (resp.documents != null) this.setState({documents:resp.documents})
+        }).bind(this), (resp) => {
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
+    }
+
     render() {
-        return <div className="lowtea-page-overview">
-            <div className="col-md-9 page-list-container">
+        return <div className="lowtea-doc-overview">
+            <div className="col-md-9 doc-list-container">
                 <div className="searchbar-container">
                     <SearchBar></SearchBar>
                 </div>
                 
                 <div className="clearfix" style={{margin:"0px 30px"}}>
-                    <h4 className="page-list-title">一共找到了858篇文章</h4>
+                    <h4 className="doc-list-title">一共找到了858篇文章</h4>
 
-                    <PagesList></PagesList>
+                    <DocsList documents={this.state.documents}></DocsList>
 
                     <nav className="pull-right">
                         <ul className="pagination">

@@ -14,4 +14,7 @@ var (
 	ERROR_SET_ROOTPASSWORD = errors.New("error to set root password")
 
 	ERROR_INVAIL_METHOD = errors.New("method is invalid")
+
+	ERROR_EMPTY_ID  = errors.New("id is empty")
+	ERROR_INVAIL_ID = errors.New("id is invail")
 )

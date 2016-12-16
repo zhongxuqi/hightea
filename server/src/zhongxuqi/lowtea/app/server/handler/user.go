@@ -18,7 +18,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 	var err error
 	accountCookie, err = r.Cookie("account")
 	if err != nil {
-		http.Error(w, "cookie find error: "+err.Error(), 500)
+		http.Error(w, "cookie find error: "+err.Error(), 400)
 		return
 	}
 	var self model.User

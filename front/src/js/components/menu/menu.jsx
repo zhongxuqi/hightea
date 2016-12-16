@@ -56,16 +56,16 @@ export default class Menu extends React.Component {
                         <Link to="/" onClick={this.onMenuItemClick.bind(this, '')}><span className="glyphicon glyphicon-th-list"></span>所有文章</Link>
                     </li>
 
-                    <li className={{true: 'active', false:''}[this.state.menuState == 'page_editor']}>
-                        <Link to="/page_editor" onClick={this.onMenuItemClick.bind(this, 'page_editor')}><span className="glyphicon glyphicon-pencil"></span>编辑文章</Link>
+                    <li className={{true: 'active', false:''}[this.state.menuState == 'doc_editor']}>
+                        <Link to="/doc_editor" onClick={this.onMenuItemClick.bind(this, 'doc_editor')}><span className="glyphicon glyphicon-pencil"></span>编辑文章</Link>
                     </li>
 
-                    <li className={{true: 'active', false:''}[this.state.menuState == 'favoritepages_list']}>
-                        <Link to="/favoritepages_list" onClick={this.onMenuItemClick.bind(this, 'favoritepages_list')}><span className="glyphicon glyphicon-star"></span>我喜欢的文章</Link>
+                    <li className={{true: 'active', false:''}[this.state.menuState == 'favoritedocs_list']}>
+                        <Link to="/favoritedocs_list" onClick={this.onMenuItemClick.bind(this, 'favoritedocs_list')}><span className="glyphicon glyphicon-star"></span>我喜欢的文章</Link>
                     </li>
 
-                    <li className={{true: 'active', false:''}[this.state.menuState == 'personalpages_list']}>
-                        <Link to="/personalpages_list" onClick={this.onMenuItemClick.bind(this, 'personalpages_list')}><span className="glyphicon glyphicon-file"></span>我的文章</Link>
+                    <li className={{true: 'active', false:''}[this.state.menuState == 'personaldocs_list']}>
+                        <Link to="/personaldocs_list" onClick={this.onMenuItemClick.bind(this, 'personaldocs_list')}><span className="glyphicon glyphicon-file"></span>我的文章</Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'user_settings']}>

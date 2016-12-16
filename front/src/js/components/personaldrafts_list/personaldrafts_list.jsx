@@ -1,7 +1,7 @@
 import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
-import PagesList from '../pages_list/pages_list.jsx'
+import DocsList from '../docs_list/docs_list.jsx'
 import LiketopList from '../liketop_list/liketop_list.jsx'
 
 import './personaldrafts_list.less'
@@ -17,7 +17,7 @@ export default class PersonalDraftsList extends React.Component {
                 <div className="clearfix" style={{margin:"0px 30px"}}>
                     <h4 className="personaldrafts-list-title">一共找到了858篇草稿</h4>
 
-                    <PagesList></PagesList>
+                    <DocsList></DocsList>
 
                     <nav className="pull-right">
                         <ul className="pagination">

@@ -47,6 +47,10 @@ export default class MarkdownEditor extends React.Component {
         }
     }
 
+    setValue(value) {
+        this.codemirror.setValue(value)
+    }
+
     componentDidMount() {
         this.codemirror = CodeMirror.fromTextArea(document.getElementById("markdown-editor"), {
             lineNumbers: false,
@@ -59,13 +63,16 @@ export default class MarkdownEditor extends React.Component {
         });
         let preView = document.getElementById("preview"),
             cm = this.codemirror;
-        cm.on("update", ()=>{
-            preView.innerHTML = marked(cm.getValue())
+        cm.on("update", (()=>{
+            let docValue = cm.getValue()
+            preView.innerHTML = marked(docValue)
 
             $("#preview a").each((i, element)=>{
                 $(element).attr("target", "_blank")
             })
-        })
+
+            this.props.onChange(docValue)
+        }).bind(this))
         
         $("#linkModal").on("hidden.bs.modal", () => {
             this.setState({

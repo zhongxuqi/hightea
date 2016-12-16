@@ -22,6 +22,7 @@ type DBConfig struct {
 	DBName       string `json:"dbname"`
 	UserColl     string `json:"userColl"`
 	RegisterColl string `json:"reqisterColl"`
+	DocumentColl string `json:"documentColl"`
 }
 
 type OSSConfig struct {
