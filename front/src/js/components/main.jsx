@@ -6,7 +6,12 @@ import Menu from './menu/menu.jsx'
 export default class Main extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            confirmModal: {
+                title: "",
+                message: "",
+            },
+        }
         this.updateUserInfo()
     }
 
@@ -25,6 +30,27 @@ export default class Main extends React.Component {
         }).bind(this))
     }
 
+    onConfirm(title, message, callback) {
+        $("#confirmModal").on("show.bs.modal", () => {
+            $("#confirmModal #confirmAffirmBtn").on("click", () => {
+                callback()
+                $("#confirmModal #confirmAffirmBtn").off("click")
+                $("#confirmModal").modal("hide")
+            })
+        })
+        $("#confirmModal").on("hide", () => {
+            $("#confirmModal #confirmAffirmBtn").off("click")
+        })
+        $("#confirmModal").modal("show")
+        this.setState({
+            confirmModal: {
+                title: title,
+                message: message,
+            }
+        })
+    
+    }
+
     render() {
         return (
             <div style={{height:'100%'}}>
@@ -41,8 +67,27 @@ export default class Main extends React.Component {
                             role: this.state.role,
                             language: this.state.language,
                             updateUserInfo: this.updateUserInfo.bind(this),
+                            onConfirm: this.onConfirm.bind(this),
                         })
                     }
+                </div>
+                
+                <div id="confirmModal" className="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+                    <div className="modal-dialog modal-sm">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title">{this.state.confirmModal.title}</h4>
+                            </div>
+                            <div className="modal-body">
+                                <p>{this.state.confirmModal.message}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">关闭</button>
+                                <button id="confirmAffirmBtn" type="button" className="btn btn-primary">确定</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         )

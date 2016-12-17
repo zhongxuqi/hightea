@@ -59,27 +59,15 @@ export default class PersonalDocsList extends React.Component {
 
     onDeleteDoc(id) {
         console.log(id)
-        $("#confirmModal").on("show.bs.modal", () => {
+        this.props.onConfirm("Danger", "delete the doc?", (()=>{
             $("#confirmModal #confirmAffirmBtn").on("click", () => {
                 HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
                     this.getDocuments(this.state.pageSize, this.state.pageIndex)
                 }).bind(this), ((data) => {
                     HttpUtils.alert("["+data.status+"] "+data.responseText)
                 }))
-                $("#confirmModal #confirmAffirmBtn").off("click")
-                $("#confirmModal").modal("hide")
             })
-        })
-        $("#confirmModal").on("hide", () => {
-            $("#confirmModal #confirmAffirmBtn").off("click")
-        })
-        $("#confirmModal").modal("show")
-        this.setState({
-            confirmModal: {
-                title: "Danger",
-                message: "delete the doc ?",
-            }
-        })
+        }).bind(this))
     }
 
     render() {
@@ -111,24 +99,6 @@ export default class PersonalDocsList extends React.Component {
 
                 <div className="col-md-3" style={{margin:"30px 0px"}}>
                     <LiketopList title="最受喜欢的个人文章排行"></LiketopList>
-                </div>
-                
-                <div id="confirmModal" className="modal fade bs-example-modal-sm" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-                    <div className="modal-dialog modal-sm">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                                <h4 className="modal-title">{this.state.confirmModal.title}</h4>
-                            </div>
-                            <div className="modal-body">
-                                <p>{this.state.confirmModal.message}</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">关闭</button>
-                                <button id="confirmAffirmBtn" type="button" className="btn btn-primary">确定</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         )
