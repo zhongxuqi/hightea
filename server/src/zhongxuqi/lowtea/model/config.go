@@ -23,6 +23,7 @@ type DBConfig struct {
 	UserColl     string `json:"userColl"`
 	RegisterColl string `json:"reqisterColl"`
 	DocumentColl string `json:"documentColl"`
+	StarColl     string `json:"starColl"`
 }
 
 type OSSConfig struct {

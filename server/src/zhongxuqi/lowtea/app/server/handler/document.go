@@ -32,6 +32,9 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		var params struct {
 			PageSize  int `json:"pageSize"`
 			PageIndex int `json:"pageIndex"`
+
+			Account     string `json:"account"`
+			LikeAccount string `json:"likeAccount"`
 		}
 		params.PageSize, err = strconv.Atoi(r.Form.Get("pageSize"))
 		if err != nil {
@@ -48,13 +51,17 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			model.RespBase
 			Documents []model.Document `json:"documents"`
 			PageTotal int              `json:"pageTotal"`
+			DocTotal  int              `json:"docTotal"`
 		}
 		filter := bson.M{
 			"$or": []bson.M{
-				bson.M{"account": accountCookie.Value},
+				bson.M{"account": accountCookie.Value, "status": bson.M{"$ne": model.STATUS_DRAFT}},
 				bson.M{"status": model.STATUS_PUBLISH_MEMBER},
 				bson.M{"status": model.STATUS_PUBLISH_PUBLIC},
 			},
+		}
+		if params.Account != "" {
+			filter["account"] = params.Account
 		}
 
 		var n int
@@ -63,6 +70,7 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
 		}
+		respBody.DocTotal = n
 		if n > 0 {
 			respBody.PageTotal = (n-1)/params.PageSize + 1
 		} else {
@@ -100,6 +108,12 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			Document model.Document `json:"document"`
 		}
 		utils.ReadReq2Struct(r, &reqData)
+
+		if len(reqData.Document.Title) == 0 {
+			http.Error(w, errors.ERROR_EMPTY_TITLE.Error(), 400)
+			return
+		}
+
 		if reqData.Action == "add" {
 			reqData.Document.Account = accountCookie.Value
 			reqData.Document.CreateTime = time.Now().Unix()
@@ -145,10 +159,15 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 				},
 			})
 
-			respByte, _ := json.Marshal(&model.RespBase{
-				Status:  200,
-				Message: "success",
-			})
+			var respBody struct {
+				Status  int           `json:"status"`
+				Message string        `json:"message"`
+				Id      bson.ObjectId `json:"id"`
+			}
+			respBody.Status = 200
+			respBody.Message = "success"
+			respBody.Id = reqData.Document.Id
+			respByte, _ := json.Marshal(&respBody)
 			w.Write(respByte)
 			return
 		}
@@ -206,6 +225,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "find document error: "+err.Error(), 500)
 			return
 		}
+
 		if respBody.Document.Status == model.STATUS_DRAFT && accountCookie.Value != respBody.Document.Account {
 			http.Error(w, errors.ERROR_PERMISSION_DENIED.Error(), 400)
 			return

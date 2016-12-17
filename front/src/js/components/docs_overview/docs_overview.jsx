@@ -15,6 +15,7 @@ export default class DocsOverView extends React.Component {
             documents: [],
             pageSize: 10,
             pageIndex: 0,
+            docTotal: 0,
         }
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
     }
@@ -24,7 +25,7 @@ export default class DocsOverView extends React.Component {
             pageSize: pageSize,
             pageIndex: pageIndex,
         }, ((resp) => {
-            console.log(resp)
+            this.setState({docTotal:resp.docTotal})
             if (resp.documents != null) this.setState({documents:resp.documents})
         }).bind(this), (resp) => {
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
@@ -39,7 +40,7 @@ export default class DocsOverView extends React.Component {
                 </div>
                 
                 <div className="clearfix" style={{margin:"0px 30px"}}>
-                    <h4 className="doc-list-title">一共找到了858篇文章</h4>
+                    <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
 
                     <DocsList documents={this.state.documents}></DocsList>
 

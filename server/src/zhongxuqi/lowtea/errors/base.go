@@ -17,4 +17,6 @@ var (
 
 	ERROR_EMPTY_ID  = errors.New("id is empty")
 	ERROR_INVAIL_ID = errors.New("id is invail")
+
+	ERROR_EMPTY_TITLE = errors.New("title is empty")
 )

@@ -17,5 +17,5 @@ type Document struct {
 	ModifyTime int64         `json:"modifyTime" bson:"modifyTime"`
 	Account    string        `json:"account" bson:"account"`
 	Status     string        `json:"status" bson:"status"`
-	LikeNum    int           `json:"likeNum" bson:"likeNum"`
+	StarNum    int           `json:"starNum" bson:"starNum"`
 }

@@ -31,4 +31,7 @@ func InitDB(mainHander *handler.MainHandler) {
 
 	mainHander.DocumentColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.DocumentColl)
 	mainHander.DocumentColl.EnsureIndexKey("createTime")
+
+	mainHander.StarColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.StarColl)
+	mainHander.StarColl.EnsureIndexKey("account", "documentId")
 }

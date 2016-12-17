@@ -33,6 +33,7 @@ type MainHandler struct {
 	UserColl     *mgo.Collection
 	RegisterColl *mgo.Collection
 	DocumentColl *mgo.Collection
+	StarColl     *mgo.Collection
 }
 
 // New new MainHandler

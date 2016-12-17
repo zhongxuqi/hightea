@@ -76,5 +76,4 @@ func (p *MainHandler) ActionDrafts(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Error(w, "Not Found", 404)
 	return
-
 }

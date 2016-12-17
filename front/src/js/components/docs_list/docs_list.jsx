@@ -19,13 +19,7 @@ export default class DocsList extends React.Component {
                 {
                     this.props.documents.map((document, index) => {
                         return (
-                            <DocShortcut 
-                                key={index}
-                                id={document.id}
-                                title={document.title} 
-                                abstract={document.content.substring(0,50)} 
-                                likeNum={document.likeNum} 
-                                modifyTime={document.modifyTime}></DocShortcut>
+                            <DocShortcut key={index} document={document} onSaveDoc={this.props.onSaveDoc} onDeleteDoc={this.props.onDeleteDoc}></DocShortcut>
                         )
                     })
                 }
