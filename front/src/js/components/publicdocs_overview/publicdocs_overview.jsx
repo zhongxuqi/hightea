@@ -17,6 +17,12 @@ export default class PublicDocsOverView extends React.Component {
             pageIndex: 0,
             docTotal: 0,
         }
+
+        HttpUtils.get('/api/member/self', {}, ((data) => {
+            window.location.pathname = "/user.html"
+        }).bind(this), ((data) => {
+        }).bind(this))
+        
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
     }
 
@@ -25,7 +31,6 @@ export default class PublicDocsOverView extends React.Component {
             pageSize: pageSize,
             pageIndex: pageIndex,
         }, ((resp) => {
-            console.log(resp)
             this.setState({docTotal:resp.docTotal})
             if (resp.documents != null) this.setState({documents:resp.documents})
         }).bind(this), (resp) => {
@@ -35,32 +40,49 @@ export default class PublicDocsOverView extends React.Component {
 
     render() {
         return <div className="lowtea-publicdoc-overview">
-            <div className="col-md-9 doc-list-container">
-                <div className="searchbar-container">
-                    <SearchBar></SearchBar>
-                </div>
-                
-                <div className="clearfix" style={{margin:"0px 30px"}}>
-                    <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+            <nav className="navbar navbar-inverse topbar" role="navigation">
+                <div className="container-fluid">
+                    <div className="navbar-header">
+                        <a className="navbar-brand" href="#">Brand</a>
+                    </div>
 
-                    <DocsList RoutePrefix="/publicdoc_reader/" documents={this.state.documents}></DocsList>
-
-                    <nav className="pull-right">
-                        <ul className="pagination">
-                            <li><a href="#">&laquo;</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a href="#">&raquo;</a></li>
+                    <div className="collapse navbar-collapse">
+                        <ul className="nav navbar-nav">
                         </ul>
-                    </nav>
+                        <ul className="nav navbar-nav navbar-right">
+                            <li><a href="/login.html">Login In</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-            <div className="col-md-3" style={{margin:"30px 0px"}}>
-                <RecommendList></RecommendList>
-                <LiketopList title="最受喜欢的文章排行"></LiketopList>
+            </nav>
+            <div className="clearfix">
+                <div className="col-md-9 doc-list-container">
+                    <div className="searchbar-container">
+                        <SearchBar></SearchBar>
+                    </div>
+                    
+                    <div className="clearfix" style={{margin:"0px 30px"}}>
+                        <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+
+                        <DocsList RoutePrefix="/publicdoc_reader/" documents={this.state.documents}></DocsList>
+
+                        <nav className="pull-right">
+                            <ul className="pagination">
+                                <li><a href="#">&laquo;</a></li>
+                                <li><a href="#">1</a></li>
+                                <li><a href="#">2</a></li>
+                                <li><a href="#">3</a></li>
+                                <li><a href="#">4</a></li>
+                                <li><a href="#">5</a></li>
+                                <li><a href="#">&raquo;</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div className="col-md-3" style={{margin:"10px 0px"}}>
+                    <RecommendList></RecommendList>
+                    <LiketopList title="最受喜欢的文章排行"></LiketopList>
+                </div>
             </div>
         </div>
     }

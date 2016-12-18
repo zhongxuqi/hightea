@@ -26,7 +26,7 @@ export default class Main extends React.Component {
                 language: data.user.language,
             })
         }).bind(this), ((data) => {
-            window.location.pathname = "/login.html"
+            window.location.pathname = "/index.html"
         }).bind(this))
     }
 

@@ -21,6 +21,11 @@ class LoginApp extends React.Component {
             registerRePassword: '',
             registerRePassword_state: '',
         }
+        
+        HttpUtils.get('/api/member/self', {}, ((data) => {
+            window.location.pathname = "/"
+        }).bind(this), ((data) => {
+        }).bind(this))
     }
 
     handleStateChange(stateName, event) {
@@ -113,7 +118,11 @@ class LoginApp extends React.Component {
                             <label>Password</label>
                             <input type="password" className="form-control" value={this.state.loginPassword} onChange={this.handleStateChange.bind(this, "loginPassword")}/>
                         </div>
-                        <button type="button" className="btn btn-success btn-block" onClick={this.onClickLoginBtn.bind(this)}>Login</button>
+                        <button type="button" className="btn btn-success btn-block" style={{marginBottom:"10px"}} onClick={this.onClickLoginBtn.bind(this)}>Login</button>
+
+                        <button type="button" className="btn btn-primary btn-sm pull-left" href="" onClick={()=>{
+                            window.location.pathname="/public.html"
+                        }}>Guest</button>
                         <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('register')}>Register</button>
                     </form>
 
