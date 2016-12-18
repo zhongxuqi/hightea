@@ -65,9 +65,36 @@ export default class DocEditor extends React.Component {
         })
     }
 
+    newDocument() {
+        this.props.onConfirm("Alert", "save the doc?", (()=>{
+            console.log(this.state.document)
+            if (this.state.document.title.length == 0) {
+                HttpUtils.alert("title is empty")
+                return
+            }
+            this.saveDoc(this.state.document)
+            this.setState({
+                document: {
+                    title: "",
+                    content: "",
+                    status: "status_draft",
+                },
+            })
+            this.refs.editor.setValue("")
+        }).bind(this), (()=>{
+            this.setState({
+                document: {
+                    title: "",
+                    content: "",
+                    status: "status_draft",
+                },
+            })
+            this.refs.editor.setValue("")
+        }).bind(this))
+    }
+
     openDocument(id) {
         HttpUtils.get("/api/member/document/"+id,{},((resp)=>{
-            console.log(resp)
             this.setState({
                 document: {
                     id: resp.document.id,
@@ -91,7 +118,7 @@ export default class DocEditor extends React.Component {
                         <button className="btn btn-default"><span className="glyphicon glyphicon-search"></span></button>
                     </div>
                     <ul className="docs-list">
-                        <li className="docs-list-item btn-new-doc">
+                        <li className="docs-list-item btn-new-doc" onClick={this.newDocument.bind(this)}>
                             <a><span className="glyphicon glyphicon-plus"></span>添加新文章</a>
                         </li>
                         {

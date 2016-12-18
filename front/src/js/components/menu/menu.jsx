@@ -60,8 +60,8 @@ export default class Menu extends React.Component {
                         <Link to="/doc_editor" onClick={this.onMenuItemClick.bind(this, 'doc_editor')}><span className="glyphicon glyphicon-pencil"></span>编辑文章</Link>
                     </li>
 
-                    <li className={{true: 'active', false:''}[this.state.menuState == 'favoritedocs_list']}>
-                        <Link to="/favoritedocs_list" onClick={this.onMenuItemClick.bind(this, 'favoritedocs_list')}><span className="glyphicon glyphicon-star"></span>我喜欢的文章</Link>
+                    <li className={{true: 'active', false:''}[this.state.menuState == 'stardocs_list']}>
+                        <Link to="/stardocs_list" onClick={this.onMenuItemClick.bind(this, 'stardocs_list')}><span className="glyphicon glyphicon-star"></span>我喜欢的文章</Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'personaldocs_list']}>

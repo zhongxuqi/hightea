@@ -30,11 +30,17 @@ export default class Main extends React.Component {
         }).bind(this))
     }
 
-    onConfirm(title, message, callback) {
+    onConfirm(title, message, callback, cancelCallback) {
         $("#confirmModal").on("show.bs.modal", () => {
             $("#confirmModal #confirmAffirmBtn").on("click", () => {
-                callback()
+                if (callback != undefined) callback()
                 $("#confirmModal #confirmAffirmBtn").off("click")
+                $("#confirmModal").modal("hide")
+            })
+            
+            $("#confirmModal #confirmCancelBtn").on("click", () => {
+                if (cancelCallback != undefined) cancelCallback()
+                $("#confirmModal #confirmCancelBtn").off("click")
                 $("#confirmModal").modal("hide")
             })
         })
