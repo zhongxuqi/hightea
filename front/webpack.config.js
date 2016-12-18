@@ -4,6 +4,7 @@ module.exports = {
     entry: {
         app: './src/js/app.jsx',
         login: './src/js/login/app.jsx',
+        public: './src/js/public.jsx'
     },
     output: {
         filename: '[name].bundle.js',

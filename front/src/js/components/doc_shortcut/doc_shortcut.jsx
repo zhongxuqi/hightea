@@ -12,7 +12,7 @@ export default class DocShortcut extends React.Component {
             <div className="doc-shortcut">
                 <div className="clearfix lowtea-table">
                     <div className="lowtea-table-cell" style={{width:"1%"}}>
-                        <h4 className="title"><Link to={"/doc_reader/"+this.props.document.id}>{this.props.document.title}</Link></h4>
+                        <h4 className="title"><Link to={this.props.RoutePrefix+this.props.document.id}>{this.props.document.title}</Link></h4>
                     </div>
                     <div className="lowtea-table-cell" style={{width:"99%"}}>
                         <span className="label label-info">{TransUtils.status2string(this.props.document.status)}</span>

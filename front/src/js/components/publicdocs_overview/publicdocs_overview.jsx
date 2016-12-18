@@ -6,9 +6,9 @@ import RecommendList from '../recommend_list/recommend_list.jsx'
 import LiketopList from '../liketop_list/liketop_list.jsx'
 import HttpUtils from '../../utils/http.jsx'
 
-import './docs_overview.less'
+import './publicdocs_overview.less'
 
-export default class DocsOverView extends React.Component {
+export default class PublicDocsOverView extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -21,10 +21,11 @@ export default class DocsOverView extends React.Component {
     }
 
     getDocuments(pageSize, pageIndex) {
-        HttpUtils.get("/api/member/documents", {
+        HttpUtils.get("/openapi/documents", {
             pageSize: pageSize,
             pageIndex: pageIndex,
         }, ((resp) => {
+            console.log(resp)
             this.setState({docTotal:resp.docTotal})
             if (resp.documents != null) this.setState({documents:resp.documents})
         }).bind(this), (resp) => {
@@ -33,7 +34,7 @@ export default class DocsOverView extends React.Component {
     }
 
     render() {
-        return <div className="lowtea-doc-overview">
+        return <div className="lowtea-publicdoc-overview">
             <div className="col-md-9 doc-list-container">
                 <div className="searchbar-container">
                     <SearchBar></SearchBar>
@@ -42,7 +43,7 @@ export default class DocsOverView extends React.Component {
                 <div className="clearfix" style={{margin:"0px 30px"}}>
                     <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
 
-                    <DocsList RoutePrefix="/doc_reader/" documents={this.state.documents}></DocsList>
+                    <DocsList RoutePrefix="/publicdoc_reader/" documents={this.state.documents}></DocsList>
 
                     <nav className="pull-right">
                         <ul className="pagination">

@@ -18,6 +18,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	openAPIHandler.HandleFunc("/openapi/login", mainHandler.Login)
 	openAPIHandler.HandleFunc("/openapi/register", mainHandler.Register)
 	openAPIHandler.HandleFunc("/openapi/logout", mainHandler.Logout)
+	openAPIHandler.HandleFunc("/openapi/documents", mainHandler.ActionPublicDocuments)
+	openAPIHandler.HandleFunc("/openapi/document/", mainHandler.ActionPublicDocument)
 	mainHandler.Mux.HandleFunc("/openapi/", func(w http.ResponseWriter, r *http.Request) {
 		openAPIHandler.ServeHTTP(w, r)
 	})
