@@ -55,6 +55,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	memberHandler.HandleFunc("/api/member/document", mainHandler.ActionDocument)
 	memberHandler.HandleFunc("/api/member/document/", mainHandler.ActionDocument)
 	memberHandler.HandleFunc("/api/member/drafts", mainHandler.ActionDrafts)
+	memberHandler.HandleFunc("/api/member/star/", mainHandler.ActionStar)
+	memberHandler.HandleFunc("/api/member/star_documents", mainHandler.ActionStarDocuments)
 	apiHandler.HandleFunc("/api/member/", func(w http.ResponseWriter, r *http.Request) {
 		memberHandler.ServeHTTP(w, r)
 	})

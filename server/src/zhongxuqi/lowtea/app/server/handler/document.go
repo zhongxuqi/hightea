@@ -83,6 +83,11 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		for i, _ := range respBody.Documents {
+			n, _ = p.StarColl.Find(&bson.M{"documentId": respBody.Documents[i].Id.Hex}).Count()
+			respBody.Documents[i].StarNum = n
+		}
+
 		respBody.Status = 200
 		respBody.Message = "success"
 		respByte, _ := json.Marshal(respBody)
@@ -219,6 +224,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 		var respBody struct {
 			model.RespBase
 			Document model.Document `json:"document"`
+			Star     bool           `json:"star"`
 		}
 		err := p.DocumentColl.Find(bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&respBody.Document)
 		if err != nil {
@@ -230,6 +236,17 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, errors.ERROR_PERMISSION_DENIED.Error(), 400)
 			return
 		}
+
+		var n int
+		n, _ = p.StarColl.Find(&bson.M{"account": accountCookie.Value, "documentId": documentId}).Count()
+		if n > 0 {
+			respBody.Star = true
+		} else {
+			respBody.Star = false
+		}
+
+		n, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+		respBody.Document.StarNum = n
 
 		respBody.Status = 200
 		respBody.Message = "success"

@@ -20,8 +20,10 @@ export default class DocReader extends React.Component {
 
     updateDoc(id) {
         HttpUtils.get("/api/member/document/"+id,{},((resp)=>{
-            console.log(resp)
-            this.setState({document:resp.document})
+            this.setState({
+                document:resp.document,
+                star: resp.star,
+            })
             
             $(".lowtea-doc-reader #content")[0].innerHTML = marked(resp.document.content)
             
@@ -31,6 +33,27 @@ export default class DocReader extends React.Component {
         }).bind(this),(resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
+    }
+
+    toggleStar() {
+        let action
+        if (this.state.star) {
+            action = "unstar"
+        } else {
+            action = "star"
+        }
+        HttpUtils.post("/api/member/star/"+this.state.document.id, {
+            action: action,
+        }, ((resp)=>{
+            let document = this.state.document
+            document.starNum = resp.starNum
+            this.setState({
+                document: document,
+                star: !this.state.star,
+            })
+        }).bind(this), ((resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        }).bind(this))
     }
     
     render() {
@@ -46,6 +69,11 @@ export default class DocReader extends React.Component {
                         <h4 className="title-status">
                             <span className="label label-info">{{"status_draft":"草稿","status_publish_self":"仅自己可见","status_publish_member":"内部可见","status_publish_public":"公开"}[this.state.document.status]}</span>
                         </h4>
+                    </div>
+                    <div className="table-cell">
+                        <button className="btn btn-primary btn-sm" type="button" onClick={this.toggleStar.bind(this)}>
+                            {{true:"unstar", false:"star"}[this.state.star]} <span className="badge">{this.state.document.starNum}</span>
+                        </button>
                     </div>
                 </div>
                 <div id="content"></div>
