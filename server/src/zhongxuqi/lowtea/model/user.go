@@ -24,6 +24,7 @@ type User struct {
 	Account   string        `json:"account" bson:"account"`
 	Email     string        `json:"email" bson:"email"`
 	NickName  string        `json:"nickname" bson:"nickname"`
+	HeadImg   string        `json:"headImg" bson:"headImg"`
 	PassWord  string        `json:"-" bson:"password"`
 	UserIntro string        `json:"userintro" bson:"userintro"`
 	Gender    string        `json:"gender" bson:"gender"`

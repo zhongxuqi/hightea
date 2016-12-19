@@ -1,6 +1,7 @@
 import React from 'react';
 
 import HttpUtils from '../../utils/http.jsx'
+import LowTea from '../../utils/lowtea.jsx'
 
 import './user_settings.less'
 
@@ -8,13 +9,7 @@ export default class UserSettings extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            user: {
-                nickname: this.props.nickname, 
-                email: this.props.email, 
-                userintro: this.props.role,
-                gender: this.props.gender,
-                language: this.props.language,
-            },
+            user: this.props.userInfo,
             userinfoEdit: false,
             password: {
                 oldPassword: "",
@@ -22,30 +17,20 @@ export default class UserSettings extends React.Component {
                 reNewPassword: "",
                 status: "",
             },
+            headStatus:"choose",
         }
+        console.log(this.state)
         this.state.copy = this.copyUser(this.state.user)
         this.updateUserInfo = this.props.updateUserInfo
     }
 
-    componentWillReceiveProps(newProps) {
+    componentWillReceiveProps(props) {
         this.setState({
-            user: {
-                nickname: newProps.nickname, 
-                email: newProps.email, 
-                userintro: newProps.userintro, 
-                gender: newProps.gender,
-                language: newProps.language,
-            },
+            user: props.userInfo,
             userinfoEdit: false,
         })
         this.setState({
-            copy: this.copyUser({
-                nickname: newProps.nickname, 
-                email: newProps.email, 
-                userintro: newProps.userintro, 
-                gender: newProps.gender,
-                language: newProps.language,
-            }),
+            copy: this.copyUser(props.userInfo),
         })
     }
 
@@ -150,6 +135,10 @@ export default class UserSettings extends React.Component {
         }).bind(this))
     }
 
+    modalHeadImg() {
+        $("#headImgModal").modal("show")
+    }
+
     render() {
         return (
             <div className="lowtea-user-settings clearfix">
@@ -162,6 +151,12 @@ export default class UserSettings extends React.Component {
                 </div>
 
                 <form className="form-horizontal lowtea-user-info" role="form">
+                    <div className="form-group">
+                        <label className="col-sm-2 control-label">头像</label>
+                        <div className="col-sm-10">
+                            <img src={{true:"/img/head.png",false:this.state.user.headImg}[this.state.user.headImg==""]} style={{width:"100px",height:"100px"}} onClick={this.modalHeadImg.bind(this)}/>
+                        </div>
+                    </div>
                     <div className="form-group">
                         <label className="col-sm-2 control-label">昵称</label>
                         <div className="col-sm-10">
@@ -257,6 +252,47 @@ export default class UserSettings extends React.Component {
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-default" data-dismiss="modal">取消</button>
                                 <button type="button" className="btn btn-primary" onClick={this.onSavePassword.bind(this)}>保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="modal fade" id="headImgModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <ul className="nav nav-pills" role="tablist">
+                                    <li role="presentation" className={{true:"active", false:""}[this.state.headStatus=="choose"]}><a href="javascript:void(0)" onClick={(()=>{this.setState({headStatus:"choose"})}).bind(this)}>选择头像</a></li>
+                                    <li role="presentation" className={{true:"active", false:""}[this.state.headStatus=="link"]}><a href="javascript:void(0)" onClick={(()=>(this.setState({headStatus:"link"})))}>头像链接</a></li>
+                                </ul>
+                            </div>
+                            <div className="modal-body">
+                                <form role="form">
+                                    <div className="form-group" style={{display:{true:"block",false:"none"}[this.state.headStatus=="choose"]}}>
+                                        <div className="row">
+                                            {
+                                                LowTea.headImgs.map((headImg)=>{
+                                                    return (
+                                                        <div className="col-xs-6 col-md-3">
+                                                            <a className="thumbnail">
+                                                                <img src={headImg} style={{height:"100px"}}/>
+                                                            </a>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="form-group" style={{display:{false:"none",true:"block"}[this.state.headStatus=="link"]}}>
+                                        <label>头像链接</label>
+                                        <input type="text" className="form-control" placeholder="Enter Video URL" value={this.state.copy.headImg} onChange={((event)=>{let tmp=this.state.copy;tmp.headImg=event.target.value;this.setState({copy:tmp})}).bind(this)}/>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary">Affirm</button>
                             </div>
                         </div>
                     </div>

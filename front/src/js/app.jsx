@@ -21,6 +21,7 @@ export default class Main extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            userInfo: {},
             confirmModal: {
                 title: "",
                 message: "",
@@ -32,15 +33,10 @@ export default class Main extends React.Component {
     updateUserInfo() {
         HttpUtil.get('/api/member/self', {}, ((data) => {
             this.setState({
-                nickname: data.user.nickname,
-                email: data.user.email,
-                userintro: data.user.userintro,
-                gender: data.user.gender,
-                role: data.user.role,
-                language: data.user.language,
+                userInfo: data.user,
             })
         }).bind(this), ((data) => {
-            window.location.pathname = "/index.html"
+            window.location = "/index.html"
         }).bind(this))
     }
 
@@ -78,18 +74,12 @@ export default class Main extends React.Component {
         return (
             <div style={{height:'100%'}}>
                 <div className="col-md-2 col-xs-2" style={{padding:"0px", margin:"0px", height:'100%'}}>
-                    <Menu nickname={this.state.nickname} role={this.state.role}></Menu>
+                    <Menu userInfo={this.state.userInfo}></Menu>
                 </div>
                 <div className="col-md-10 col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
                     {
                         React.cloneElement(this.props.children, {
-                            nickname: this.state.nickname,
-                            email: this.state.email,
-                            userintro: this.state.userintro,
-                            gender: this.state.gender,
-                            role: this.state.role,
-                            language: this.state.language,
-                            updateUserInfo: this.updateUserInfo.bind(this),
+                            userInfo: this.state.userInfo,
                             onConfirm: this.onConfirm.bind(this),
                         })
                     }

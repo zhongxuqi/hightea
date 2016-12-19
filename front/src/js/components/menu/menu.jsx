@@ -12,8 +12,9 @@ import './menu.less';
 export default class Menu extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {nickname: this.props.nickname, role: this.props.role}
-        this.state.menuState=window.location.hash.substring(2);
+        this.state = {
+            menuState: window.location.hash.substring(2),
+        }
     }
 
     onLogoutClick() {
@@ -28,17 +29,13 @@ export default class Menu extends React.Component {
         this.state.menuState = newState;
     }
 
-    componentWillReceiveProps(newProps) {
-        this.setState({nickname: newProps.nickname, role: newProps.role})
-    }
-
     render() {
         return (
             <div className="lowtea-menu">
                 <div className="lowtea-user-panel clearfix">
-                    <div className="table-cell"><img className="lowtea-headimg" src="/img/heads/1.png"/></div>
+                    <div className="table-cell"><img className="lowtea-headimg" src={{false:this.props.headImg,true:"/img/head.png"}[this.props.userInfo.headImg==""]}/></div>
                     <div className="table-cell lowtea-menu-userinfo">
-                        <UserBadge nickname={this.state.nickname} role={this.state.role}></UserBadge>
+                        <UserBadge nickname={this.props.userInfo.nickname} role={this.props.userInfo.role}></UserBadge>
                     </div>
 
                     <div className="table-cell dropdown">
