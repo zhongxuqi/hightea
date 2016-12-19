@@ -142,7 +142,7 @@ export default class UsersManager extends React.Component {
     render() {
         return (
             <div className="users_manager clearfix">
-                <div className={["lowtea-table", {true: "col-md-8", false:""}[this.state.role=="root"||this.state.role=="admin"]].join(" ")}>
+                <div className={["lowtea-table", {true: "col-md-8 col-lg-8", false:""}[this.state.role=="root"||this.state.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
                         <div className="panel-heading">社区成员</div>
 
@@ -183,7 +183,7 @@ export default class UsersManager extends React.Component {
                     </div>
                 </div>
 
-                <div className="col-md-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.role=="root"||this.state.role=="admin"]}}>
+                <div className="col-md-4 col-lg-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.role=="root"||this.state.role=="admin"]}}>
                     <div className="panel panel-default">
                         <div className="panel-heading">加入申请</div>
 

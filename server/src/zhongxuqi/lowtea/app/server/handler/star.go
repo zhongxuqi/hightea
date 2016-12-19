@@ -75,7 +75,7 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 			var document model.Document
 			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)}).One(&document)
 
-			n, _ = p.StarColl.Find(&bson.M{"documentId": document.Id.Hex}).Count()
+			n, _ = p.StarColl.Find(&bson.M{"documentId": document.Id.Hex()}).Count()
 			document.StarNum = n
 
 			respBody.Documents = append(respBody.Documents, &document)

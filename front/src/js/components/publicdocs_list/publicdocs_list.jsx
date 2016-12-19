@@ -1,8 +1,8 @@
 import React from 'react';
 
-import DocShortcut from '../doc_shortcut/doc_shortcut.jsx'
+import PublicDocShortcut from '../publicdoc_shortcut/publicdoc_shortcut.jsx'
 
-import './docs_list.less'
+import './publicdocs_list.less'
 
 export default class DocsList extends React.Component {
     constructor(props) {
@@ -15,11 +15,11 @@ export default class DocsList extends React.Component {
 
     render() {
         return (
-            <ul className="docs-list">
+            <ul className="publicdocs-list">
                 {
                     this.props.documents.map((document, index) => {
                         return (
-                            <DocShortcut key={index} document={document} onSaveDoc={this.props.onSaveDoc} onDeleteDoc={this.props.onDeleteDoc}></DocShortcut>
+                            <PublicDocShortcut key={index} document={document} onSaveDoc={this.props.onSaveDoc} onDeleteDoc={this.props.onDeleteDoc}></PublicDocShortcut>
                         )
                     })
                 }

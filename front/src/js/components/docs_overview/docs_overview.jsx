@@ -4,6 +4,8 @@ import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
 import RecommendList from '../recommend_list/recommend_list.jsx'
 import LiketopList from '../liketop_list/liketop_list.jsx'
+import LoadingBtn from '../loading_btn/loading_btn.jsx'
+
 import HttpUtils from '../../utils/http.jsx'
 
 import './docs_overview.less'
@@ -20,15 +22,28 @@ export default class DocsOverView extends React.Component {
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
     }
 
-    getDocuments(pageSize, pageIndex) {
+    getDocuments(pageSize, pageIndex, successFunc, errorFunc) {
         HttpUtils.get("/api/member/documents", {
             pageSize: pageSize,
             pageIndex: pageIndex,
         }, ((resp) => {
-            this.setState({docTotal:resp.docTotal})
-            if (resp.documents != null) this.setState({documents:resp.documents})
+            if (resp.documents == null) resp.documents = []
+            if (pageIndex == 0) {
+                this.setState({
+                    documents: resp.documents,
+                    docTotal: resp.docTotal,
+                })
+            } else {
+                this.setState({
+                    documents: this.state.documents.concat(resp.documents),
+                    docTotal: resp.docTotal,
+                })
+            }
+            
+            if (successFunc != undefined) successFunc(pageIndex + 1 >= resp.pageTotal)
         }).bind(this), (resp) => {
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+            if (errorFunc != undefined) errorFunc()
         })
     }
 
@@ -39,22 +54,25 @@ export default class DocsOverView extends React.Component {
                     <SearchBar></SearchBar>
                 </div>
                 
-                <div className="clearfix" style={{margin:"0px 30px"}}>
+                <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
                     <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
 
-                    <DocsList RoutePrefix="/doc_reader/" documents={this.state.documents}></DocsList>
+                    <DocsList documents={this.state.documents}></DocsList>
 
-                    <nav className="pull-right">
-                        <ul className="pagination">
-                            <li><a href="#">&laquo;</a></li>
-                            <li><a href="#">1</a></li>
-                            <li><a href="#">2</a></li>
-                            <li><a href="#">3</a></li>
-                            <li><a href="#">4</a></li>
-                            <li><a href="#">5</a></li>
-                            <li><a href="#">&raquo;</a></li>
-                        </ul>
-                    </nav>
+                    <div style={{width:"100%"}}>
+                        <LoadingBtn ref="LoadingBtn" onClick={(()=>{
+                            this.getDocuments(this.state.pageSize, this.state.pageIndex + 1, ((isEnd)=>{
+                                if (isEnd) {
+                                    this.refs.LoadingBtn.button("finish")
+                                } else {
+                                    this.refs.LoadingBtn.button("active")
+                                }
+                                this.setState({pageIndex: this.state.pageIndex+1})
+                            }).bind(this), ()=>{
+                                this.refs.LoadingBtn.button("active")
+                            }) 
+                        }).bind(this)}></LoadingBtn>
+                    </div>
                 </div>
             </div>
             <div className="col-md-3" style={{margin:"30px 0px"}}>

@@ -2,6 +2,8 @@ import React from 'react';
 
 import DocSideShortcut from '../doc_side_shortcut/doc_side_shortcut.jsx'
 import MarkdownEditor from '../markdown_editor/markdown_editor.jsx'
+import LoadingBtn from '../loading_btn/loading_btn.jsx'
+
 import HttpUtils from '../../utils/http.jsx'
 
 import './doc_editor.less'
@@ -27,19 +29,33 @@ export default class DocEditor extends React.Component {
         this.refs.editor.setValue(this.state.document.content)
     }
 
-    getDrafts(pageSize, pageIndex) {
+    getDrafts(pageSize, pageIndex, successFunc, errorFunc) {
         HttpUtils.get("/api/member/drafts", {
             pageSize: pageSize,
             pageIndex: pageIndex,
         }, ((resp)=>{
-            if (resp.documents != null) this.setState({drafts:resp.documents})
-            else this.setState({drafts:[]})
+            if (resp.documents == null) resp.documents = []
+            if (pageIndex == 0) {
+                this.setState({
+                    drafts:resp.documents,
+                    pageTotal: resp.pageTotal,
+                })
+            } else {
+                this.setState({
+                    drafts:this.state.drafts.concat(resp.documents),
+                    pageTotal: resp.pageTotal,
+                })
+            }
+            
+            if (successFunc != undefined) successFunc(pageIndex + 1 >= resp.pageTotal)
         }).bind(this), ((resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+            if (errorFunc != undefined) errorFunc()
         }))
     }
 
-    saveDoc(document) {
+
+    saveDoc(document, callback) {
         let action
         if (document.id == null || document.id.length == 0) {
             action = "add"
@@ -59,6 +75,7 @@ export default class DocEditor extends React.Component {
                     status: document.status,
                 },
             })
+            if (callback != undefined) callback()
             this.getDrafts(this.state.pageSize, this.state.pageIndex)
         }).bind(this), (resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
@@ -72,14 +89,15 @@ export default class DocEditor extends React.Component {
                 HttpUtils.alert("title is empty")
                 return
             }
-            this.saveDoc(this.state.document)
-            this.setState({
-                document: {
-                    title: "",
-                    content: "",
-                    status: "status_draft",
-                },
-            })
+            this.saveDoc(this.state.document, (()=>{
+                this.setState({
+                    document: {
+                        title: "",
+                        content: "",
+                        status: "status_draft",
+                    },
+                })
+            }).bind(this))
             this.refs.editor.setValue("")
         }).bind(this), (()=>{
             this.setState({
@@ -131,6 +149,20 @@ export default class DocEditor extends React.Component {
                             })
                         }
                     </ul>
+                    <div style={{width:"100%"}}>
+                        <LoadingBtn ref="LoadingBtn" onClick={(()=>{
+                            this.getDrafts(this.state.pageSize, this.state.pageIndex + 1, ((isEnd)=>{
+                                if (isEnd) {
+                                    this.refs.LoadingBtn.button("finish")
+                                } else {
+                                    this.refs.LoadingBtn.button("active")
+                                }
+                                this.setState({pageIndex: this.state.pageIndex+1})
+                            }).bind(this), ()=>{
+                                this.refs.LoadingBtn.button("active")
+                            }) 
+                        }).bind(this)}></LoadingBtn>
+                    </div>
                 </div>
 
                 <div className="col-md-9 col-xs-9 lowtea-doc-editor">

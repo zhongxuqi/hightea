@@ -23,7 +23,7 @@ class LoginApp extends React.Component {
         }
         
         HttpUtils.get('/api/member/self', {}, ((data) => {
-            window.location.pathname = "/"
+            window.location = "/user.html"
         }).bind(this), ((data) => {
         }).bind(this))
     }
@@ -72,7 +72,7 @@ class LoginApp extends React.Component {
                 expireTime: expireTime,
                 sign: sign,
             }, (data) => {
-                window.location = "/?lang="+data.user.language
+                window.location = "/user.html?lang="+data.user.language
             }, (data) => {
                 HttpUtils.alert("["+data.status+"]: "+data.responseText)
             })
@@ -121,7 +121,7 @@ class LoginApp extends React.Component {
                         <button type="button" className="btn btn-success btn-block" style={{marginBottom:"10px"}} onClick={this.onClickLoginBtn.bind(this)}>Login</button>
 
                         <button type="button" className="btn btn-primary btn-sm pull-left" href="" onClick={()=>{
-                            window.location.pathname="/public.html"
+                            window.location.pathname="/index.html"
                         }}>Guest</button>
                         <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('register')}>Register</button>
                     </form>

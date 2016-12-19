@@ -4,18 +4,15 @@ import {Link} from 'react-router'
 import DateUtils from '../../utils/date.jsx'
 import TransUtils from '../../utils/trans.jsx'
 
-import './doc_shortcut.less'
+import './publicdoc_shortcut.less'
 
-export default class DocShortcut extends React.Component {
+export default class PublicDocShortcut extends React.Component {
     render() {
         return (
-            <div className="doc-shortcut">
+            <div className="publicdoc-shortcut">
                 <div className="clearfix lowtea-table">
-                    <div className="lowtea-table-cell" style={{width:"1%"}}>
-                        <h4 className="title"><Link to={"/doc_reader/"+this.props.document.id}>{this.props.document.title}</Link></h4>
-                    </div>
                     <div className="lowtea-table-cell" style={{width:"99%"}}>
-                        <span className="label label-info">{TransUtils.status2string(this.props.document.status)}</span>
+                        <h4 className="title"><Link to={"/publicdoc_reader/"+this.props.document.id}>{this.props.document.title}</Link></h4>
                     </div>
                     <div className="lowtea-table-cell dropdown" style={{width:"1%", paddingRight:"10px", display:{true:"table-cell", false:"none"}[this.props.onSaveDoc!=undefined]}}>
                         <button className="btn btn-default dropdown-toggle lowtea-doc-btn" type="button" data-toggle="dropdown">
