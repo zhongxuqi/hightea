@@ -31,9 +31,9 @@ export default class Main extends React.Component {
     }
 
     updateUserInfo() {
-        HttpUtil.get('/api/member/self', {}, ((data) => {
+        HttpUtil.get('/api/member/self', {}, ((resp) => {
             this.setState({
-                userInfo: data.user,
+                userInfo: resp.user,
             })
         }).bind(this), ((data) => {
             window.location = "/index.html"
@@ -81,6 +81,7 @@ export default class Main extends React.Component {
                         React.cloneElement(this.props.children, {
                             userInfo: this.state.userInfo,
                             onConfirm: this.onConfirm.bind(this),
+                            updateUserInfo: this.updateUserInfo.bind(this),
                         })
                     }
                 </div>

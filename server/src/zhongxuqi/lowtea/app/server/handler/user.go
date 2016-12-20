@@ -72,6 +72,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 			UserIntro string `json:"userintro"`
 			Gender    string `json:"gender"`
 			Language  string `json:"language"`
+			HeadImg   string `json:"headimg"`
 		}
 		err := utils.ReadReq2Struct(r, &data)
 		if err != nil {

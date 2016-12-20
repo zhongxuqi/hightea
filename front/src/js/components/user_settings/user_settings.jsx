@@ -19,7 +19,6 @@ export default class UserSettings extends React.Component {
             },
             headStatus:"choose",
         }
-        console.log(this.state)
         this.state.copy = this.copyUser(this.state.user)
         this.updateUserInfo = this.props.updateUserInfo
     }
@@ -51,6 +50,7 @@ export default class UserSettings extends React.Component {
     copyUser(user) {
         return {
             nickname: user.nickname,
+            headimg: user.headimg,
             email: user.email,
             userintro: user.userintro,
             gender: user.gender,
@@ -67,6 +67,8 @@ export default class UserSettings extends React.Component {
             this.state.copy.userintro = event.target.value
         } else if (key == "gender") {
             this.state.copy.gender = event.target.value
+        } else if (key == "headimg") {
+            this.state.copy.img = event.target.value
         }
         this.setState({})
     }
@@ -81,11 +83,13 @@ export default class UserSettings extends React.Component {
     onSaveUserInfoChange() {
         HttpUtils.post("/api/member/self", {
             nickname: this.state.copy.nickname, 
+            headimg: this.state.copy.headimg,
             email: this.state.copy.email, 
             userintro: this.state.copy.userintro, 
             gender: this.state.copy.gender,
             language: this.state.copy.language,
-        }, ((data) => {
+        }, ((resp) => {
+            console.log(resp)
             this.updateUserInfo()
         }).bind(this), ((data) => {
             HttpUtils.alert("["+data.status+"] "+data.responseText)
@@ -136,7 +140,39 @@ export default class UserSettings extends React.Component {
     }
 
     modalHeadImg() {
+        if (!this.state.userinfoEdit) return
         $("#headImgModal").modal("show")
+    }
+
+    onUploadImg() {
+        let headImgfile = document.getElementById("headImgFile").files[0]
+
+        if (headImgfile == null) {
+            HttpUtils.alert("请选择图片")
+            return
+        } else if (!(/\.(png|jpeg|jpg)$/.test(headImgfile.name))) {
+            HttpUtils.alert("所选文件不是图片")
+            return
+        }
+        
+        let formData = new FormData()
+        formData.append("imagefile", headImgfile)
+        $.ajax({
+            type: "POST",
+            url: "/api/member/upload_image",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: (resp) => {
+                $("#modal-headimg-file").attr("src", resp.imageUrl)
+                this.state.copy.headimg = resp.imageUrl
+                this.setState({})
+            },
+            error: (resp) => {
+                HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+            },
+        })
     }
 
     render() {
@@ -154,7 +190,10 @@ export default class UserSettings extends React.Component {
                     <div className="form-group">
                         <label className="col-sm-2 control-label">头像</label>
                         <div className="col-sm-10">
-                            <img src={{true:"/img/head.png",false:this.state.user.headImg}[this.state.user.headImg==""]} style={{width:"100px",height:"100px"}} onClick={this.modalHeadImg.bind(this)}/>
+                            <img src={{true:"/img/head.png",false:this.state.user.headimg}[this.state.user.headimg==""]} style={{width:"100px",height:"100px", display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}}/>
+                            <a className="head-img thumbnail" onClick={this.modalHeadImg.bind(this)} style={{display:{false:"none", true:"inline-block"}[this.state.userinfoEdit]}}>
+                                <img src={{true:"/img/head.png",false:this.state.copy.headimg}[this.state.copy.headimg==""]} style={{width:"100px",height:"100px"}}/>
+                            </a>
                         </div>
                     </div>
                     <div className="form-group">
@@ -265,6 +304,7 @@ export default class UserSettings extends React.Component {
                                 <ul className="nav nav-pills" role="tablist">
                                     <li role="presentation" className={{true:"active", false:""}[this.state.headStatus=="choose"]}><a href="javascript:void(0)" onClick={(()=>{this.setState({headStatus:"choose"})}).bind(this)}>选择头像</a></li>
                                     <li role="presentation" className={{true:"active", false:""}[this.state.headStatus=="link"]}><a href="javascript:void(0)" onClick={(()=>(this.setState({headStatus:"link"})))}>头像链接</a></li>
+                                    <li role="presentation" className={{true:"active", false:""}[this.state.headStatus=="file"]}><a href="javascript:void(0)" onClick={(()=>(this.setState({headStatus:"file"})))}>上传头像</a></li>
                                 </ul>
                             </div>
                             <div className="modal-body">
@@ -272,27 +312,40 @@ export default class UserSettings extends React.Component {
                                     <div className="form-group" style={{display:{true:"block",false:"none"}[this.state.headStatus=="choose"]}}>
                                         <div className="row">
                                             {
-                                                LowTea.headImgs.map((headImg)=>{
+                                                LowTea.headImgs.map(((headImg, i)=>{
                                                     return (
-                                                        <div className="col-xs-6 col-md-3">
-                                                            <a className="thumbnail">
+                                                        <div className="col-xs-6 col-md-3" key={i}>
+                                                            <a className={["thumbnail", {true:"active", false:""}[this.state.copy.headimg==headImg]].join(" ")} onClick={(()=>{this.state.copy.headimg=headImg;this.setState({});$("#headImgModal").modal("hide")}).bind(this)}>
                                                                 <img src={headImg} style={{height:"100px"}}/>
                                                             </a>
                                                         </div>
                                                     )
-                                                })
+                                                }).bind(this))
                                             }
                                         </div>
                                     </div>
                                     <div className="form-group" style={{display:{false:"none",true:"block"}[this.state.headStatus=="link"]}}>
                                         <label>头像链接</label>
-                                        <input type="text" className="form-control" placeholder="Enter Video URL" value={this.state.copy.headImg} onChange={((event)=>{let tmp=this.state.copy;tmp.headImg=event.target.value;this.setState({copy:tmp})}).bind(this)}/>
+                                        <input type="text" className="form-control" placeholder="Enter Video URL" value={this.state.copy.headimg} onChange={((event)=>{this.state.copy.headimg=event.target.value;this.setState({})}).bind(this)}/>
+                                        <a className="thumbnail" style={{width:"100px",height:"100px",marginTop:"10px"}}>
+                                            <img src={this.state.copy.headimg}/>
+                                        </a>
+                                    </div>
+                                    <div className="form-group" style={{display:{true:"block",false:"none"}[this.state.headStatus=="file"]}}>
+                                        <label>上传头像图片</label>
+                                        <input type="file" id="headImgFile" onChange={this.onUploadImg.bind(this)}/>
+                                        <a className="thumbnail" style={{width:"100px",height:"100px",marginTop:"10px"}}>
+                                            <img id="modal-headimg-file"/>
+                                        </a>
                                     </div>
                                 </form>
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary">Affirm</button>
+                            <div className="modal-footer" style={{display:{true:"block",false:"none"}[this.state.headStatus!="choose"]}}>
+                                <button type="button" className="btn btn-default" data-dismiss="modal" onClick={(()=>{
+                                    this.state.copy.headimg=this.state.user.headimg
+                                    this.setState({})
+                                }).bind(this)}>Close</button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal">Save changes</button>
                             </div>
                         </div>
                     </div>

@@ -33,7 +33,7 @@ export default class Menu extends React.Component {
         return (
             <div className="lowtea-menu">
                 <div className="lowtea-user-panel clearfix">
-                    <div className="table-cell"><img className="lowtea-headimg" src={{false:this.props.headImg,true:"/img/head.png"}[this.props.userInfo.headImg==""]}/></div>
+                    <div className="table-cell"><img className="lowtea-headimg" src={{false:this.props.userInfo.headimg,true:"/img/head.png"}[this.props.userInfo.headimg==""]}/></div>
                     <div className="table-cell lowtea-menu-userinfo">
                         <UserBadge nickname={this.props.userInfo.nickname} role={this.props.userInfo.role}></UserBadge>
                     </div>

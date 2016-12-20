@@ -35,6 +35,5 @@ export default {
         "/img/heads/33.png",
         "/img/heads/34.png",
         "/img/heads/35.png",
-        "/img/heads/36.png",
     ],
 }
