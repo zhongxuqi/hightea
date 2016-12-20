@@ -4,7 +4,7 @@ import React from 'react'
 import {Link} from 'react-router'
 
 import UserBadge from '../user_badge/user_badge.jsx'
-import HttpUtil from '../../utils/http.jsx'
+import HttpUtils from '../../utils/http.jsx'
 import Language from '../../language/language.jsx'
 
 import './menu.less';
@@ -14,11 +14,17 @@ export default class Menu extends React.Component {
         super(props)
         this.state = {
             menuState: window.location.hash.substring(2),
+            password: {
+                oldPassword: "",
+                newPassword: "",
+                reNewPassword: "",
+                status: "",
+            },
         }
     }
 
     onLogoutClick() {
-        HttpUtil.get("/openapi/logout", {}, (data) => {
+        HttpUtils.get("/openapi/logout", {}, (data) => {
             window.location.pathname = "/login.html"
         }, (data) => {
             HttpUtil.alert("["+data.status+"]: "+data.responseText)
@@ -29,6 +35,49 @@ export default class Menu extends React.Component {
         this.state.menuState = newState;
     }
 
+    modalPassword() {
+        this.setState({
+            password: {
+                oldPassword: "",
+                newPassword: "",
+                reNewPassword: "",
+                status: "",
+            }
+        })
+        $("#passwordModal").modal("show")
+    }
+
+    onChangePassword(key, event) {
+        if (key == "oldPassword") {
+            this.state.password.oldPassword = event.target.value
+        } else if (key == "newPassword") {
+            this.state.password.newPassword = event.target.value
+        } else if (key == "reNewPassword") {
+            this.state.password.reNewPassword = event.target.value
+        }
+
+        if (this.state.password.newPassword != this.state.password.reNewPassword) {
+            this.state.password.status = "input-error"
+        } else {
+            this.state.password.status = ""
+        }
+        this.setState({})
+    }
+
+    onSavePassword() {
+        if (this.state.password.status.length > 0) return
+        $("#passwordModal").modal("hide")
+        
+        HttpUtils.post("/api/member/self_password", {
+            password: this.state.password.oldPassword, 
+            newPassword: this.state.password.newPassword,
+        }, ((data) => {
+            HttpUtils.notice("Success to save password!")
+        }).bind(this), ((data) => {
+            HttpUtils.alert("["+data.status+"] "+data.responseText)
+        }).bind(this))
+    }
+    
     render() {
         return (
             <div className="lowtea-menu">
@@ -43,7 +92,8 @@ export default class Menu extends React.Component {
                             <span className="caret"></span>
                         </button>
                         <ul className="dropdown-menu">
-                            <li><a href="" onClick={this.onLogoutClick}><span className="glyphicon glyphicon-log-out" style={{margin:"0px 10px 0px 0px"}}></span>{Language.textMap("Quit")}</a></li>
+                            <li><a onClick={this.modalPassword.bind(this)}><i className="fa fa-lock" aria-hidden="true" style={{margin:"0px 10px 0px 0px"}}></i>修改密码</a></li>
+                            <li><a onClick={this.onLogoutClick}><span className="glyphicon glyphicon-log-out" style={{margin:"0px 10px 0px 0px"}}></span>{Language.textMap("Quit")}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -73,6 +123,43 @@ export default class Menu extends React.Component {
                         <Link to="/users_manager" onClick={this.onMenuItemClick.bind(this, 'users_manager')}><span className="glyphicon glyphicon-user"></span>用户管理</Link>
                     </li>
                 </ul>
+                
+                <div className="modal fade" id="passwordModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title" id="myModalLabel">修改密码</h4>
+                            </div>
+                            <div className="modal-body">
+                                <form className="form-horizontal lowtea-password-modal" role="form">
+                                    <div className="form-group">
+                                        <label className="col-sm-4 control-label">旧密码</label>
+                                        <div className="col-sm-8">
+                                            <input type="password" className="form-control" value={this.state.password.oldPassword} onChange={this.onChangePassword.bind(this, "oldPassword")}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="col-sm-4 control-label">新密码</label>
+                                        <div className="col-sm-8">
+                                            <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="col-sm-4 control-label">重复新密码</label>
+                                        <div className="col-sm-8">
+                                            <input type="password" className={["form-control", this.state.password.status].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-default" data-dismiss="modal">取消</button>
+                                <button type="button" className="btn btn-primary" onClick={this.onSavePassword.bind(this)}>保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

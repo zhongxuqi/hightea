@@ -96,49 +96,6 @@ export default class UserSettings extends React.Component {
         }).bind(this))
     }
 
-    onClickPassword() {
-        this.setState({
-            password: {
-                oldPassword: "",
-                newPassword: "",
-                reNewPassword: "",
-                status: "",
-            }
-        })
-        $("#passwordModal").modal("show")
-    }
-
-    onChangePassword(key, event) {
-        if (key == "oldPassword") {
-            this.state.password.oldPassword = event.target.value
-        } else if (key == "newPassword") {
-            this.state.password.newPassword = event.target.value
-        } else if (key == "reNewPassword") {
-            this.state.password.reNewPassword = event.target.value
-        }
-
-        if (this.state.password.newPassword != this.state.password.reNewPassword) {
-            this.state.password.status = "input-error"
-        } else {
-            this.state.password.status = ""
-        }
-        this.setState({})
-    }
-
-    onSavePassword() {
-        if (this.state.password.status.length > 0) return
-        $("#passwordModal").modal("hide")
-        
-        HttpUtils.post("/api/member/self_password", {
-            password: this.state.password.oldPassword, 
-            newPassword: this.state.password.newPassword,
-        }, ((data) => {
-            HttpUtils.notice("Success to save password!")
-        }).bind(this), ((data) => {
-            HttpUtils.alert("["+data.status+"] "+data.responseText)
-        }).bind(this))
-    }
-
     modalHeadImg() {
         if (!this.state.userinfoEdit) return
         $("#headImgModal").modal("show")
@@ -211,12 +168,6 @@ export default class UserSettings extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">密码</label>
-                        <div className="col-sm-10">
-                            <button type="button" className="btn btn-primary" onClick={this.onClickPassword.bind(this)}>修改密码</button>
-                        </div>
-                    </div>
-                    <div className="form-group">
                         <label className="col-sm-2 control-label">个人签名</label>
                         <div className="col-sm-10">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.userintro} onChange={this.onChangeUserInfo.bind(this, "userintro")}/>
@@ -258,44 +209,6 @@ export default class UserSettings extends React.Component {
                     </div>
                 </form>
 
-
-                <div className="modal fade" id="passwordModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                                <h4 className="modal-title" id="myModalLabel">修改密码</h4>
-                            </div>
-                            <div className="modal-body">
-                                <form className="form-horizontal lowtea-password-modal" role="form">
-                                    <div className="form-group">
-                                        <label className="col-sm-4 control-label">旧密码</label>
-                                        <div className="col-sm-8">
-                                            <input type="password" className="form-control" value={this.state.password.oldPassword} onChange={this.onChangePassword.bind(this, "oldPassword")}/>
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="col-sm-4 control-label">新密码</label>
-                                        <div className="col-sm-8">
-                                            <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
-                                        </div>
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="col-sm-4 control-label">重复新密码</label>
-                                        <div className="col-sm-8">
-                                            <input type="password" className={["form-control", this.state.password.status].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-default" data-dismiss="modal">取消</button>
-                                <button type="button" className="btn btn-primary" onClick={this.onSavePassword.bind(this)}>保存</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <div className="modal fade" id="headImgModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
