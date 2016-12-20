@@ -3,12 +3,22 @@
     height: 100%;
     overflow-y: scroll;
 
-    .lowtea-table {
+    .lowtea-users-table {
         padding: 0px 5px;
         margin: 0px;
         box-sizing:border-box;
         -moz-box-sizing:border-box; /* Firefox */
         -webkit-box-sizing:border-box; /* Safari */
+
+        tbody {
+            td {
+                vertical-align: middle;
+            }
+            
+            td.head-img {
+                text-align: center;
+            }
+        }
     }
 
     button {

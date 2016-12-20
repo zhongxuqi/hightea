@@ -11,9 +11,10 @@ export default class UsersManager extends React.Component {
             users: [],
             registers: [],
             confirmModal: {},
+            userInfo: props.userInfo,
         }
         this.updateUsersList()
-        if ('role' in this.props && (this.props.role == "root" || this.props.role == "admin")) {
+        if (this.props.userInfo.role == "root" || this.props.userInfo.role == "admin") {
             this.updateRegistersList()
         }
     }
@@ -84,11 +85,11 @@ export default class UsersManager extends React.Component {
         }))
     }
 
-    componentWillReceiveProps(newProps) {
-        if ('role' in newProps && newProps.role != this.state.role && (newProps.role == "root" || newProps.role == "admin")) {
+    componentWillReceiveProps(props) {
+        if (props.userInfo.role == "root" || props.userInfo.role == "admin") {
             this.updateRegistersList()
         }
-        this.setState(newProps)
+        this.setState(props)
     }
 
     onClickActionUser(action, userItem) {
@@ -142,13 +143,14 @@ export default class UsersManager extends React.Component {
     render() {
         return (
             <div className="users_manager clearfix">
-                <div className={["lowtea-table", {true: "col-md-8 col-lg-8", false:""}[this.state.role=="root"||this.state.role=="admin"]].join(" ")}>
+                <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
                         <div className="panel-heading">社区成员</div>
 
                         <table className="table table-bordered">
                             <thead>
                                 <tr>
+                                    <th>头像</th>
                                     <th>用户名</th>
                                     <th>用户角色</th>
                                     <th>操作</th>
@@ -159,6 +161,7 @@ export default class UsersManager extends React.Component {
                                     this.state.users.map((user) => {
                                         return (
                                             <tr key={user.account}>
+                                                <td className="head-img"><img src={user.headimg} style={{width:"30px",height:"30px"}}/></td>
                                                 <td>{user.nickname}</td>
                                                 <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.role}</td>
                                                 <td style={{display:{true: "table-cell", false:"none"}[user.isEdit]}}>
@@ -183,7 +186,7 @@ export default class UsersManager extends React.Component {
                     </div>
                 </div>
 
-                <div className="col-md-4 col-lg-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.role=="root"||this.state.role=="admin"]}}>
+                <div className="col-md-4 col-lg-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
                     <div className="panel panel-default">
                         <div className="panel-heading">加入申请</div>
 
