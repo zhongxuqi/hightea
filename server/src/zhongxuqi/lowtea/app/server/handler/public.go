@@ -21,8 +21,9 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 		}
 
 		var params struct {
-			PageSize  int `json:"pageSize"`
-			PageIndex int `json:"pageIndex"`
+			PageSize  int    `json:"pageSize"`
+			PageIndex int    `json:"pageIndex"`
+			Keyword   string `json:"keyword"`
 		}
 		params.PageSize, err = strconv.Atoi(r.Form.Get("pageSize"))
 		if err != nil {
@@ -34,6 +35,7 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "read param pageIndex error: "+err.Error(), 400)
 			return
 		}
+		params.Keyword = r.Form.Get("keyword")
 
 		var respBody struct {
 			model.RespBase
@@ -43,6 +45,11 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 		}
 		filter := bson.M{
 			"status": model.STATUS_PUBLISH_PUBLIC,
+		}
+		if params.Keyword != "" {
+			filter["title"] = &bson.M{
+				"$regex": params.Keyword,
+			}
 		}
 
 		var n int
