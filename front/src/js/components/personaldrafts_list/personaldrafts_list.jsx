@@ -2,7 +2,6 @@ import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
-import LiketopList from '../liketop_list/liketop_list.jsx'
 
 import './personaldrafts_list.less'
 

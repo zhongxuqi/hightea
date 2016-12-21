@@ -20,6 +20,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	openAPIHandler.HandleFunc("/openapi/logout", mainHandler.Logout)
 	openAPIHandler.HandleFunc("/openapi/documents", mainHandler.ActionPublicDocuments)
 	openAPIHandler.HandleFunc("/openapi/document/", mainHandler.ActionPublicDocument)
+	openAPIHandler.HandleFunc("/openapi/public_top_star_documents", mainHandler.ActionPublicTopStarDocuments)
+	openAPIHandler.HandleFunc("/openapi/public_top_flag_documents", mainHandler.ActionPublicTopFlagDocuments)
 	mainHandler.Mux.HandleFunc("/openapi/", func(w http.ResponseWriter, r *http.Request) {
 		openAPIHandler.ServeHTTP(w, r)
 	})
@@ -59,6 +61,9 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	memberHandler.HandleFunc("/api/member/drafts", mainHandler.ActionDrafts)
 	memberHandler.HandleFunc("/api/member/star/", mainHandler.ActionStar)
 	memberHandler.HandleFunc("/api/member/star_documents", mainHandler.ActionStarDocuments)
+	memberHandler.HandleFunc("/api/member/top_star_documents", mainHandler.ActionTopStarDocuments)
+	memberHandler.HandleFunc("/api/member/self_top_star_documents", mainHandler.ActionSelfTopStarDocuments)
+	memberHandler.HandleFunc("/api/member/top_flag_documents", mainHandler.ActionTopFlagDocuments)
 	apiHandler.HandleFunc("/api/member/", func(w http.ResponseWriter, r *http.Request) {
 		memberHandler.ServeHTTP(w, r)
 	})
@@ -67,6 +72,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	adminHandler.HandleFunc("/api/admin/registers", mainHandler.GetRegisters)
 	adminHandler.HandleFunc("/api/admin/register", mainHandler.ActionRegister)
 	adminHandler.HandleFunc("/api/admin/user/", mainHandler.AdminActionUser)
+	adminHandler.HandleFunc("/api/admin/flag/", mainHandler.ActionFlag)
 	apiHandler.HandleFunc("/api/admin/", func(w http.ResponseWriter, r *http.Request) {
 
 		// check permission

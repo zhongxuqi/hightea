@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 	"zhongxuqi/lowtea/errors"
@@ -130,4 +131,155 @@ func (p *MainHandler) ActionStar(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Error(w, "Not Found", 404)
 	return
+}
+
+type starDocuments []*model.Document
+
+func (p starDocuments) Len() int {
+	return len(p)
+}
+
+func (p starDocuments) Less(i, j int) bool {
+	if p[i].StarNum == p[j].StarNum {
+		return p[i].CreateTime > p[j].CreateTime
+	}
+	return p[i].StarNum > p[j].StarNum
+}
+
+func (p starDocuments) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		var respBody struct {
+			Documents starDocuments `json:"documents"`
+			MemberNum int           `json:"memberNum"`
+		}
+		documentIds := make([]string, 0)
+		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		if err != nil {
+			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
+			return
+		}
+
+		respBody.MemberNum, err = p.UserColl.Count()
+		if err != nil {
+			http.Error(w, "find users count error: "+err.Error(), 500)
+			return
+		}
+		respBody.MemberNum++
+
+		respBody.Documents = starDocuments{}
+		for _, documentId := range documentIds {
+			stardoc := model.Document{}
+			p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&stardoc)
+			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			respBody.Documents = append(respBody.Documents, &stardoc)
+		}
+		sort.Sort(respBody.Documents)
+
+		if len(respBody.Documents) > 10 {
+			respBody.Documents = respBody.Documents[0:10]
+		}
+
+		respByte, _ := json.Marshal(&respBody)
+		w.Write(respByte)
+		return
+	}
+	http.Error(w, "Not Found", 404)
+}
+
+func (p *MainHandler) ActionSelfTopStarDocuments(w http.ResponseWriter, r *http.Request) {
+	var accountCookie *http.Cookie
+	var err error
+	accountCookie, err = r.Cookie("account")
+	if err != nil {
+		http.Error(w, "cookie find error: "+err.Error(), 400)
+		return
+	}
+
+	if r.Method == http.MethodGet {
+		var respBody struct {
+			Documents starDocuments `json:"documents"`
+			MemberNum int           `json:"memberNum"`
+		}
+		documentIds := make([]string, 0)
+		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		if err != nil {
+			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
+			return
+		}
+
+		respBody.MemberNum, err = p.UserColl.Count()
+		if err != nil {
+			http.Error(w, "find users count error: "+err.Error(), 500)
+			return
+		}
+		respBody.MemberNum++
+
+		respBody.Documents = starDocuments{}
+		for _, documentId := range documentIds {
+			stardoc := model.Document{}
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": accountCookie.Value}).One(&stardoc)
+			if err != nil {
+				continue
+			}
+			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			respBody.Documents = append(respBody.Documents, &stardoc)
+		}
+		sort.Sort(respBody.Documents)
+
+		if len(respBody.Documents) > 10 {
+			respBody.Documents = respBody.Documents[0:10]
+		}
+
+		respByte, _ := json.Marshal(&respBody)
+		w.Write(respByte)
+		return
+	}
+	http.Error(w, "Not Found", 404)
+}
+
+func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		var respBody struct {
+			Documents starDocuments `json:"documents"`
+			MemberNum int           `json:"memberNum"`
+		}
+		documentIds := make([]string, 0)
+		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		if err != nil {
+			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
+			return
+		}
+
+		respBody.MemberNum, err = p.UserColl.Count()
+		if err != nil {
+			http.Error(w, "find users count error: "+err.Error(), 500)
+			return
+		}
+		respBody.MemberNum++
+
+		respBody.Documents = starDocuments{}
+		for _, documentId := range documentIds {
+			stardoc := model.Document{}
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "status": model.STATUS_PUBLISH_PUBLIC}).One(&stardoc)
+			if err != nil {
+				continue
+			}
+			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			respBody.Documents = append(respBody.Documents, &stardoc)
+		}
+		sort.Sort(respBody.Documents)
+
+		if len(respBody.Documents) > 10 {
+			respBody.Documents = respBody.Documents[0:10]
+		}
+
+		respByte, _ := json.Marshal(&respBody)
+		w.Write(respByte)
+		return
+	}
+	http.Error(w, "Not Found", 404)
 }

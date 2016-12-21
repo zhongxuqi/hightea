@@ -2,12 +2,13 @@ import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
-import LiketopList from '../liketop_list/liketop_list.jsx'
+import TopStarList from '../topstar_list/topstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
 
 import './personaldocs_list.less'
+
 
 export default class PersonalDocsList extends React.Component {
     constructor(props) {
@@ -22,8 +23,21 @@ export default class PersonalDocsList extends React.Component {
                 title: "",
                 message: "",
             },
+            topStarDocuments: [],
         }
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
+        
+        HttpUtils.get("/api/member/self_top_star_documents",{},((resp)=>{
+            let topStarDocuments = []
+            for (let i=0;i<resp.documents.length;i++) {
+                let document = resp.documents[i]
+                document.starPercent = Math.round(100 * document.starNum / resp.memberNum)
+                topStarDocuments.push(document)
+            }
+            this.setState({topStarDocuments:topStarDocuments})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
     }
     
     getDocuments(pageSize, pageIndex) {
@@ -60,7 +74,6 @@ export default class PersonalDocsList extends React.Component {
     }
 
     onSaveDoc(document) {
-        console.log(document)
         HttpUtils.post("/api/member/document", {
             action: "edit",
             document: document,
@@ -118,7 +131,7 @@ export default class PersonalDocsList extends React.Component {
                 </div>
 
                 <div className="col-md-3" style={{margin:"30px 0px"}}>
-                    <LiketopList title="最受喜欢的个人文章排行"></LiketopList>
+                    <TopStarList title="最受喜欢的个人文章排行" documents={this.state.topStarDocuments}></TopStarList>
                 </div>
             </div>
         )

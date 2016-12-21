@@ -2,8 +2,8 @@ import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
-import RecommendList from '../recommend_list/recommend_list.jsx'
-import LiketopList from '../liketop_list/liketop_list.jsx'
+import TopFlagList from '../topflag_list/topflag_list.jsx'
+import TopStarList from '../topstar_list/topstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
@@ -19,8 +19,34 @@ export default class DocsOverView extends React.Component {
             pageIndex: 0,
             docTotal: 0,
             keyword: "",
+            topFlagDocuments: [],
+            topStarDocuments: [],
         }
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
+
+        HttpUtils.get("/api/member/top_star_documents",{},((resp)=>{
+            let topStarDocuments = []
+            for (let i=0;i<resp.documents.length;i++) {
+                let document = resp.documents[i]
+                document.starPercent = Math.round(100 * document.starNum / resp.memberNum)
+                topStarDocuments.push(document)
+            }
+            this.setState({topStarDocuments:topStarDocuments})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
+        
+        HttpUtils.get("/api/member/top_flag_documents",{},((resp)=>{
+            let topFlagDocuments = []
+            for (let i=0;i<resp.documents.length;i++) {
+                let document = resp.documents[i]
+                document.flagPercent = Math.round(100 * document.flagNum / resp.adminNum)
+                topFlagDocuments.push(document)
+            }
+            this.setState({topFlagDocuments:topFlagDocuments})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
     }
 
     getDocuments(pageSize, pageIndex, successFunc, errorFunc) {
@@ -79,8 +105,8 @@ export default class DocsOverView extends React.Component {
                 </div>
             </div>
             <div className="col-md-3" style={{margin:"30px 0px"}}>
-                <RecommendList></RecommendList>
-                <LiketopList title="最受喜欢的文章排行"></LiketopList>
+                <TopFlagList title="标记最多的文章排行" documents={this.state.topFlagDocuments}></TopFlagList>
+                <TopStarList title="Star最多的文章排行" documents={this.state.topStarDocuments}></TopStarList>
             </div>
         </div>
     }

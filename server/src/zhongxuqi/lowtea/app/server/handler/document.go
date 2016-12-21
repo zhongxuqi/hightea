@@ -90,8 +90,7 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for i, _ := range respBody.Documents {
-			n, _ = p.StarColl.Find(&bson.M{"documentId": respBody.Documents[i].Id.Hex()}).Count()
-			respBody.Documents[i].StarNum = n
+			respBody.Documents[i].StarNum, _ = p.StarColl.Find(&bson.M{"documentId": respBody.Documents[i].Id.Hex()}).Count()
 		}
 
 		respBody.Status = 200
@@ -231,6 +230,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			model.RespBase
 			Document model.Document `json:"document"`
 			Star     bool           `json:"star"`
+			Flag     bool           `json:"flag"`
 		}
 		err := p.DocumentColl.Find(bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&respBody.Document)
 		if err != nil {
@@ -251,8 +251,24 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			respBody.Star = false
 		}
 
+		n, _ = p.FlagColl.Find(&bson.M{
+			"account":    accountCookie.Value,
+			"documentId": documentId,
+			"createTime": bson.M{"$gte": time.Now().Unix() - 30*24*60*60},
+		}).Count()
+		if n > 0 {
+			respBody.Flag = true
+		} else {
+			respBody.Flag = false
+		}
+
 		n, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
 		respBody.Document.StarNum = n
+		n, _ = p.FlagColl.Find(&bson.M{
+			"documentId": documentId,
+			"createTime": bson.M{"$gte": time.Now().Unix() - 30*24*60*60},
+		}).Count()
+		respBody.Document.FlagNum = n
 
 		respBody.Status = 200
 		respBody.Message = "success"

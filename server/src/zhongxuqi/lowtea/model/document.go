@@ -18,4 +18,5 @@ type Document struct {
 	Account    string        `json:"account" bson:"account"`
 	Status     string        `json:"status" bson:"status"`
 	StarNum    int           `json:"starNum" bson:"-"`
+	FlagNum    int           `json:"flagNum" bson:"-"`
 }

@@ -2,8 +2,8 @@ import React from 'react'
 
 import SearchBar from '../searchbar/searchbar.jsx'
 import PublicDocsList from '../publicdocs_list/publicdocs_list.jsx'
-import RecommendList from '../recommend_list/recommend_list.jsx'
-import LiketopList from '../liketop_list/liketop_list.jsx'
+import PublicTopFlagList from '../publictopflag_list/publictopflag_list.jsx'
+import PublicTopStarList from '../publictopstar_list/publictopstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
@@ -19,9 +19,35 @@ export default class PublicDocsOverView extends React.Component {
             pageIndex: 0,
             docTotal: 0,
             keyword: "",
+            topFlagDocuments: [],
+            topStarDocuments: [],
         }
 
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
+
+        HttpUtils.get("/openapi/public_top_star_documents",{},((resp)=>{
+            let topStarDocuments = []
+            for (let i=0;i<resp.documents.length;i++) {
+                let document = resp.documents[i]
+                document.starPercent = Math.round(100 * document.starNum / resp.memberNum)
+                topStarDocuments.push(document)
+            }
+            this.setState({topStarDocuments:topStarDocuments})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
+        
+        HttpUtils.get("/openapi/public_top_flag_documents",{},((resp)=>{
+            let topFlagDocuments = []
+            for (let i=0;i<resp.documents.length;i++) {
+                let document = resp.documents[i]
+                document.flagPercent = Math.round(100 * document.flagNum / resp.adminNum)
+                topFlagDocuments.push(document)
+            }
+            this.setState({topFlagDocuments:topFlagDocuments})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
     }
 
     getDocuments(pageSize, pageIndex) {
@@ -90,8 +116,8 @@ export default class PublicDocsOverView extends React.Component {
                     </div>
                 </div>
                 <div className="col-md-3" style={{margin:"10px 0px"}}>
-                    <RecommendList></RecommendList>
-                    <LiketopList title="最受喜欢的文章排行"></LiketopList>
+                    <PublicTopFlagList title="标记最多的文章排行" documents={this.state.topFlagDocuments}></PublicTopFlagList>
+                    <PublicTopStarList title="最受喜欢的文章排行" documents={this.state.topStarDocuments}></PublicTopStarList>
                 </div>
             </div>
         </div>

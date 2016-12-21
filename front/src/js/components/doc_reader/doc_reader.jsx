@@ -23,6 +23,7 @@ export default class DocReader extends React.Component {
             this.setState({
                 document:resp.document,
                 star: resp.star,
+                flag: resp.flag,
             })
             
             $(".lowtea-doc-reader #content")[0].innerHTML = marked(resp.document.content)
@@ -56,6 +57,27 @@ export default class DocReader extends React.Component {
         }).bind(this))
     }
     
+    toggleFlag() {
+        let action
+        if (this.state.flag) {
+            action = "unflag"
+        } else {
+            action = "flag"
+        }
+        HttpUtils.post("/api/admin/flag/"+this.state.document.id, {
+            action: action,
+        }, ((resp)=>{
+            let document = this.state.document
+            document.flagNum = resp.flagNum
+            this.setState({
+                document: document,
+                flag: !this.state.flag,
+            })
+        }).bind(this), ((resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        }).bind(this))
+    }
+    
     render() {
         return (
             <div className="lowtea-doc-reader">
@@ -71,6 +93,11 @@ export default class DocReader extends React.Component {
                         </h4>
                     </div>
                     <div className="table-cell">
+                        <button className="btn btn-primary btn-sm" type="button" onClick={this.toggleFlag.bind(this)}>
+                            {{true:"unflag", false:"flag"}[this.state.flag]} <span className="badge">{this.state.document.flagNum}</span>
+                        </button>
+                    </div>
+                    <div className="table-cell" style={{paddingLeft:"10px"}}>
                         <button className="btn btn-primary btn-sm" type="button" onClick={this.toggleStar.bind(this)}>
                             {{true:"unstar", false:"star"}[this.state.star]} <span className="badge">{this.state.document.starNum}</span>
                         </button>
