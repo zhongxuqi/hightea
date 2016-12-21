@@ -18,6 +18,7 @@ export default class DocsOverView extends React.Component {
             pageSize: 10,
             pageIndex: 0,
             docTotal: 0,
+            keyword: "",
         }
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
     }
@@ -26,6 +27,7 @@ export default class DocsOverView extends React.Component {
         HttpUtils.get("/api/member/documents", {
             pageSize: pageSize,
             pageIndex: pageIndex,
+            keyword: this.state.keyword,
         }, ((resp) => {
             if (resp.documents == null) resp.documents = []
             if (pageIndex == 0) {
@@ -40,10 +42,15 @@ export default class DocsOverView extends React.Component {
                 })
             }
             
-            if (successFunc != undefined) successFunc(pageIndex + 1 >= resp.pageTotal)
+            if (pageIndex + 1 >= resp.pageTotal) {
+                this.refs.LoadingBtn.button("finish")
+            } else {
+                this.refs.LoadingBtn.button("active")
+            }
+            this.setState({pageIndex: pageIndex})
         }).bind(this), (resp) => {
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
-            if (errorFunc != undefined) errorFunc()
+            this.refs.LoadingBtn.button("active")
         })
     }
 
@@ -51,7 +58,12 @@ export default class DocsOverView extends React.Component {
         return <div className="lowtea-doc-overview">
             <div className="col-md-9 doc-list-container">
                 <div className="searchbar-container">
-                    <SearchBar></SearchBar>
+                    <SearchBar ref="searchbar" onClick={(()=>{
+                        this.state.keyword = this.refs.searchbar.getValue()
+                        this.state.pageIndex = 0
+                        this.getDocuments(this.state.pageSize, 0)
+                        this.setState({})
+                    }).bind(this)}></SearchBar>
                 </div>
                 
                 <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
@@ -61,16 +73,7 @@ export default class DocsOverView extends React.Component {
 
                     <div style={{width:"100%"}}>
                         <LoadingBtn ref="LoadingBtn" onClick={(()=>{
-                            this.getDocuments(this.state.pageSize, this.state.pageIndex + 1, ((isEnd)=>{
-                                if (isEnd) {
-                                    this.refs.LoadingBtn.button("finish")
-                                } else {
-                                    this.refs.LoadingBtn.button("active")
-                                }
-                                this.setState({pageIndex: this.state.pageIndex+1})
-                            }).bind(this), ()=>{
-                                this.refs.LoadingBtn.button("active")
-                            }) 
+                            this.getDocuments(this.state.pageSize, this.state.pageIndex + 1) 
                         }).bind(this)}></LoadingBtn>
                     </div>
                 </div>

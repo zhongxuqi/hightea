@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 	"zhongxuqi/lowtea/errors"
@@ -29,47 +28,26 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 			return
 		}
 
-		var params struct {
-			PageSize  int `json:"pageSize"`
-			PageIndex int `json:"pageIndex"`
-		}
-		params.PageSize, err = strconv.Atoi(r.Form.Get("pageSize"))
-		if err != nil {
-			http.Error(w, "read param pageSize error: "+err.Error(), 400)
-			return
-		}
-		params.PageIndex, err = strconv.Atoi(r.Form.Get("pageIndex"))
-		if err != nil {
-			http.Error(w, "read param pageIndex error: "+err.Error(), 400)
-			return
-		}
-
 		var respBody struct {
 			model.RespBase
 			Documents []*model.Document `json:"documents"`
-			PageTotal int               `json:"pageTotal"`
 			DocTotal  int               `json:"docTotal"`
 		}
 
-		filter := &bson.M{
+		filter := bson.M{
 			"account": accountCookie.Value,
 		}
 
 		var n int
-		n, err = p.StarColl.Find(filter).Count()
+		n, err = p.StarColl.Find(&filter).Count()
 		if err != nil {
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
 		}
 		respBody.DocTotal = n
-		if n > 0 {
-			respBody.PageTotal = (n-1)/params.PageSize + 1
-		} else {
-			respBody.PageTotal = 0
-		}
 
 		stars := make([]model.Star, 0)
-		p.StarColl.Find(filter).Sort("-createTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&stars)
+		p.StarColl.Find(filter).Sort("-createTime").All(&stars)
 		respBody.Documents = make([]*model.Document, 0, len(stars))
 		for _, star := range stars {
 			var document model.Document

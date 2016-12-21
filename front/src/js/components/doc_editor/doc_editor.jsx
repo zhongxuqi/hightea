@@ -14,6 +14,7 @@ export default class DocEditor extends React.Component {
         this.state = {
             pageSize: 10,
             pageIndex: 0,
+            keyword: "",
             drafts: [],
             document: {
                 title: "",
@@ -29,10 +30,11 @@ export default class DocEditor extends React.Component {
         this.refs.editor.setValue(this.state.document.content)
     }
 
-    getDrafts(pageSize, pageIndex, successFunc, errorFunc) {
+    getDrafts(pageSize, pageIndex) {
         HttpUtils.get("/api/member/drafts", {
             pageSize: pageSize,
             pageIndex: pageIndex,
+            keyword: this.state.keyword,
         }, ((resp)=>{
             if (resp.documents == null) resp.documents = []
             if (pageIndex == 0) {
@@ -47,10 +49,15 @@ export default class DocEditor extends React.Component {
                 })
             }
             
-            if (successFunc != undefined) successFunc(pageIndex + 1 >= resp.pageTotal)
+            if (pageIndex + 1 >= resp.pageTotal) {
+                this.refs.LoadingBtn.button("finish")
+            } else {
+                this.refs.LoadingBtn.button("active")
+            }
+            this.setState({pageIndex: pageIndex})
         }).bind(this), ((resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
-            if (errorFunc != undefined) errorFunc()
+            this.refs.LoadingBtn.button("active")
         }))
     }
 
@@ -132,8 +139,13 @@ export default class DocEditor extends React.Component {
             <div className="clearfix" style={{height:"100%"}}>
                 <div className="col-md-3 col-xs-3 lowtea-docs-sidebar">
                     <div className="side-searchbar">
-                        <input className="form-control" placeholder="请输入关键词"/>
-                        <button className="btn btn-default"><span className="glyphicon glyphicon-search"></span></button>
+                        <input id="input-keyword" className="form-control" placeholder="请输入关键词"/>
+                        <button className="btn btn-default" onClick={(()=>{
+                            this.state.keyword = document.getElementById("input-keyword").value
+                            this.state.pageIndex = 0
+                            this.getDrafts(this.state.pageSize, this.state.pageIndex)
+                            this.setState({})
+                        }).bind(this)}><span className="glyphicon glyphicon-search"></span></button>
                     </div>
                     <ul className="docs-list">
                         <li className="docs-list-item btn-new-doc" onClick={this.newDocument.bind(this)}>
@@ -151,16 +163,7 @@ export default class DocEditor extends React.Component {
                     </ul>
                     <div style={{width:"100%"}}>
                         <LoadingBtn ref="LoadingBtn" onClick={(()=>{
-                            this.getDrafts(this.state.pageSize, this.state.pageIndex + 1, ((isEnd)=>{
-                                if (isEnd) {
-                                    this.refs.LoadingBtn.button("finish")
-                                } else {
-                                    this.refs.LoadingBtn.button("active")
-                                }
-                                this.setState({pageIndex: this.state.pageIndex+1})
-                            }).bind(this), ()=>{
-                                this.refs.LoadingBtn.button("active")
-                            }) 
+                            this.getDrafts(this.state.pageSize, this.state.pageIndex + 1) 
                         }).bind(this)}></LoadingBtn>
                     </div>
                 </div>

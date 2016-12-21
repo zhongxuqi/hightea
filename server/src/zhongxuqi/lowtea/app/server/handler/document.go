@@ -30,11 +30,10 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var params struct {
-			PageSize  int `json:"pageSize"`
-			PageIndex int `json:"pageIndex"`
-
-			Account     string `json:"account"`
-			LikeAccount string `json:"likeAccount"`
+			PageSize  int    `json:"pageSize"`
+			PageIndex int    `json:"pageIndex"`
+			Account   string `json:"account"`
+			Keyword   string `json:"keyword"`
 		}
 		params.PageSize, err = strconv.Atoi(r.Form.Get("pageSize"))
 		if err != nil {
@@ -46,6 +45,8 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "read param pageIndex error: "+err.Error(), 400)
 			return
 		}
+		params.Account = r.Form.Get("account")
+		params.Keyword = r.Form.Get("keyword")
 
 		var respBody struct {
 			model.RespBase
@@ -62,6 +63,11 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 		if params.Account != "" {
 			filter["account"] = params.Account
+		}
+		if params.Keyword != "" {
+			filter["title"] = &bson.M{
+				"$regex": params.Keyword,
+			}
 		}
 
 		var n int

@@ -26,8 +26,9 @@ func (p *MainHandler) ActionDrafts(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var params struct {
-			PageSize  int `json:"pageSize"`
-			PageIndex int `json:"pageIndex"`
+			PageSize  int    `json:"pageSize"`
+			PageIndex int    `json:"pageIndex"`
+			Keyword   string `json:"keyword"`
 		}
 		params.PageSize, err = strconv.Atoi(r.Form.Get("pageSize"))
 		if err != nil {
@@ -39,6 +40,7 @@ func (p *MainHandler) ActionDrafts(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "read param pageIndex error: "+err.Error(), 400)
 			return
 		}
+		params.Keyword = r.Form.Get("keyword")
 
 		var respBody struct {
 			model.RespBase
@@ -48,6 +50,11 @@ func (p *MainHandler) ActionDrafts(w http.ResponseWriter, r *http.Request) {
 		filter := bson.M{
 			"account": accountCookie.Value,
 			"status":  model.STATUS_DRAFT,
+		}
+		if params.Keyword != "" {
+			filter["title"] = &bson.M{
+				"$regex": params.Keyword,
+			}
 		}
 
 		var n int
