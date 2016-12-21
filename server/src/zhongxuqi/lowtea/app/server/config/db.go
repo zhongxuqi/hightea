@@ -2,6 +2,7 @@ package config
 
 import (
 	"zhongxuqi/lowtea/app/server/handler"
+	"zhongxuqi/lowtea/model"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -23,8 +24,22 @@ func InitDB(mainHander *handler.MainHandler) {
 	}
 
 	// init db
-	sess.DB(mainHander.Config.DBConfig.DBName).C(APPNAME).Upsert(
-		bson.M{"app": APPNAME}, bson.M{"$set": bson.M{"version": VERSION}})
+	mainHander.AppConfColl = sess.DB(mainHander.Config.DBConfig.DBName).C(APPNAME)
+	mainHander.AppConfColl.Upsert(bson.M{"app": APPNAME}, bson.M{"$set": bson.M{"version": VERSION}})
+
+	appConf := model.AppConfig{}
+	err = mainHander.AppConfColl.Find(&bson.M{"app": APPNAME}).One(&appConf)
+	if err != nil {
+		panic(err)
+	}
+
+	if appConf.FlagExpiredTime <= 0 {
+		mainHander.Config.FlagExpiredTime = FLAG_EXPIRED_TIME
+		err = mainHander.AppConfColl.Update(&bson.M{"app": APPNAME}, &bson.M{"$set": bson.M{"flagExpiredTime": FLAG_EXPIRED_TIME}})
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	mainHander.UserColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.UserColl)
 	mainHander.RegisterColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.RegisterColl)

@@ -39,7 +39,7 @@ func (p *MainHandler) ActionFlag(w http.ResponseWriter, r *http.Request) {
 		}
 		utils.ReadReq2Struct(r, &reqData)
 
-		_, err := p.FlagColl.RemoveAll(&bson.M{"createTime": bson.M{"$lt": time.Now().Unix() - 30*24*60*60}})
+		_, err := p.FlagColl.RemoveAll(&bson.M{"createTime": bson.M{"$lt": time.Now().Unix() - p.Config.FlagExpiredTime}})
 		if err != nil {
 			http.Error(w, "remove old flag error: "+err.Error(), 500)
 			return
@@ -104,7 +104,7 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 			AdminNum  int           `json:"adminNum"`
 		}
 		documentIds := make([]string, 0)
-		err := p.FlagColl.Find(&bson.M{"createTime": bson.M{"$gte": time.Now().Unix() - 30*24*60*60}}).Distinct("documentId", &documentIds)
+		err := p.FlagColl.Find(&bson.M{"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime}}).Distinct("documentId", &documentIds)
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return

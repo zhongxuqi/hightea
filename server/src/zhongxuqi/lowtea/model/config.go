@@ -5,13 +5,20 @@ const (
 	QINIU = "qiniu"
 )
 
+type AppConfig struct {
+	App             string `json:"app"`
+	Version         string `json:"version"`
+	FlagExpiredTime int64  `json:"flagExpiredTime"`
+}
+
 // Config env of the server
 type Config struct {
-	RootEmail    string    `json:"rootemail"`
-	RootPassword string    `json:"rootpassword"`
-	RootLanguage string    `json:"rootlanguage"`
-	DBConfig     DBConfig  `json:"dbConfig"`
-	OssConfig    OSSConfig `json:"ossConfig"`
+	RootEmail       string    `json:"rootemail"`
+	RootPassword    string    `json:"rootpassword"`
+	RootLanguage    string    `json:"rootlanguage"`
+	DBConfig        DBConfig  `json:"dbConfig"`
+	OssConfig       OSSConfig `json:"ossConfig"`
+	FlagExpiredTime int64     `json:"-"`
 }
 
 // DBConfig env of the db

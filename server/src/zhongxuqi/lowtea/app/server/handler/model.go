@@ -15,6 +15,7 @@ import (
 	"zhongxuqi/lowtea/config"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/oss"
+	"zhongxuqi/lowtea/utils"
 )
 
 var (
@@ -30,6 +31,7 @@ type MainHandler struct {
 	SessMapMutex *sync.Mutex
 	Config       model.Config
 	Oss          oss.OssIBase
+	AppConfColl  *mgo.Collection
 	UserColl     *mgo.Collection
 	RegisterColl *mgo.Collection
 	DocumentColl *mgo.Collection
@@ -164,4 +166,35 @@ func (p *MainHandler) ClearSession(w http.ResponseWriter) {
 		HttpOnly: true,
 	}
 	w.Header().Add("Set-Cookie", tokenCookie.String())
+}
+
+func (p *MainHandler) ActionFlagExpiredTime(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		var params struct {
+			FlagExpiredTime int64 `json:"flagExpiredTime"`
+		}
+		err := utils.ReadReq2Struct(r, &params)
+		if err != nil {
+			http.Error(w, "read request params error: "+err.Error(), 400)
+			return
+		}
+		if params.FlagExpiredTime <= 0 {
+			http.Error(w, "error: flag expired time setted to 0", 400)
+			return
+		}
+		err = p.AppConfColl.Update(&bson.M{"app": p.Config.DBConfig.DBName}, &bson.M{"flagExpiredTime": params.FlagExpiredTime})
+		if err != nil {
+			http.Error(w, "updatet flag expired time error: "+err.Error(), 500)
+			return
+		}
+		p.Config.FlagExpiredTime = params.FlagExpiredTime
+
+		respByte, _ := bson.Marshal(&model.RespBase{
+			Status:  200,
+			Message: "success",
+		})
+		w.Write(respByte)
+		return
+	}
+	http.Error(w, "Not Found", 404)
 }

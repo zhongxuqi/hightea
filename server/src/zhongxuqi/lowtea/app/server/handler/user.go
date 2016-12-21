@@ -229,6 +229,11 @@ func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "star remove error: "+err.Error(), 500)
 			return
 		}
+		_, err = p.FlagColl.RemoveAll(&bson.M{"account": accountCookie.Value})
+		if err != nil {
+			http.Error(w, "flag remove error: "+err.Error(), 500)
+			return
+		}
 		err = p.UserColl.Remove(filter)
 		if err != nil {
 			http.Error(w, "user remove error: "+err.Error(), 500)
