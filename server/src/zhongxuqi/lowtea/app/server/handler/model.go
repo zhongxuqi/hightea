@@ -9,6 +9,7 @@ import (
 
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"sync"
 	"time"
@@ -182,17 +183,35 @@ func (p *MainHandler) ActionFlagExpiredTime(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "error: flag expired time setted to 0", 400)
 			return
 		}
-		err = p.AppConfColl.Update(&bson.M{"app": p.Config.DBConfig.DBName}, &bson.M{"flagExpiredTime": params.FlagExpiredTime})
+		err = p.AppConfColl.Update(&bson.M{"app": p.Config.DBConfig.DBName}, &bson.M{"$set": bson.M{"flagExpiredTime": params.FlagExpiredTime}})
 		if err != nil {
-			http.Error(w, "updatet flag expired time error: "+err.Error(), 500)
+			http.Error(w, "update flag expired time error: "+err.Error(), 500)
 			return
 		}
 		p.Config.FlagExpiredTime = params.FlagExpiredTime
 
-		respByte, _ := bson.Marshal(&model.RespBase{
+		respByte, _ := json.Marshal(&model.RespBase{
 			Status:  200,
 			Message: "success",
 		})
+		w.Write(respByte)
+		return
+	} else if r.Method == http.MethodGet {
+		var appConf model.AppConfig
+		err := p.AppConfColl.Find(&bson.M{"app": p.Config.DBConfig.DBName}).One(&appConf)
+		if err != nil {
+			http.Error(w, "find flag expired time error: "+err.Error(), 500)
+			return
+		}
+
+		var respBody struct {
+			model.RespBase
+			FlagExpiredTime int64 `json:"flagExpiredTime"`
+		}
+		respBody.FlagExpiredTime = appConf.FlagExpiredTime
+		respBody.Status = 200
+		respBody.Message = "success"
+		respByte, _ := json.Marshal(&respBody)
 		w.Write(respByte)
 		return
 	}

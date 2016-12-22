@@ -6,9 +6,9 @@ const (
 )
 
 type AppConfig struct {
-	App             string `json:"app"`
-	Version         string `json:"version"`
-	FlagExpiredTime int64  `json:"flagExpiredTime"`
+	App             string `json:"app" bson:"app"`
+	Version         string `json:"version" bson:"version"`
+	FlagExpiredTime int64  `json:"flagExpiredTime" bson:"flagExpiredTime"`
 }
 
 // Config env of the server

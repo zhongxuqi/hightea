@@ -18,9 +18,11 @@ export default class UserSettings extends React.Component {
                 status: "",
             },
             headStatus:"choose",
+            flagExpiredTime: 24 * 60 * 60,
         }
         this.state.copy = this.copyUser(this.state.user)
         this.updateUserInfo = this.props.updateUserInfo
+        if (this.state.user.role=="root") this.getFlagExpiredTime()
     }
 
     componentWillReceiveProps(props) {
@@ -132,6 +134,24 @@ export default class UserSettings extends React.Component {
         })
     }
 
+    getFlagExpiredTime() {
+        HttpUtils.get("/api/root/flag_expired_time",{},((resp)=>{
+            this.setState({flagExpiredTime:resp.flagExpiredTime})
+        }).bind(this),(resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
+    }
+    
+    setFlagExpiredTime(flagExpiredTime) {
+        HttpUtils.post("/api/root/flag_expired_time",{
+            flagExpiredTime: flagExpiredTime,
+        },((resp)=>{
+            this.setState({flagExpiredTime:flagExpiredTime})
+        }).bind(this),(resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
+    }
+
     render() {
         return (
             <div className="lowtea-user-settings clearfix">
@@ -145,8 +165,8 @@ export default class UserSettings extends React.Component {
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">头像</label>
-                        <div className="col-sm-10">
+                        <label className="col-sm-3 control-label">头像</label>
+                        <div className="col-sm-9">
                             <img src={{true:"/img/head.png",false:this.state.user.headimg}[this.state.user.headimg==""]} style={{width:"100px",height:"100px", display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}}/>
                             <a className="head-img thumbnail" onClick={this.modalHeadImg.bind(this)} style={{display:{false:"none", true:"inline-block"}[this.state.userinfoEdit]}}>
                                 <img src={{true:"/img/head.png",false:this.state.copy.headimg}[this.state.copy.headimg==""]} style={{width:"100px",height:"100px"}}/>
@@ -154,29 +174,29 @@ export default class UserSettings extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">昵称</label>
-                        <div className="col-sm-10">
+                        <label className="col-sm-3 control-label">昵称</label>
+                        <div className="col-sm-9">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.nickname} onChange={this.onChangeUserInfo.bind(this, "nickname")}/>
                             <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.user.nickname}</p>
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">Email</label>
-                        <div className="col-sm-10">
+                        <label className="col-sm-3 control-label">Email</label>
+                        <div className="col-sm-9">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.email} onChange={this.onChangeUserInfo.bind(this, "email")}/>
                             <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.user.email}</p>
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">个人签名</label>
-                        <div className="col-sm-10">
+                        <label className="col-sm-3 control-label">个人签名</label>
+                        <div className="col-sm-9">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.userintro} onChange={this.onChangeUserInfo.bind(this, "userintro")}/>
                             <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.user.userintro}</p>
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">性别</label>
-                        <div className="col-sm-10" style={{height:"27px"}}>
+                        <label className="col-sm-3 control-label">性别</label>
+                        <div className="col-sm-9" style={{height:"27px"}}>
                             <div className="radio" style={{padding:"0px", display:{true:"block", false:"none"}[this.state.userinfoEdit]}}>
                                 <label className="radio-inline">
                                     <input type="radio" name="genderRadio" id="genderRadio" value="unknow" checked={this.state.copy.gender==""} onChange={this.onChangeUserInfo.bind(this, "gender")}/> 未知
@@ -199,11 +219,43 @@ export default class UserSettings extends React.Component {
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-2 control-label">Language</label>
-                        <div className="col-sm-10">
+                        <label className="col-sm-3 control-label">Language</label>
+                        <div className="col-sm-9">
                             <select className="form-control" value={this.state.copy.language} onChange={this.onLanguageClick.bind(this)}>
                                 <option value="">English</option>
                                 <option value="cn">中文</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                
+                <form className="form-horizontal lowtea-user-info" role="form">
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Flag有效时间</label>
+                        <div className="col-sm-9">
+                            <select className="form-control" value={this.state.flagExpiredTime} onChange={((event)=>{
+                                this.setFlagExpiredTime(parseInt(event.target.value))
+                            }).bind(this)}>
+                                {
+                                    [{
+                                        value: 24 * 60 * 60,
+                                        text: "1天",
+                                    }, {
+                                        value: 3 * 24 * 60 * 60,
+                                        text: "3天",
+                                    }, {
+                                        value: 1 * 24 * 60 * 60,
+                                        text: "1周",
+                                    }, {
+                                        value: 14 * 24 * 60 * 60,
+                                        text: "2周",
+                                    }, {
+                                        value: 30 * 24 * 60 * 60,
+                                        text: "1个月",
+                                    }].map((item, i)=>{
+                                        return <option key={i} value={item.value}>{item.text}</option>
+                                    })
+                                }
                             </select>
                         </div>
                     </div>

@@ -34,6 +34,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	apiHandler := http.NewServeMux()
 	memberHandler := http.NewServeMux()
 	adminHandler := http.NewServeMux()
+	rootHandler := http.NewServeMux()
 
 	// setup /api/ handler
 	mainHandler.Mux.HandleFunc("/api/", func(w http.ResponseWriter, r *http.Request) {
@@ -83,6 +84,20 @@ func InitRouter(mainHandler *handler.MainHandler) {
 		}
 
 		adminHandler.ServeHTTP(w, r)
+	})
+
+	// setup /api/root/ handler
+	rootHandler.HandleFunc("/api/root/flag_expired_time", mainHandler.ActionFlagExpiredTime)
+	apiHandler.HandleFunc("/api/root/", func(w http.ResponseWriter, r *http.Request) {
+
+		// check permission
+		err := mainHandler.CheckRoot(r)
+		if err != nil {
+			http.Error(w, "check permission error: "+err.Error(), 400)
+			return
+		}
+
+		rootHandler.ServeHTTP(w, r)
 	})
 
 	// init web file handler
