@@ -52,7 +52,12 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 		respBody.Documents = make([]*model.Document, 0, len(stars))
 		for _, star := range stars {
 			var document model.Document
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)}).One(&document)
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)}).Select(bson.M{
+				"_id":        1,
+				"title":      1,
+				"modifyTime": 1,
+				"status":     1,
+			}).One(&document)
 
 			n, _ = p.StarColl.Find(&bson.M{"documentId": document.Id.Hex()}).Count()
 			document.StarNum = n
@@ -173,7 +178,12 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
 			stardoc := model.Document{}
-			p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&stardoc)
+			p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
+				"_id":        1,
+				"title":      1,
+				"modifyTime": 1,
+				"status":     1,
+			}).One(&stardoc)
 			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
 			respBody.Documents = append(respBody.Documents, &stardoc)
 		}
@@ -221,7 +231,12 @@ func (p *MainHandler) ActionSelfTopStarDocuments(w http.ResponseWriter, r *http.
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
 			stardoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": accountCookie.Value}).One(&stardoc)
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": accountCookie.Value}).Select(bson.M{
+				"_id":        1,
+				"title":      1,
+				"modifyTime": 1,
+				"status":     1,
+			}).One(&stardoc)
 			if err != nil {
 				continue
 			}

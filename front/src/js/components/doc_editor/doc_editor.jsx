@@ -61,6 +61,16 @@ export default class DocEditor extends React.Component {
         }))
     }
 
+    publishDoc(document) {
+        if (document.id == this.state.document.id) {
+            this.props.onConfirm("Warning","save current changes?",(()=>{
+                let metadoc = this.state.document
+                this.saveDoc(metadoc)
+            }).bind(this))
+        } else {
+            this.saveDoc(document)
+        }
+    }
 
     saveDoc(document, callback) {
         let action
@@ -69,21 +79,32 @@ export default class DocEditor extends React.Component {
         } else {
             action = "edit"
         }
-        
+
         HttpUtils.post("/api/member/document", {
             action: action,
             document: document,
         }, ((resp)=>{
-            if (action == "add") this.setState({
-                document: {
-                    id: resp.id,
-                    title: document.title,
-                    content: document.content,
-                    status: document.status,
-                },
-            })
+            if (action == "add") {
+                this.setState({
+                    document: {
+                        id: resp.id,
+                        title: document.title,
+                        content: document.content,
+                        status: document.status,
+                    },
+                })
+            } else if (action == "edit" && document.status != "status_draft" && document.id == this.state.document.id) {
+                this.setState({
+                    document: {
+                        title:"",
+                        content:"",
+                        status:"status_draft",
+                    }
+                })
+                this.refs.editor.setValue("")
+            }
             if (callback != undefined) callback()
-            this.getDrafts(this.state.pageSize, this.state.pageIndex)
+            this.getDrafts(this.state.pageSize, 0)
         }).bind(this), (resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
@@ -152,13 +173,13 @@ export default class DocEditor extends React.Component {
                             <a><span className="glyphicon glyphicon-plus"></span>添加新文章</a>
                         </li>
                         {
-                            this.state.drafts.map((document)=>{
+                            this.state.drafts.map(((document)=>{
                                 return (
                                     <li className="docs-list-item" key={document.id}>
-                                        <DocSideShortcut document={document} onSaveDoc={this.saveDoc.bind(this)} onClick={this.openDocument.bind(this)}></DocSideShortcut>
+                                        <DocSideShortcut document={document} onPublishDoc={this.publishDoc.bind(this)} onClick={this.openDocument.bind(this)}></DocSideShortcut>
                                     </li>
                                 )
-                            })
+                            }).bind(this))
                         }
                     </ul>
                     <div style={{width:"100%"}}>

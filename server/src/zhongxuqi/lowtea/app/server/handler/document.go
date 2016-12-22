@@ -83,7 +83,12 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			respBody.PageTotal = 0
 		}
 
-		err = p.DocumentColl.Find(&filter).Sort("-createTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
+		err = p.DocumentColl.Find(&filter).Select(bson.M{
+			"_id":        1,
+			"title":      1,
+			"modifyTime": 1,
+			"status":     1,
+		}).Sort("-createTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
 		if err != nil {
 			http.Error(w, "find documents error: "+err.Error(), 500)
 			return
@@ -254,7 +259,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 		n, _ = p.FlagColl.Find(&bson.M{
 			"account":    accountCookie.Value,
 			"documentId": documentId,
-			"createTime": bson.M{"$gte": time.Now().Unix() - 30*24*60*60},
+			"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime},
 		}).Count()
 		if n > 0 {
 			respBody.Flag = true
@@ -266,7 +271,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 		respBody.Document.StarNum = n
 		n, _ = p.FlagColl.Find(&bson.M{
 			"documentId": documentId,
-			"createTime": bson.M{"$gte": time.Now().Unix() - 30*24*60*60},
+			"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime},
 		}).Count()
 		respBody.Document.FlagNum = n
 

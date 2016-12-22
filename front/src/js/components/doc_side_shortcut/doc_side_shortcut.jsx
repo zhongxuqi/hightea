@@ -19,7 +19,7 @@ export default class DocSideShortcut extends React.Component {
 
                     <ul className="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
                         <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
-                            this.props.onSaveDoc({
+                            this.props.onPublishDoc({
                                 id: this.props.document.id,
                                 title: this.props.document.title,
                                 content: this.props.document.content,
@@ -27,7 +27,7 @@ export default class DocSideShortcut extends React.Component {
                             })
                         }).bind(this)}>发布(仅自己可见)</a></li>
                         <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
-                            this.props.onSaveDoc({
+                            this.props.onPublishDoc({
                                 id: this.props.document.id,
                                 title: this.props.document.title,
                                 content: this.props.document.content,
@@ -35,7 +35,7 @@ export default class DocSideShortcut extends React.Component {
                             })
                         }).bind(this)}>发布(仅成员可见)</a></li>
                         <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
-                            this.props.onSaveDoc({
+                            this.props.onPublishDoc({
                                 id: this.props.document.id,
                                 title: this.props.document.title,
                                 content: this.props.document.content,
