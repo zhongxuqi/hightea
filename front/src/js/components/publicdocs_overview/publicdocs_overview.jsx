@@ -26,7 +26,7 @@ export default class PublicDocsOverView extends React.Component {
         }
 
         this.getDocuments(this.state.pageSize, this.state.pageIndex)
-
+        
         HttpUtils.get("/openapi/public_top_star_documents",{},((resp)=>{
             let topStarDocuments = []
             for (let i=0;i<resp.documents.length;i++) {

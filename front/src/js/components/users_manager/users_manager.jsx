@@ -13,11 +13,18 @@ export default class UsersManager extends React.Component {
             registers: [],
             confirmModal: {},
             userInfo: props.userInfo,
+            rootEmail: "",
         }
         this.updateUsersList()
         if (this.props.userInfo.role == "root" || this.props.userInfo.role == "admin") {
             this.updateRegistersList()
         }
+        
+        HttpUtils.get("/openapi/rootinfo",{},((resp)=>{
+            this.setState({rootEmail:resp.rootEmail})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
     }
 
     copyUser(user) {
@@ -38,29 +45,16 @@ export default class UsersManager extends React.Component {
     }
 
     saveUserEdit(userObj) {
-        $("#confirmModal").on("show.bs.modal", () => {
-            $("#confirmModal #confirmAffirmBtn").on("click", () => {
-                HttpUtils.post("/api/admin/user/"+userObj.account, {
-                    role: userObj.copy.role,
-                }, ((data) => {
-                    this.updateUsersList()
-                }).bind(this), ((data) => {
-                    HttpUtils.alert("["+data.status+"] "+data.responseText)
-                }))
-                $("#confirmModal #confirmAffirmBtn").off("click")
-                $("#confirmModal").modal("hide")
-            })
-        })
-        $("#confirmModal").on("hide", () => {
-            $("#confirmModal #confirmAffirmBtn").off("click")
-        })
-        $("#confirmModal").modal("show")
-        this.setState({
-            confirmModal: {
-                title: "Warning",
-                message: "save the change of "+userObj.account,
-            }
-        })
+        this.props.onConfirm(Language.textMap("Warning"),
+                Language.textMap("Whether to ")+Language.textMap("save")+" "+userObj.account+" ?", (()=>{
+            HttpUtils.post("/api/admin/user/"+userObj.account, {
+                role: userObj.copy.role,
+            }, ((data) => {
+                this.updateUsersList()
+            }).bind(this), ((data) => {
+                HttpUtils.alert("["+data.status+"] "+data.responseText)
+            }))
+        }).bind(this))
     }
 
     updateUsersList() {
@@ -98,27 +92,14 @@ export default class UsersManager extends React.Component {
             this.setState({currUser: userItem})
             $("#userInfoModal").modal("show")
         } else {
-            $("#confirmModal").on("show.bs.modal", () => {
-                $("#confirmModal #confirmAffirmBtn").on("click", () => {
-                    HttpUtils.delete("/api/admin/user/"+userItem.account, {}, ((data) => {
-                        this.updateUsersList()
-                    }).bind(this), ((data) => {
-                        HttpUtils.alert("["+data.status+"] "+data.responseText)
-                    }))
-                    $("#confirmModal #confirmAffirmBtn").off("click")
-                    $("#confirmModal").modal("hide")
-                })
-            })
-            $("#confirmModal").on("hide", () => {
-                $("#confirmModal #confirmAffirmBtn").off("click")
-            })
-            $("#confirmModal").modal("show")
-            this.setState({
-                confirmModal: {
-                    title: "Danger",
-                    message: action+" the user of "+userItem.account+" ?",
-                }
-            })
+            this.props.onConfirm(Language.textMap("Danger"), 
+                    Language.textMap("Whether to ")+Language.textMap(action)+" "+userItem.account+" ?", (()=>{
+                HttpUtils.delete("/api/admin/user/"+userItem.account, {}, ((data) => {
+                    this.updateUsersList()
+                }).bind(this), ((data) => {
+                    HttpUtils.alert("["+data.status+"] "+data.responseText)
+                }))
+            }).bind(this))
         }
     }
 
@@ -127,7 +108,8 @@ export default class UsersManager extends React.Component {
             this.setState({currRegister: registerItem})
             $("#registerInfoModal").modal("show")
         } else {
-            this.props.onConfirm("Warning", action+" the register of "+registerItem.email+" ?", (()=>{
+            this.props.onConfirm(Language.textMap("Warning"), 
+                    Language.textMap("Whether to ")+Language.textMap(action)+" "+registerItem.email+" ?", (()=>{
                 HttpUtils.post("/api/admin/register", {
                     action: action,
                     account: registerItem.account,
@@ -146,7 +128,14 @@ export default class UsersManager extends React.Component {
             <div className="users_manager clearfix">
                 <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
-                        <div className="panel-heading">{Language.textMap("Members")}</div>
+                        <div className="panel-heading lowtea-table" style={{width:"100%"}}>
+                            <div className="lowtea-table-cell" style={{width:"99%"}}>
+                                {Language.textMap("Members")}
+                            </div>
+                            <div className="lowtea-table-cell" style={{width:"1%"}}>
+                                {this.state.rootEmail}
+                            </div>
+                        </div>
 
                         <table className="table table-bordered">
                             <thead>
@@ -163,16 +152,18 @@ export default class UsersManager extends React.Component {
                                     this.state.users.map((user) => {
                                         return (
                                             <tr key={user.account}>
-                                                <td className="head-img"><img src={user.headimg} style={{width:"30px",height:"30px"}}/></td>
+                                                <td className="head-img"><img src={{true:"/img/head.png",false:user.headimg}[user.headimg==""]} style={{width:"30px",height:"30px"}}/></td>
                                                 <td>{user.nickname}</td>
-                                                <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.role}</td>
-                                                <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.email}</td>
+                                                <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>
+                                                    {Language.textMap(user.role)}
+                                                </td>
                                                 <td style={{display:{true: "table-cell", false:"none"}[user.isEdit]}}>
                                                     <select className="form-control" style={{height:"auto"}} value={user.copy.role} onChange={(event)=>{user.copy.role = event.target.value}}>
                                                         <option value="member">{Language.textMap("Member")}</option>
                                                         <option value="admin">{Language.textMap("Admin")}</option>
                                                     </select>
                                                 </td>
+                                                <td>{user.email}</td>
                                                 <td>
                                                     <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>{Language.textMap("Detail")}</button>
                                                     <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>{Language.textMap("Edit")}</button>

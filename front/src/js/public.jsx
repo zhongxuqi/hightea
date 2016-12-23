@@ -20,7 +20,14 @@ export default class PublicMain extends React.Component {
                 title: "",
                 message: "",
             },
+            rootEmail: "",
         }
+        
+        HttpUtils.get("/openapi/rootinfo",{},((resp)=>{
+            this.setState({rootEmail:resp.rootEmail})
+        }).bind(this), (resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
         
         HttpUtils.get('/api/member/self', {}, ((data) => {
             window.location = "/user.html"
@@ -61,7 +68,7 @@ export default class PublicMain extends React.Component {
                 <nav className="navbar navbar-default topbar" role="navigation">
                     <div className="container-fluid">
                         <div className="navbar-header">
-                            <img src="img/logo.png" style={{maxHeight:"50px"}}/>
+                            <a className="navbar-brand">{this.state.rootEmail}</a>
                         </div>
 
                         <div className="collapse navbar-collapse">

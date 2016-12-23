@@ -7,6 +7,7 @@ import LoadingBtn from '../loading_btn/loading_btn.jsx'
 import DocListTitle from '../doc_list_title/doc_list_title.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './personaldocs_list.less'
 
@@ -26,7 +27,9 @@ export default class PersonalDocsList extends React.Component {
             },
             topStarDocuments: [],
         }
-        this.getDocuments(this.state.pageSize, this.state.pageIndex)
+        if (this.props.userInfo.account != undefined && this.props.userInfo.account != "") {
+            this.getDocuments(this.state.pageSize, 0)
+        }
         
         HttpUtils.get("/api/member/self_top_star_documents",{},((resp)=>{
             let topStarDocuments = []
@@ -39,6 +42,13 @@ export default class PersonalDocsList extends React.Component {
         }).bind(this), (resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
+    }
+
+    componentWillReceiveProps(props) {
+        this.props = props
+        if (this.props.userInfo.account != undefined && this.props.userInfo.account != "") {
+            this.getDocuments(this.state.pageSize, 0)
+        }
     }
     
     getDocuments(pageSize, pageIndex) {
@@ -93,7 +103,7 @@ export default class PersonalDocsList extends React.Component {
     }
 
     onDeleteDoc(id) {
-        this.props.onConfirm("Danger", "delete the doc?", (()=>{
+        this.props.onConfirm(Language.textMap("Danger"), Language.textMap("Whether to ")+Language.textMap("delete")+" "+Language.textMap("the document")+" ?", (()=>{
             HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
                 this.getDocuments(this.state.pageSize, 0)
             }).bind(this), ((data) => {

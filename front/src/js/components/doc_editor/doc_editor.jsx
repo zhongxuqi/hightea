@@ -114,7 +114,7 @@ export default class DocEditor extends React.Component {
     }
     
     onDeleteDoc(id) {
-        this.props.onConfirm("Danger", "delete the doc?", (()=>{
+        this.props.onConfirm(Language.textMap("Danger"), Language.textMap("Whether to ")+Language.textMap("delete")+" "+Language.textMap("the document")+" ?", (()=>{
             HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
                 this.getDrafts(this.state.pageSize, 0)
             }).bind(this), ((data) => {
@@ -124,13 +124,25 @@ export default class DocEditor extends React.Component {
     }
 
     newDocument() {
-        this.props.onConfirm("Alert", "save the doc?", (()=>{
-            if (this.state.document.title.length == 0) {
-                HttpUtils.alert("title is empty")
-                return
-            }
-            this.refs.editor.setValue("")
-            this.saveDoc(this.state.document, (()=>{
+        if (this.state.ischanged) {
+            this.props.onConfirm(Language.textMap("Alert"), Language.textMap("Whether to ")+Language.textMap("save")+" "+Language.textMap("the document")+" ?", (()=>{
+                if (this.state.document.title.length == 0) {
+                    HttpUtils.alert("title is empty")
+                    return
+                }
+                this.refs.editor.setValue("")
+                this.saveDoc(this.state.document, (()=>{
+                    this.setState({
+                        document: {
+                            title: "",
+                            content: "",
+                            status: "status_draft",
+                        },
+                        ischanged: false,
+                    })
+                }).bind(this))
+            }).bind(this), (()=>{
+                this.refs.editor.setValue("")
                 this.setState({
                     document: {
                         title: "",
@@ -140,7 +152,7 @@ export default class DocEditor extends React.Component {
                     ischanged: false,
                 })
             }).bind(this))
-        }).bind(this), (()=>{
+        } else {
             this.refs.editor.setValue("")
             this.setState({
                 document: {
@@ -150,12 +162,12 @@ export default class DocEditor extends React.Component {
                 },
                 ischanged: false,
             })
-        }).bind(this))
+        }
     }
 
     openDocument(document) {
         if (this.state.ischanged) {
-            this.props.onConfirm("Alert", "save curr document ?", (()=>{
+            this.props.onConfirm(Language.textMap("Alert"), Language.textMap("Whether to ")+Language.textMap("save")+" "+Language.textMap("the document")+" ?", (()=>{
                 this.saveDoc(this.state.document, (()=>{
                     this.refs.editor.setValue(document.content)
                     this.setState({
@@ -197,6 +209,7 @@ export default class DocEditor extends React.Component {
         return (
             <div className="clearfix" style={{height:"100%"}}>
                 <div className="col-md-3 col-xs-3 lowtea-docs-sidebar">
+                    <h4>{Language.textMap("Drafts Box")}</h4>
                     <div className="side-searchbar">
                         <input id="input-keyword" className="form-control" placeholder={Language.textMap("Please input keyword")}/>
                         <button className="btn btn-default" onClick={(()=>{

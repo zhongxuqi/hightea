@@ -27,6 +27,7 @@ export default class Main extends React.Component {
                 title: "",
                 message: "",
             },
+            isShowNoBtn: false,
         }
         this.updateUserInfo()
     }
@@ -44,7 +45,12 @@ export default class Main extends React.Component {
         }).bind(this))
     }
 
-    onConfirm(title, message, callback, cancelCallback) {
+    onConfirm(title, message, callback, negativeCallback) {
+        if (negativeCallback != undefined) {
+            this.setState({isShowNoBtn: true})
+        } else {
+            this.setState({isShowNoBtn: false})
+        }
         $("#confirmModal").off("show.bs.modal")
         $("#confirmModal").off("hide.bs.modal")
         $("#confirmModal").on("show.bs.modal", () => {
@@ -55,7 +61,7 @@ export default class Main extends React.Component {
             })
             
             $("#confirmModal #confirmNoBtn").on("click", () => {
-                if (cancelCallback != undefined) cancelCallback()
+                if (negativeCallback != undefined) negativeCallback()
                 $("#confirmModal #confirmNoBtn").off("click")
                 $("#confirmModal").modal("hide")
             })
@@ -102,7 +108,7 @@ export default class Main extends React.Component {
                             </div>
                             <div className="modal-footer">
                                 <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">{Language.textMap("Cancel")}</button>
-                                <button id="confirmNoBtn" type="button" className="btn btn-default" data-dismiss="modal" style={{color:"red"}}>{Language.textMap("No")}</button>
+                                <button id="confirmNoBtn" type="button" className="btn btn-default" data-dismiss="modal" style={{color:"red", display:{true:"inline-block", false:"none"}[this.state.isShowNoBtn]}}>{Language.textMap("No")}</button>
                                 <button id="confirmAffirmBtn" type="button" className="btn btn-primary">{Language.textMap("Yes")}</button>
                             </div>
                         </div>
