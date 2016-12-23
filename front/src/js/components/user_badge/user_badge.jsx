@@ -1,5 +1,7 @@
 import React from 'react'
 
+import Language from '../../language/language.jsx'
+
 import './user_badge.less'
 
 export default class UserBadge extends React.Component {
@@ -16,7 +18,9 @@ export default class UserBadge extends React.Component {
         return (
             <div>
                 <p className="lowtea-menu-username"><span className={"nickname-"+this.state.role}>{this.state.nickname}</span></p>
-                <p className="lowtea-menu-userbadge"><span className={["label label-info", "role-"+this.state.role].join(" ")}>{this.state.role}</span></p>
+                <p className="lowtea-menu-userbadge"><span className={["label label-info", "role-"+this.state.role].join(" ")}>
+                    {Language.textMap(this.state.role)}
+                </span></p>
             </div>
         )
     }

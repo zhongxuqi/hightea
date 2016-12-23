@@ -5,6 +5,7 @@ import MarkdownEditor from '../markdown_editor/markdown_editor.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './doc_editor.less'
 
@@ -21,6 +22,7 @@ export default class DocEditor extends React.Component {
                 content: "",
                 status: "status_draft",
             },
+            ischanged: false,
         }
 
         this.getDrafts(this.state.pageSize, this.state.pageIndex)
@@ -84,6 +86,7 @@ export default class DocEditor extends React.Component {
             action: action,
             document: document,
         }, ((resp)=>{
+            this.state.ischanged = false
             if (action == "add") {
                 this.setState({
                     document: {
@@ -94,14 +97,14 @@ export default class DocEditor extends React.Component {
                     },
                 })
             } else if (action == "edit" && document.status != "status_draft" && document.id == this.state.document.id) {
+                this.refs.editor.setValue("")
                 this.setState({
                     document: {
                         title:"",
                         content:"",
                         status:"status_draft",
-                    }
+                    },
                 })
-                this.refs.editor.setValue("")
             }
             if (callback != undefined) callback()
             this.getDrafts(this.state.pageSize, 0)
@@ -109,14 +112,24 @@ export default class DocEditor extends React.Component {
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
     }
+    
+    onDeleteDoc(id) {
+        this.props.onConfirm("Danger", "delete the doc?", (()=>{
+            HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
+                this.getDrafts(this.state.pageSize, 0)
+            }).bind(this), ((data) => {
+                HttpUtils.alert("["+data.status+"] "+data.responseText)
+            }))
+        }).bind(this))
+    }
 
     newDocument() {
         this.props.onConfirm("Alert", "save the doc?", (()=>{
-            console.log(this.state.document)
             if (this.state.document.title.length == 0) {
                 HttpUtils.alert("title is empty")
                 return
             }
+            this.refs.editor.setValue("")
             this.saveDoc(this.state.document, (()=>{
                 this.setState({
                     document: {
@@ -124,35 +137,60 @@ export default class DocEditor extends React.Component {
                         content: "",
                         status: "status_draft",
                     },
+                    ischanged: false,
                 })
             }).bind(this))
-            this.refs.editor.setValue("")
         }).bind(this), (()=>{
+            this.refs.editor.setValue("")
             this.setState({
                 document: {
                     title: "",
                     content: "",
                     status: "status_draft",
                 },
+                ischanged: false,
             })
-            this.refs.editor.setValue("")
         }).bind(this))
     }
 
-    openDocument(id) {
-        HttpUtils.get("/api/member/document/"+id,{},((resp)=>{
-            this.setState({
-                document: {
-                    id: resp.document.id,
-                    title: resp.document.title,
-                    content: resp.document.content,
-                    status: resp.document.status,
-                },
-            })
-            this.refs.editor.setValue(resp.document.content)
-        }).bind(this),((resp)=>{
-            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
-        }))
+    openDocument(document) {
+        if (this.state.ischanged) {
+            this.props.onConfirm("Alert", "save curr document ?", (()=>{
+                this.saveDoc(this.state.document, (()=>{
+                    this.refs.editor.setValue(document.content)
+                    this.setState({
+                        document: {
+                            id: document.id,
+                            title: document.title,
+                            content: document.content,
+                            status: document.status,
+                        },
+                        ischanged: false,
+                    })
+                }).bind(this))
+            }).bind(this), (()=>{
+                this.refs.editor.setValue(document.content)
+                this.setState({
+                    document: {
+                        id: document.id,
+                        title: document.title,
+                        content: document.content,
+                        status: document.status,
+                    },
+                    ischanged: false,
+                })
+            }).bind(this))
+        } else {
+            this.refs.editor.setValue(document.content)
+            this.state.document = {
+                id: document.id,
+                title: document.title,
+                content: document.content,
+                status: document.status,
+            }
+            this.state.ischanged = false
+            this.setState({})
+        }
     }
 
     render() {
@@ -160,7 +198,7 @@ export default class DocEditor extends React.Component {
             <div className="clearfix" style={{height:"100%"}}>
                 <div className="col-md-3 col-xs-3 lowtea-docs-sidebar">
                     <div className="side-searchbar">
-                        <input id="input-keyword" className="form-control" placeholder="请输入关键词"/>
+                        <input id="input-keyword" className="form-control" placeholder={Language.textMap("Please input keyword")}/>
                         <button className="btn btn-default" onClick={(()=>{
                             this.state.keyword = document.getElementById("input-keyword").value
                             this.state.pageIndex = 0
@@ -170,13 +208,13 @@ export default class DocEditor extends React.Component {
                     </div>
                     <ul className="docs-list">
                         <li className="docs-list-item btn-new-doc" onClick={this.newDocument.bind(this)}>
-                            <a><span className="glyphicon glyphicon-plus"></span>添加新文章</a>
+                            <a><span className="glyphicon glyphicon-plus"></span>{Language.textMap("Add new document")}</a>
                         </li>
                         {
                             this.state.drafts.map(((document)=>{
                                 return (
                                     <li className="docs-list-item" key={document.id}>
-                                        <DocSideShortcut document={document} onPublishDoc={this.publishDoc.bind(this)} onClick={this.openDocument.bind(this)}></DocSideShortcut>
+                                        <DocSideShortcut document={document} onPublishDoc={this.publishDoc.bind(this)} onClick={this.openDocument.bind(this)} onDeleteDoc={this.onDeleteDoc.bind(this)}></DocSideShortcut>
                                     </li>
                                 )
                             }).bind(this))
@@ -192,7 +230,7 @@ export default class DocEditor extends React.Component {
                 <div className="col-md-9 col-xs-9 lowtea-doc-editor">
                     <div className="doc-title clearfix">
                         <div className="table-cell" style={{width:"99%"}}>
-                            <input className="doc-title-input" placeholder="标题" value={this.state.document.title} onChange={
+                            <input className="doc-title-input" placeholder={Language.textMap("Title")} value={this.state.document.title} onChange={
                                 ((event)=>{
                                     this.setState({
                                         document:{
@@ -201,24 +239,20 @@ export default class DocEditor extends React.Component {
                                             content:this.state.document.content,
                                             status:this.state.document.status,
                                         },
+                                        ischanged: true,
                                     })
                                 }
                             ).bind(this)}/>
                         </div>
                         <div className="table-cell" style={{width:"1%"}}>
-                            <button type="button" className="btn btn-default" onClick={(()=>{this.saveDoc(this.state.document)}).bind(this)}><span className="glyphicon glyphicon-floppy-disk" style={{marginRight:"5px"}}></span>保存</button>
+                            <button type="button" className="btn btn-default" disabled={{false:"disabled", true:""}[this.state.ischanged]} onClick={(()=>{this.saveDoc(this.state.document)}).bind(this)}><span className="glyphicon glyphicon-floppy-disk" style={{marginRight:"5px"}}></span>{Language.textMap("Save")}</button>
                         </div>
                     </div>
 
                     <MarkdownEditor ref="editor" onChange={((value)=>{
-                        this.setState({
-                            document: {
-                                id: this.state.document.id,
-                                title: this.state.document.title,
-                                content: value,
-                                status: this.state.document.status,
-                            },
-                        })
+                        this.state.document.content = value
+                        this.state.ischanged = true
+                        this.setState({})
                     }).bind(this)}></MarkdownEditor>
                 </div>
             </div>

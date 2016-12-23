@@ -1,12 +1,14 @@
 import React from 'react'
 
+import Language from '../../language/language.jsx'
+
 import './topflag_list.less';
 
 export default class TopFlagList extends React.Component {
     render() {
         return (
             <div className="topflag-list">
-                <h5>{this.props.title}:</h5>
+                <h5>{Language.textMap("Flag documents top list")}:</h5>
                 <div className="list-group">
                     {
                         this.props.documents.map((document)=>{

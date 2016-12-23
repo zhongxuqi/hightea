@@ -5,8 +5,10 @@ import DocsList from '../docs_list/docs_list.jsx'
 import TopFlagList from '../topflag_list/topflag_list.jsx'
 import TopStarList from '../topstar_list/topstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
+import DocListTitle from '../doc_list_title/doc_list_title.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './docs_overview.less'
 
@@ -93,7 +95,7 @@ export default class DocsOverView extends React.Component {
                 </div>
                 
                 <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
-                    <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+                    <DocListTitle docTotal={this.state.docTotal}></DocListTitle>
 
                     <DocsList documents={this.state.documents}></DocsList>
 
@@ -105,8 +107,8 @@ export default class DocsOverView extends React.Component {
                 </div>
             </div>
             <div className="col-md-3" style={{margin:"30px 0px"}}>
-                <TopFlagList title="标记最多的文章排行" documents={this.state.topFlagDocuments}></TopFlagList>
-                <TopStarList title="Star最多的文章排行" documents={this.state.topStarDocuments}></TopStarList>
+                <TopFlagList documents={this.state.topFlagDocuments}></TopFlagList>
+                <TopStarList documents={this.state.topStarDocuments}></TopStarList>
             </div>
         </div>
     }

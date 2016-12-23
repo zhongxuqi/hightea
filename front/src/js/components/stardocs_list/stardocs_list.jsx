@@ -3,6 +3,7 @@ import React from 'react'
 import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
+import DocListTitle from '../doc_list_title/doc_list_title.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
 
@@ -55,7 +56,7 @@ export default class StarDocsList extends React.Component {
                 </div>
 
                 <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
-                    <h4 className="stardocs-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+                    <DocListTitle docTotal={this.state.docTotal}></DocListTitle>
 
                     <DocsList documents={this.state.documents}></DocsList>
                 </div>

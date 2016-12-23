@@ -1,18 +1,15 @@
 import React from 'react';
 
+import Language from '../../language/language.jsx'
+
 import './doc_side_shortcut.less'
 
 export default class DocSideShortcut extends React.Component {
     render() {
         return (
-            <div className="doc-side-shortcut clearfix">
-                <h5 className="table-cell doc-side-shortcut-title"><a onClick={(()=>{this.props.onClick(this.props.document.id)}).bind(this)}>{this.props.document.title}</a></h5>
-                <div className="table-cell doc-side-shortcut-data">
-                    <span className="glyphicon glyphicon-star"></span>
-                    {this.props.document.starNum}
-                </div>
-
-                <div className="table-cell dropdown" style={{width:"1%"}}>
+            <div className="doc-side-shortcut clearfix lowtea-table">
+                <h5 className="doc-side-shortcut-title lowtea-table-cell"><a onClick={(()=>{this.props.onClick(this.props.document)}).bind(this)}>{this.props.document.title}</a></h5>
+                <div className="dropdown lowtea-table-cell" style={{width:"1%"}}>
                     <button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                         <span className="fa fa-toggle-down"></span>
                     </button>
@@ -25,7 +22,7 @@ export default class DocSideShortcut extends React.Component {
                                 content: this.props.document.content,
                                 status: "status_publish_self",
                             })
-                        }).bind(this)}>发布(仅自己可见)</a></li>
+                        }).bind(this)}>{Language.textMap("Publish for self")}</a></li>
                         <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
                             this.props.onPublishDoc({
                                 id: this.props.document.id,
@@ -33,7 +30,7 @@ export default class DocSideShortcut extends React.Component {
                                 content: this.props.document.content,
                                 status: "status_publish_member",
                             })
-                        }).bind(this)}>发布(仅成员可见)</a></li>
+                        }).bind(this)}>{Language.textMap("Publish for member")}</a></li>
                         <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
                             this.props.onPublishDoc({
                                 id: this.props.document.id,
@@ -41,8 +38,14 @@ export default class DocSideShortcut extends React.Component {
                                 content: this.props.document.content,
                                 status: "status_publish_public",
                             })
-                        }).bind(this)}>发布(对外公开)</a></li>
+                        }).bind(this)}>{Language.textMap("Publish for public")}</a></li>
                     </ul>
+                </div>
+                <div className="lowtea-table-cell" style={{width:"1%", display:{true:"table-cell", false:"none"}[this.props.onDeleteDoc!=undefined]}}>
+                    <button type="button" className="btn btn-default lowtea-doc-btn" 
+                        onClick={(()=>{this.props.onDeleteDoc(this.props.document.id)}).bind(this)}>
+                        <span className="fa fa-trash"></span>
+                    </button>
                 </div>
             </div>
         )

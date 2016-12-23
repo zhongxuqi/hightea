@@ -1,6 +1,7 @@
 import React from 'react';
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './users_manager.less'
 
@@ -145,15 +146,16 @@ export default class UsersManager extends React.Component {
             <div className="users_manager clearfix">
                 <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
-                        <div className="panel-heading">社区成员</div>
+                        <div className="panel-heading">{Language.textMap("Members")}</div>
 
                         <table className="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>头像</th>
-                                    <th>用户名</th>
-                                    <th>用户角色</th>
-                                    <th>操作</th>
+                                    <th>{Language.textMap("Head Picture")}</th>
+                                    <th>{Language.textMap("Nick Name")}</th>
+                                    <th>{Language.textMap("Role")}</th>
+                                    <th>{Language.textMap("Email")}</th>
+                                    <th>{Language.textMap("Action")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -164,18 +166,19 @@ export default class UsersManager extends React.Component {
                                                 <td className="head-img"><img src={user.headimg} style={{width:"30px",height:"30px"}}/></td>
                                                 <td>{user.nickname}</td>
                                                 <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.role}</td>
+                                                <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>{user.email}</td>
                                                 <td style={{display:{true: "table-cell", false:"none"}[user.isEdit]}}>
                                                     <select className="form-control" style={{height:"auto"}} value={user.copy.role} onChange={(event)=>{user.copy.role = event.target.value}}>
-                                                        <option value="member">成员</option>
-                                                        <option value="admin">管理员</option>
+                                                        <option value="member">{Language.textMap("Member")}</option>
+                                                        <option value="admin">{Language.textMap("Admin")}</option>
                                                     </select>
                                                 </td>
                                                 <td>
-                                                    <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>详情</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>编辑</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.cancelUserEdit.bind(this, user)}>取消</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.saveUserEdit.bind(this, user)}>保存</button>
-                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>删除</button>
+                                                    <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>{Language.textMap("Detail")}</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>{Language.textMap("Edit")}</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.cancelUserEdit.bind(this, user)}>{Language.textMap("Cancel")}</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.saveUserEdit.bind(this, user)}>{Language.textMap("Save")}</button>
+                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>{Language.textMap("Delete")}</button>
                                                 </td>
                                             </tr>
                                         )
@@ -188,13 +191,13 @@ export default class UsersManager extends React.Component {
 
                 <div className="col-md-4 col-lg-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
                     <div className="panel panel-default">
-                        <div className="panel-heading">加入申请</div>
+                        <div className="panel-heading">{Language.textMap("Registers")}</div>
 
                         <table className="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Email</th>
-                                    <th>操作</th>
+                                    <th>{Language.textMap("Action")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -204,9 +207,9 @@ export default class UsersManager extends React.Component {
                                             <tr key={registerItem.account}>
                                                 <td>{registerItem.email}</td>
                                                 <td>
-                                                    <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionRegister.bind(this, "info", registerItem)}>详情</button>
-                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionRegister.bind(this, "deny", registerItem)}>拒绝</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" onClick={this.onClickActionRegister.bind(this, "agree", registerItem)}>同意</button>
+                                                    <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionRegister.bind(this, "info", registerItem)}>{Language.textMap("Detail")}</button>
+                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionRegister.bind(this, "deny", registerItem)}>{Language.textMap("Deny")}</button>
+                                                    <button type="button" className="btn btn-warning btn-xs" onClick={this.onClickActionRegister.bind(this, "agree", registerItem)}>{Language.textMap("Agree")}</button>
                                                 </td>
                                             </tr>
                                         )
@@ -222,7 +225,7 @@ export default class UsersManager extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                                <h4 className="modal-title" id="myModalLabel">{"currUser" in this.state ? this.state.currUser.account:''}的用户详情</h4>
+                                <h4 className="modal-title" id="myModalLabel">{"currUser" in this.state ? this.state.currUser.account:''}</h4>
                             </div>
                             <div className="modal-body">
                                 <table className="lowtea-userinfo-table">
@@ -232,15 +235,15 @@ export default class UsersManager extends React.Component {
                                             <td className="line-value">{"currUser" in this.state ? this.state.currUser.email:''}</td>
                                         </tr>
                                         <tr>
-                                            <td className="line-key">Role:</td>
+                                            <td className="line-key">{Language.textMap("Role")}:</td>
                                             <td className="line-value">{"currUser" in this.state ? this.state.currUser.role:''}</td>
                                         </tr>
                                         <tr>
-                                            <td className="line-key">用户简介:</td>
+                                            <td className="line-key">{Language.textMap("User Introduce")}:</td>
                                             <td className="line-value">{"currUser" in this.state ? this.state.currUser.userintro:''}</td>
                                         </tr>
                                         <tr>
-                                            <td className="line-key">Gender:</td>
+                                            <td className="line-key">{Language.textMap("Gender")}:</td>
                                             <td className="line-value">{"currUser" in this.state ? this.state.currUser.gender:''}</td>
                                         </tr>
                                     </tbody>

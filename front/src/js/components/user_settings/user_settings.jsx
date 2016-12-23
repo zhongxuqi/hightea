@@ -2,6 +2,7 @@ import React from 'react';
 
 import HttpUtils from '../../utils/http.jsx'
 import LowTea from '../../utils/lowtea.jsx'
+import Language from '../../language/language.jsx'
 
 import './user_settings.less'
 
@@ -42,8 +43,9 @@ export default class UserSettings extends React.Component {
             userintro: this.state.user.userintro, 
             gender: this.state.user.gender,
             language: event.target.value,
+            headimg: this.state.user.headimg,
         }, ((data) => {
-            window.location = "/?lang="+data.language+"#/user_settings"
+            window.location = "/user.html?lang="+data.language+"#/user_settings"
         }).bind(this), ((data) => {
             HttpUtils.alert("["+data.status+"] "+data.responseText)
         }).bind(this))
@@ -91,7 +93,6 @@ export default class UserSettings extends React.Component {
             gender: this.state.copy.gender,
             language: this.state.copy.language,
         }, ((resp) => {
-            console.log(resp)
             this.updateUserInfo()
         }).bind(this), ((data) => {
             HttpUtils.alert("["+data.status+"] "+data.responseText)
@@ -107,10 +108,10 @@ export default class UserSettings extends React.Component {
         let headImgfile = document.getElementById("headImgFile").files[0]
 
         if (headImgfile == null) {
-            HttpUtils.alert("请选择图片")
+            HttpUtils.alert(Language.textMap("Please choose picture"))
             return
         } else if (!(/\.(png|jpeg|jpg)$/.test(headImgfile.name))) {
-            HttpUtils.alert("所选文件不是图片")
+            HttpUtils.alert(Language.textMap("File is not picture"))
             return
         }
         
@@ -156,16 +157,16 @@ export default class UserSettings extends React.Component {
         return (
             <div className="lowtea-user-settings clearfix">
                 <div className="lowtea-group-title clearfix">
-                    <h4 className="pull-left">用户信息</h4>
+                    <h4 className="pull-left">{Language.textMap("User Info")}</h4>
 
-                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={this.onSaveUserInfoChange.bind(this)}>保存</button>
-                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={this.onCancelUserInfoChange.bind(this)}>取消</button>
-                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}} onClick={()=>{this.setState({userinfoEdit: true})}}>编辑</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={this.onSaveUserInfoChange.bind(this)}>{Language.textMap("Save")}</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{true:"inline-block", false:"none"}[this.state.userinfoEdit]}} onClick={this.onCancelUserInfoChange.bind(this)}>{Language.textMap("Cancel")}</button>
+                    <button type="button" className="btn btn-primary btn-sm pull-right" style={{display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}} onClick={()=>{this.setState({userinfoEdit: true})}}>{Language.textMap("Edit")}</button>
                 </div>
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">头像</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("Head Picture")}</label>
                         <div className="col-sm-9">
                             <img src={{true:"/img/head.png",false:this.state.user.headimg}[this.state.user.headimg==""]} style={{width:"100px",height:"100px", display:{false:"inline-block", true:"none"}[this.state.userinfoEdit]}}/>
                             <a className="head-img thumbnail" onClick={this.modalHeadImg.bind(this)} style={{display:{false:"none", true:"inline-block"}[this.state.userinfoEdit]}}>
@@ -174,7 +175,7 @@ export default class UserSettings extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">昵称</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("Nick Name")}</label>
                         <div className="col-sm-9">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.nickname} onChange={this.onChangeUserInfo.bind(this, "nickname")}/>
                             <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.user.nickname}</p>
@@ -188,38 +189,38 @@ export default class UserSettings extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">个人签名</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("User Introduce")}</label>
                         <div className="col-sm-9">
                             <input className="form-control" style={{display:{true:"block", false:"none"}[this.state.userinfoEdit]}} value={this.state.copy.userintro} onChange={this.onChangeUserInfo.bind(this, "userintro")}/>
                             <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{this.state.user.userintro}</p>
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">性别</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("Gender")}</label>
                         <div className="col-sm-9" style={{height:"27px"}}>
                             <div className="radio" style={{padding:"0px", display:{true:"block", false:"none"}[this.state.userinfoEdit]}}>
                                 <label className="radio-inline">
-                                    <input type="radio" name="genderRadio" id="genderRadio" value="unknow" checked={this.state.copy.gender==""} onChange={this.onChangeUserInfo.bind(this, "gender")}/> 未知
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="unknow" checked={this.state.copy.gender==""} onChange={this.onChangeUserInfo.bind(this, "gender")}/> {Language.textMap("Unknow")}
                                 </label>
                                 <label className="radio-inline">
-                                    <input type="radio" name="genderRadio" id="genderRadio" value="female" checked={this.state.copy.gender=="female"} onChange={this.onChangeUserInfo.bind(this, "gender")}/> 女
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="female" checked={this.state.copy.gender=="female"} onChange={this.onChangeUserInfo.bind(this, "gender")}/> {Language.textMap("Female")}
                                 </label>
                                 <label className="radio-inline">
-                                    <input type="radio" name="genderRadio" id="genderRadio" value="male" checked={this.state.copy.gender=="male"} onChange={this.onChangeUserInfo.bind(this, "gender")}/> 男
+                                    <input type="radio" name="genderRadio" id="genderRadio" value="male" checked={this.state.copy.gender=="male"} onChange={this.onChangeUserInfo.bind(this, "gender")}/> {Language.textMap("Male")}
                                 </label>
                             </div>
-                            <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{{true:"女", false:{true:"男", false: "未知"}[this.state.copy.gender=="male"]}[this.state.copy.gender=="female"]}</p>
+                            <p className="show-text" style={{display:{false:"block", true:"none"}[this.state.userinfoEdit]}}>{{true:Language.textMap("Female"), false:{true:Language.textMap("Male"), false:Language.textMap("Unknow")}[this.state.copy.gender=="male"]}[this.state.copy.gender=="female"]}</p>
                         </div>
                     </div>
                 </form>
 
                 <div className="lowtea-group-title">
-                    <h4>其它设置</h4>
+                    <h4>{Language.textMap("Other Options")}</h4>
                 </div>
 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Language</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("Language")}</label>
                         <div className="col-sm-9">
                             <select className="form-control" value={this.state.copy.language} onChange={this.onLanguageClick.bind(this)}>
                                 <option value="">English</option>
@@ -231,7 +232,7 @@ export default class UserSettings extends React.Component {
                 
                 <form className="form-horizontal lowtea-user-info" role="form">
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Flag有效时间</label>
+                        <label className="col-sm-3 control-label">{Language.textMap("Flag Expired Time")}</label>
                         <div className="col-sm-9">
                             <select className="form-control" value={this.state.flagExpiredTime} onChange={((event)=>{
                                 this.setFlagExpiredTime(parseInt(event.target.value))
@@ -239,19 +240,19 @@ export default class UserSettings extends React.Component {
                                 {
                                     [{
                                         value: 24 * 60 * 60,
-                                        text: "1天",
+                                        text: "1 "+Language.textMap("day"),
                                     }, {
                                         value: 3 * 24 * 60 * 60,
-                                        text: "3天",
+                                        text: "3 "+Language.textMap("day"),
                                     }, {
                                         value: 1 * 24 * 60 * 60,
-                                        text: "1周",
+                                        text: "1 "+Language.textMap("week"),
                                     }, {
                                         value: 14 * 24 * 60 * 60,
-                                        text: "2周",
+                                        text: "2 "+Language.textMap("week"),
                                     }, {
                                         value: 30 * 24 * 60 * 60,
-                                        text: "1个月",
+                                        text: "1 "+Language.textMap("month"),
                                     }].map((item, i)=>{
                                         return <option key={i} value={item.value}>{item.text}</option>
                                     })

@@ -1,12 +1,14 @@
 import React from 'react';
 
+import Language from '../../language/language.jsx'
+
 import './publictopstar_list.less'
 
 export default class PublicTopStarList extends React.Component {
     render() {
         return (
             <div className="publictopstar-list">
-                <h5>{this.props.title+":"}</h5>
+                <h5>{Language.textMap("Star documents top list")}:</h5>
                 <div className="list-group">
                     {
                         this.props.documents.map((document)=>{

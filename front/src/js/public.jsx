@@ -72,8 +72,8 @@ export default class PublicMain extends React.Component {
                                     <a className="dropdown-toggle" data-toggle="dropdown">{Language.currLang.value} <span className="caret"></span></a>
                                     <ul className="dropdown-menu" role="menu">
                                         {
-                                            Language.languages.map(((lang)=>{
-                                                return <li><a onClick={(()=>{
+                                            Language.languages.map(((lang, i)=>{
+                                                return <li key={i}><a onClick={(()=>{
                                                     window.location = "?lang=" + lang.short
                                                 }).bind(this)}>{lang.value}</a></li>
                                             }).bind(this))

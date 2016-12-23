@@ -10,6 +10,7 @@ import (
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -120,7 +121,13 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 		respBody.Documents = flagDocuments{}
 		for _, documentId := range documentIds {
 			flagdoc := model.Document{}
-			p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&flagdoc)
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&flagdoc)
+			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+				}
+				continue
+			}
 			flagdoc.FlagNum, _ = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()
 			respBody.Documents = append(respBody.Documents, &flagdoc)
 		}
@@ -162,6 +169,9 @@ func (p *MainHandler) ActionPublicTopFlagDocuments(w http.ResponseWriter, r *htt
 			flagdoc := model.Document{}
 			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "status": model.STATUS_PUBLISH_PUBLIC}).One(&flagdoc)
 			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+				}
 				continue
 			}
 			flagdoc.FlagNum, _ = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()

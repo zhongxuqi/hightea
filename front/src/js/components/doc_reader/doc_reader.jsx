@@ -2,6 +2,7 @@ import React from 'react'
 import marked from 'marked'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './doc_reader.less'
 
@@ -89,17 +90,17 @@ export default class DocReader extends React.Component {
                     </div>
                     <div className="table-cell" style={{width:"99%", paddingLeft:"10px"}}>
                         <h4 className="title-status">
-                            <span className="label label-info">{{"status_draft":"草稿","status_publish_self":"仅自己可见","status_publish_member":"内部可见","status_publish_public":"公开"}[this.state.document.status]}</span>
+                            <span className="label label-info">{{"status_draft":Language.textMap("draft"),"status_publish_self":Language.textMap("only self"),"status_publish_member":Language.textMap("for member"),"status_publish_public":Language.textMap("for public")}[this.state.document.status]}</span>
                         </h4>
                     </div>
                     <div className="table-cell">
                         <button className="btn btn-primary btn-sm" type="button" onClick={this.toggleFlag.bind(this)}>
-                            {{true:"unflag", false:"flag"}[this.state.flag]} <span className="badge">{this.state.document.flagNum}</span>
+                            {{true:Language.textMap("Unflag"), false:Language.textMap("Flag")}[this.state.flag]} <span className="badge">{this.state.document.flagNum}</span>
                         </button>
                     </div>
                     <div className="table-cell" style={{paddingLeft:"10px"}}>
                         <button className="btn btn-primary btn-sm" type="button" onClick={this.toggleStar.bind(this)}>
-                            {{true:"unstar", false:"star"}[this.state.star]} <span className="badge">{this.state.document.starNum}</span>
+                            {{true:Language.textMap("Unstar"), false:Language.textMap("Star")}[this.state.star]} <span className="badge">{this.state.document.starNum}</span>
                         </button>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import {Link} from 'react-router'
 
 import DateUtils from '../../utils/date.jsx'
 import TransUtils from '../../utils/trans.jsx'
+import Language from '../../language/language.jsx'
 
 import './doc_shortcut.less'
 
@@ -30,7 +31,7 @@ export default class DocShortcut extends React.Component {
                                     content: this.props.document.content,
                                     status: "status_draft",
                                 })
-                            }).bind(this)}>草稿</a></li>
+                            }).bind(this)}>{Language.textMap("draft")}</a></li>
                             <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
                                 this.props.onSaveDoc({
                                     id: this.props.document.id,
@@ -38,7 +39,7 @@ export default class DocShortcut extends React.Component {
                                     content: this.props.document.content,
                                     status: "status_publish_self",
                                 })
-                            }).bind(this)}>发布(仅自己可见)</a></li>
+                            }).bind(this)}>{Language.textMap("publish for self")}</a></li>
                             <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
                                 this.props.onSaveDoc({
                                     id: this.props.document.id,
@@ -46,7 +47,7 @@ export default class DocShortcut extends React.Component {
                                     content: this.props.document.content,
                                     status: "status_publish_member",
                                 })
-                            }).bind(this)}>发布(仅成员可见)</a></li>
+                            }).bind(this)}>{Language.textMap("publish for member")}</a></li>
                             <li role="presentation"><a role="menuitem" href="javascript:void(0)" onClick={(()=>{
                                 this.props.onSaveDoc({
                                     id: this.props.document.id,
@@ -54,7 +55,7 @@ export default class DocShortcut extends React.Component {
                                     content: this.props.document.content,
                                     status: "status_publish_public",
                                 })
-                            }).bind(this)}>发布(对外公开)</a></li>
+                            }).bind(this)}>{Language.textMap("publish for public")}</a></li>
                         </ul>
                     </div>
                     <div className="lowtea-table-cell" style={{width:"1%", display:{true:"table-cell", false:"none"}[this.props.onDeleteDoc!=undefined]}}>

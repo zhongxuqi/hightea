@@ -5,6 +5,7 @@ import PublicDocsList from '../publicdocs_list/publicdocs_list.jsx'
 import PublicTopFlagList from '../publictopflag_list/publictopflag_list.jsx'
 import PublicTopStarList from '../publictopstar_list/publictopstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
+import DocListTitle from '../doc_list_title/doc_list_title.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
 import Language from '../../language/language.jsx'
@@ -117,8 +118,8 @@ export default class PublicDocsOverView extends React.Component {
                     </div>
                 </div>
                 <div className="col-md-3" style={{margin:"10px 0px"}}>
-                    <PublicTopFlagList title={Language.textMap("Flag documents top list")} documents={this.state.topFlagDocuments}></PublicTopFlagList>
-                    <PublicTopStarList title={Language.textMap("Star documents top list")} documents={this.state.topStarDocuments}></PublicTopStarList>
+                    <PublicTopFlagList documents={this.state.topFlagDocuments}></PublicTopFlagList>
+                    <PublicTopStarList documents={this.state.topStarDocuments}></PublicTopStarList>
                 </div>
             </div>
         </div>

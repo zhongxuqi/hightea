@@ -4,6 +4,7 @@ import SearchBar from '../searchbar/searchbar.jsx'
 import DocsList from '../docs_list/docs_list.jsx'
 import TopStarList from '../topstar_list/topstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
+import DocListTitle from '../doc_list_title/doc_list_title.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
 
@@ -92,15 +93,12 @@ export default class PersonalDocsList extends React.Component {
     }
 
     onDeleteDoc(id) {
-        console.log(id)
         this.props.onConfirm("Danger", "delete the doc?", (()=>{
-            $("#confirmModal #confirmAffirmBtn").on("click", () => {
-                HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
-                    this.getDocuments(this.state.pageSize, this.state.pageIndex)
-                }).bind(this), ((data) => {
-                    HttpUtils.alert("["+data.status+"] "+data.responseText)
-                }))
-            })
+            HttpUtils.delete("/api/member/document/"+id, {}, ((data) => {
+                this.getDocuments(this.state.pageSize, 0)
+            }).bind(this), ((data) => {
+                HttpUtils.alert("["+data.status+"] "+data.responseText)
+            }))
         }).bind(this))
     }
 
@@ -118,7 +116,7 @@ export default class PersonalDocsList extends React.Component {
                     </div>
 
                     <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
-                        <h4 className="personnaldocs-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+                        <DocListTitle docTotal={this.state.docTotal}></DocListTitle>
 
                         <DocsList documents={this.state.documents} onSaveDoc={this.onSaveDoc.bind(this)} onDeleteDoc={this.onDeleteDoc.bind(this)}></DocsList>
 
@@ -131,7 +129,7 @@ export default class PersonalDocsList extends React.Component {
                 </div>
 
                 <div className="col-md-3" style={{margin:"30px 0px"}}>
-                    <TopStarList title="最受喜欢的个人文章排行" documents={this.state.topStarDocuments}></TopStarList>
+                    <TopStarList documents={this.state.topStarDocuments}></TopStarList>
                 </div>
             </div>
         )

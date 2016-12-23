@@ -14,6 +14,7 @@ import DocEditor from './components/doc_editor/doc_editor.jsx'
 
 import HttpUtil from './utils/http.jsx'
 import Menu from './components/menu/menu.jsx'
+import Language from './language/language.jsx'
 
 import './app.less';
 
@@ -32,6 +33,9 @@ export default class Main extends React.Component {
 
     updateUserInfo() {
         HttpUtil.get('/api/member/self', {}, ((resp) => {
+            if (resp.user.language != Language.currLang.short && !(resp.user.language == "" && Language.currLang.short == "en")) {
+                window.location = "?lang=" + resp.user.language
+            }
             this.setState({
                 userInfo: resp.user,
             })
@@ -50,15 +54,15 @@ export default class Main extends React.Component {
                 $("#confirmModal").modal("hide")
             })
             
-            $("#confirmModal #confirmCancelBtn").on("click", () => {
+            $("#confirmModal #confirmNoBtn").on("click", () => {
                 if (cancelCallback != undefined) cancelCallback()
-                $("#confirmModal #confirmCancelBtn").off("click")
+                $("#confirmModal #confirmNoBtn").off("click")
                 $("#confirmModal").modal("hide")
             })
         })
         $("#confirmModal").on("hide.bs.modal", () => {
             $("#confirmModal #confirmAffirmBtn").off("click")
-            $("#confirmModal #confirmCancelBtn").off("click")
+            $("#confirmModal #confirmNoBtn").off("click")
         })
         $("#confirmModal").modal("show")
         this.setState({
@@ -97,8 +101,9 @@ export default class Main extends React.Component {
                                 <p>{this.state.confirmModal.message}</p>
                             </div>
                             <div className="modal-footer">
-                                <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">关闭</button>
-                                <button id="confirmAffirmBtn" type="button" className="btn btn-primary">确定</button>
+                                <button id="confirmCancelBtn" type="button" className="btn btn-default" data-dismiss="modal">{Language.textMap("Cancel")}</button>
+                                <button id="confirmNoBtn" type="button" className="btn btn-default" data-dismiss="modal" style={{color:"red"}}>{Language.textMap("No")}</button>
+                                <button id="confirmAffirmBtn" type="button" className="btn btn-primary">{Language.textMap("Yes")}</button>
                             </div>
                         </div>
                     </div>

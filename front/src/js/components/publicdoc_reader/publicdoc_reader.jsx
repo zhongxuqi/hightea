@@ -46,7 +46,7 @@ export default class PublicDocReader extends React.Component {
                     </div>
                     <div className="table-cell">
                         <button className="btn btn-primary btn-sm" type="button">
-                            star <span className="badge">{this.state.document.starNum}</span>
+                            {Language.textMap("Star")} <span className="badge">{this.state.document.starNum}</span>
                         </button>
                     </div>
                 </div>

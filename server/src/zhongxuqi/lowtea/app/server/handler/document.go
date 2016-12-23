@@ -208,7 +208,17 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = p.DocumentColl.RemoveAll(bson.M{"_id": bson.ObjectIdHex(documentId)})
+		_, err = p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+		if err != nil {
+			http.Error(w, "remove document star error: "+err.Error(), 500)
+			return
+		}
+		_, err = p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+		if err != nil {
+			http.Error(w, "remove document flag error: "+err.Error(), 500)
+			return
+		}
+		_, err = p.DocumentColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
 		if err != nil {
 			http.Error(w, "remove document error: "+err.Error(), 500)
 			return

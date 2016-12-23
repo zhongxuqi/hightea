@@ -10,6 +10,7 @@ import (
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -45,7 +46,6 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
 		}
-		respBody.DocTotal = n
 
 		stars := make([]model.Star, 0)
 		p.StarColl.Find(filter).Sort("-createTime").All(&stars)
@@ -58,12 +58,19 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 				"modifyTime": 1,
 				"status":     1,
 			}).One(&document)
+			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)})
+				}
+				continue
+			}
 
 			n, _ = p.StarColl.Find(&bson.M{"documentId": document.Id.Hex()}).Count()
 			document.StarNum = n
 
 			respBody.Documents = append(respBody.Documents, &document)
 		}
+		respBody.DocTotal = len(respBody.Documents)
 		respBody.Status = 200
 		respBody.Message = "success"
 		respByte, _ := json.Marshal(respBody)
@@ -178,12 +185,18 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
 			stardoc := model.Document{}
-			p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
 			}).One(&stardoc)
+			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+				}
+				continue
+			}
 			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
 			respBody.Documents = append(respBody.Documents, &stardoc)
 		}
@@ -238,6 +251,9 @@ func (p *MainHandler) ActionSelfTopStarDocuments(w http.ResponseWriter, r *http.
 				"status":     1,
 			}).One(&stardoc)
 			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+				}
 				continue
 			}
 			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
@@ -281,6 +297,9 @@ func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *htt
 			stardoc := model.Document{}
 			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "status": model.STATUS_PUBLISH_PUBLIC}).One(&stardoc)
 			if err != nil {
+				if err == mgo.ErrNotFound {
+					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+				}
 				continue
 			}
 			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()

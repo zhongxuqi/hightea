@@ -92,7 +92,7 @@ export default class Menu extends React.Component {
                             <span className="caret"></span>
                         </button>
                         <ul className="dropdown-menu">
-                            <li><a onClick={this.modalPassword.bind(this)}><i className="fa fa-lock" aria-hidden="true" style={{margin:"0px 10px 0px 0px"}}></i>修改密码</a></li>
+                            <li><a onClick={this.modalPassword.bind(this)}><i className="fa fa-lock" aria-hidden="true" style={{margin:"0px 10px 0px 0px"}}></i>{Language.textMap("Change Password")}</a></li>
                             <li><a onClick={this.onLogoutClick}><span className="glyphicon glyphicon-log-out" style={{margin:"0px 10px 0px 0px"}}></span>{Language.textMap("Quit")}</a></li>
                         </ul>
                     </div>
@@ -100,27 +100,45 @@ export default class Menu extends React.Component {
 
                 <ul className="lowtea-menu-list clearfix">
                     <li className={{true: 'active', false:''}[this.state.menuState == '']}>
-                        <Link to="/" onClick={this.onMenuItemClick.bind(this, '')}><span className="glyphicon glyphicon-th-list"></span>所有文章</Link>
+                        <Link to="/" onClick={this.onMenuItemClick.bind(this, '')}>
+                            <span className="glyphicon glyphicon-th-list"></span>
+                            {Language.textMap("All Documents")}
+                        </Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'doc_editor']}>
-                        <Link to="/doc_editor" onClick={this.onMenuItemClick.bind(this, 'doc_editor')}><span className="glyphicon glyphicon-pencil"></span>编辑文章</Link>
+                        <Link to="/doc_editor" onClick={this.onMenuItemClick.bind(this, 'doc_editor')}>
+                            <span className="glyphicon glyphicon-pencil"></span>
+                            {Language.textMap("Edit Documents")}
+                        </Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'stardocs_list']}>
-                        <Link to="/stardocs_list" onClick={this.onMenuItemClick.bind(this, 'stardocs_list')}><span className="glyphicon glyphicon-star"></span>我喜欢的文章</Link>
+                        <Link to="/stardocs_list" onClick={this.onMenuItemClick.bind(this, 'stardocs_list')}>
+                            <span className="glyphicon glyphicon-star"></span>
+                            {Language.textMap("My Stars")}
+                        </Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'personaldocs_list']}>
-                        <Link to="/personaldocs_list" onClick={this.onMenuItemClick.bind(this, 'personaldocs_list')}><span className="glyphicon glyphicon-file"></span>我的文章</Link>
+                        <Link to="/personaldocs_list" onClick={this.onMenuItemClick.bind(this, 'personaldocs_list')}>
+                            <span className="glyphicon glyphicon-file"></span>
+                            {Language.textMap("My Documents")}
+                        </Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'user_settings']}>
-                        <Link to="/user_settings" onClick={this.onMenuItemClick.bind(this, 'user_settings')}><span className="glyphicon glyphicon-cog"></span>个人设置</Link>
+                        <Link to="/user_settings" onClick={this.onMenuItemClick.bind(this, 'user_settings')}>
+                            <span className="glyphicon glyphicon-cog"></span>
+                            {Language.textMap("My Settings")}
+                        </Link>
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'users_manager']}>
-                        <Link to="/users_manager" onClick={this.onMenuItemClick.bind(this, 'users_manager')}><span className="glyphicon glyphicon-user"></span>用户管理</Link>
+                        <Link to="/users_manager" onClick={this.onMenuItemClick.bind(this, 'users_manager')}>
+                            <span className="glyphicon glyphicon-user"></span>
+                            {Language.textMap("Members List")}
+                        </Link>
                     </li>
                 </ul>
                 
@@ -129,24 +147,24 @@ export default class Menu extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
-                                <h4 className="modal-title" id="myModalLabel">修改密码</h4>
+                                <h4 className="modal-title" id="myModalLabel">{Language.textMap("Change Password")}</h4>
                             </div>
                             <div className="modal-body">
                                 <form className="form-horizontal lowtea-password-modal" role="form">
                                     <div className="form-group">
-                                        <label className="col-sm-4 control-label">旧密码</label>
+                                        <label className="col-sm-4 control-label">{Language.textMap("Old Password")}</label>
                                         <div className="col-sm-8">
                                             <input type="password" className="form-control" value={this.state.password.oldPassword} onChange={this.onChangePassword.bind(this, "oldPassword")}/>
                                         </div>
                                     </div>
                                     <div className="form-group">
-                                        <label className="col-sm-4 control-label">新密码</label>
+                                        <label className="col-sm-4 control-label">{Language.textMap("New Password")}</label>
                                         <div className="col-sm-8">
                                             <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
                                         </div>
                                     </div>
                                     <div className="form-group">
-                                        <label className="col-sm-4 control-label">重复新密码</label>
+                                        <label className="col-sm-4 control-label">{Language.textMap("Repeat New Password")}</label>
                                         <div className="col-sm-8">
                                             <input type="password" className={["form-control", this.state.password.status].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
                                         </div>
@@ -154,8 +172,10 @@ export default class Menu extends React.Component {
                                 </form>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-default" data-dismiss="modal">取消</button>
-                                <button type="button" className="btn btn-primary" onClick={this.onSavePassword.bind(this)}>保存</button>
+                                <button type="button" className="btn btn-default" data-dismiss="modal">{Language.textMap("Cancel")}</button>
+                                <button type="button" className="btn btn-primary" onClick={this.onSavePassword.bind(this)}>
+                                    {Language.textMap("Save")}
+                                </button>
                             </div>
                         </div>
                     </div>
