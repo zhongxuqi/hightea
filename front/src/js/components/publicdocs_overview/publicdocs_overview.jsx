@@ -7,6 +7,7 @@ import PublicTopStarList from '../publictopstar_list/publictopstar_list.jsx'
 import LoadingBtn from '../loading_btn/loading_btn.jsx'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './publicdocs_overview.less'
 
@@ -95,7 +96,7 @@ export default class PublicDocsOverView extends React.Component {
                     </div>
                     
                     <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
-                        <h4 className="doc-list-title">一共找到了{this.state.docTotal}篇文章</h4>
+                        <h4 className="doc-list-title">{Language.textMap("We’ve found ")}{this.state.docTotal}{Language.textMap(" documents")}</h4>
 
                         <PublicDocsList documents={this.state.documents}></PublicDocsList>
 
@@ -116,8 +117,8 @@ export default class PublicDocsOverView extends React.Component {
                     </div>
                 </div>
                 <div className="col-md-3" style={{margin:"10px 0px"}}>
-                    <PublicTopFlagList title="标记最多的文章排行" documents={this.state.topFlagDocuments}></PublicTopFlagList>
-                    <PublicTopStarList title="最受喜欢的文章排行" documents={this.state.topStarDocuments}></PublicTopStarList>
+                    <PublicTopFlagList title={Language.textMap("Flag documents top list")} documents={this.state.topFlagDocuments}></PublicTopFlagList>
+                    <PublicTopStarList title={Language.textMap("Star documents top list")} documents={this.state.topStarDocuments}></PublicTopStarList>
                 </div>
             </div>
         </div>

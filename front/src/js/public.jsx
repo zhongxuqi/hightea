@@ -8,6 +8,7 @@ import PublicDocReader from './components/publicdoc_reader/publicdoc_reader.jsx'
 import DocEditor from './components/doc_editor/doc_editor.jsx'
 
 import HttpUtils from './utils/http.jsx'
+import Language from './language/language.jsx'
 
 import './public.less';
 
@@ -57,7 +58,7 @@ export default class PublicMain extends React.Component {
     render() {
         return (
             <div style={{height:'100%'}}>
-                <nav className="navbar navbar-inverse topbar" role="navigation">
+                <nav className="navbar navbar-default topbar" role="navigation">
                     <div className="container-fluid">
                         <div className="navbar-header">
                             <img src="img/logo.png" style={{maxHeight:"50px"}}/>
@@ -67,7 +68,19 @@ export default class PublicMain extends React.Component {
                             <ul className="nav navbar-nav btn-menu">
                             </ul>
                             <ul className="nav navbar-nav navbar-right btn-menu">
-                                <li><a href="/login.html">Login In</a></li>
+                                <li className="dropdown">
+                                    <a className="dropdown-toggle" data-toggle="dropdown">{Language.currLang.value} <span className="caret"></span></a>
+                                    <ul className="dropdown-menu" role="menu">
+                                        {
+                                            Language.languages.map(((lang)=>{
+                                                return <li><a onClick={(()=>{
+                                                    window.location = "?lang=" + lang.short
+                                                }).bind(this)}>{lang.value}</a></li>
+                                            }).bind(this))
+                                        }
+                                    </ul>
+                                </li>
+                                <li><a href="/login.html">{Language.textMap("Login In")}</a></li>
                             </ul>
                         </div>
                     </div>
