@@ -245,7 +245,7 @@ export default class UserSettings extends React.Component {
                                         value: 3 * 24 * 60 * 60,
                                         text: "3 "+Language.textMap("day"),
                                     }, {
-                                        value: 1 * 24 * 60 * 60,
+                                        value: 7 * 24 * 60 * 60,
                                         text: "1 "+Language.textMap("week"),
                                     }, {
                                         value: 14 * 24 * 60 * 60,
