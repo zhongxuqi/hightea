@@ -2,6 +2,7 @@ import React from 'react'
 import marked from 'marked'
 
 import HttpUtils from '../../utils/http.jsx'
+import Language from '../../language/language.jsx'
 
 import './publicdoc_reader.less'
 
