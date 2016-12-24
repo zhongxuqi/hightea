@@ -126,7 +126,7 @@ export default class UsersManager extends React.Component {
     render() {
         return (
             <div className="users_manager clearfix">
-                <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
+                <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8 col-sm-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
                         <div className="panel-heading lowtea-table" style={{width:"100%"}}>
                             <div className="lowtea-table-cell" style={{width:"99%"}}>
@@ -184,7 +184,7 @@ export default class UsersManager extends React.Component {
                     </div>
                 </div>
 
-                <div className="col-md-4 col-lg-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
+                <div className="col-md-4 col-lg-4 col-sm-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
                     <div className="panel panel-default">
                         <div className="panel-heading">{Language.textMap("Registers")}</div>
 

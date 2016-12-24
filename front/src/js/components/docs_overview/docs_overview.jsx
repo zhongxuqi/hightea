@@ -84,7 +84,7 @@ export default class DocsOverView extends React.Component {
 
     render() {
         return <div className="lowtea-doc-overview">
-            <div className="col-md-9 doc-list-container">
+            <div className="col-md-9 col-sm-9 col-xs-9 doc-list-container">
                 <div className="searchbar-container">
                     <SearchBar ref="searchbar" onClick={(()=>{
                         this.state.keyword = this.refs.searchbar.getValue()
@@ -106,7 +106,7 @@ export default class DocsOverView extends React.Component {
                     </div>
                 </div>
             </div>
-            <div className="col-md-3" style={{margin:"30px 0px"}}>
+            <div className="col-md-3 col-sm-3 col-xs-3" style={{margin:"30px 0px"}}>
                 <TopFlagList documents={this.state.topFlagDocuments}></TopFlagList>
                 <TopStarList documents={this.state.topStarDocuments}></TopStarList>
             </div>
