@@ -29,8 +29,8 @@ export default class PublicMain extends React.Component {
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
         
-        HttpUtils.get('/api/member/self', {}, ((data) => {
-            window.location = "/user.html"
+        HttpUtils.get('/api/member/self', {}, ((resp) => {
+            window.location = "/user.html?lang="+resp.user.language
         }).bind(this), ((data) => {
         }).bind(this))
     }
