@@ -166,10 +166,14 @@ export default class UsersManager extends React.Component {
                                                 <td>{user.email}</td>
                                                 <td>
                                                     <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>{Language.textMap("Detail")}</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>{Language.textMap("Edit")}</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.cancelUserEdit.bind(this, user)}>{Language.textMap("Cancel")}</button>
-                                                    <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.saveUserEdit.bind(this, user)}>{Language.textMap("Save")}</button>
-                                                    <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>{Language.textMap("Delete")}</button>
+                                                    <div style={{display:{true:"inline-block", false:"none"}[this.props.userInfo.role=="admin"||this.props.userInfo.role=="root"]}}>
+                                                        <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>{Language.textMap("Edit")}</button>
+                                                        <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.cancelUserEdit.bind(this, user)}>{Language.textMap("Cancel")}</button>
+                                                        <button type="button" className="btn btn-warning btn-xs" style={{display:{true: "inline-block", false:"none"}[user.isEdit]}} onClick={this.saveUserEdit.bind(this, user)}>{Language.textMap("Save")}</button>
+                                                    </div>
+                                                    <div style={{display:{true:"inline-block",false:"none"}[this.props.userInfo.role=="root"||(this.props.userInfo.role=="admin"&&user.role=="member")]}}>
+                                                        <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>{Language.textMap("Delete")}</button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )
