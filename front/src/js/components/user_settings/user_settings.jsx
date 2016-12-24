@@ -34,6 +34,7 @@ export default class UserSettings extends React.Component {
         this.setState({
             copy: this.copyUser(props.userInfo),
         })
+        if (props.userInfo.role=="root") this.getFlagExpiredTime()
     }
 
     onLanguageClick(event) {
@@ -230,7 +231,7 @@ export default class UserSettings extends React.Component {
                     </div>
                 </form>
                 
-                <form className="form-horizontal lowtea-user-info" role="form">
+                <form className="form-horizontal lowtea-user-info" role="form" style={{display:{true:"block",false:"none"}[this.props.userInfo.role == "root"]}}>
                     <div className="form-group">
                         <label className="col-sm-3 control-label">{Language.textMap("Flag Expired Time")}</label>
                         <div className="col-sm-9">
