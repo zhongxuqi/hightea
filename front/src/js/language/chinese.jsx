@@ -85,5 +85,12 @@ chineseTextMap["Whether to "] = "是否"
 chineseTextMap["agree"] = "同意"
 chineseTextMap["deny"] = "拒绝"
 chineseTextMap["the document"] = "这篇文档"
+chineseTextMap["Register has sent, wait for callback"] = "注册信息已发送，请等待反馈"
+chineseTextMap["Account"] = "账号"
+chineseTextMap["Password"] = "密码"
+chineseTextMap["Guest"] = "访客"
+chineseTextMap["Resume"] = "简历"
+chineseTextMap["Repeat Password"] = "重复密码"
+chineseTextMap["Register"] = "注册"
 
 export default chineseTextMap;

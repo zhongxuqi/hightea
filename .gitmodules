@@ -1,3 +1,3 @@
 [submodule "server/src/github.com/gopkg.in/mgo.v2"]
 	path = server/src/github.com/gopkg.in/mgo.v2
-	url = git@github.com:go-mgo/mgo.git
+	url = https://github.com/go-mgo/mgo.git

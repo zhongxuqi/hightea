@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -17,11 +18,11 @@ func main() {
 	config.InitOss(mainHandler)
 
 	httpServer := &http.Server{
-		Addr:           "0.0.0.0:8080",
+		Addr:           mainHandler.Config.ServerAddr,
 		Handler:        mainHandler.Mux,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	httpServer.ListenAndServe()
+	log.Fatal(httpServer.ListenAndServe())
 }

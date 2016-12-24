@@ -13,6 +13,7 @@ type AppConfig struct {
 
 // Config env of the server
 type Config struct {
+	ServerAddr      string    `json:"server_addr"`
 	RootEmail       string    `json:"rootemail"`
 	RootPassword    string    `json:"rootpassword"`
 	RootLanguage    string    `json:"rootlanguage"`

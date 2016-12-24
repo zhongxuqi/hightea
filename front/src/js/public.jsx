@@ -87,7 +87,7 @@ export default class PublicMain extends React.Component {
                                         }
                                     </ul>
                                 </li>
-                                <li><a href="/login.html">{Language.textMap("Login In")}</a></li>
+                                <li><a href={"/login.html?lang="+Language.currLang.short}>{Language.textMap("Login In")}</a></li>
                             </ul>
                         </div>
                     </div>

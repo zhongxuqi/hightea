@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import md5 from 'js-md5'
 
 import HttpUtils from '../utils/http.jsx'
+import Language from '../language/language.jsx'
 
 import './app.less'
 
@@ -89,7 +90,7 @@ class LoginApp extends React.Component {
             resume: this.state.registerResume,
             password: this.state.registerPassword,
         }, ((data) => {
-            HttpUtils.notice("register has sent, wait for callback")
+            HttpUtils.notice(Language.textMap("Register has sent, wait for callback"))
             this.setState({
                 registerAccount: '',
                 registerNickname: "",
@@ -110,29 +111,30 @@ class LoginApp extends React.Component {
             <div className="lowtea-login-container">
                 <div className="lowtea-login-form">
                     <form className="clearfix" style={{display:{true: "block", false: "none"}[this.state.formState=="login"]}}>
-                        <div className="form-group">
-                            <label>Account</label>
+                        <div className="orm-group">
+                            <label>{Language.textMap("Account")}</label>
                             <input className="form-control" value={this.state.loginAccount} onChange={this.handleStateChange.bind(this, "loginAccount")}/>
                         </div>
                         <div className="form-group">
-                            <label>Password</label>
+                            <label>{Language.textMap("Password")}</label>
                             <input type="password" className="form-control" value={this.state.loginPassword} onChange={this.handleStateChange.bind(this, "loginPassword")}/>
                         </div>
-                        <button type="button" className="btn btn-success btn-block" style={{marginBottom:"10px"}} onClick={this.onClickLoginBtn.bind(this)}>Login</button>
-
+                        <button type="button" className="btn btn-success btn-block" style={{marginBottom:"10px"}} onClick={this.onClickLoginBtn.bind(this)}>{Language.textMap("Login In")}</button>
                         <button type="button" className="btn btn-primary btn-sm pull-left" href="" onClick={()=>{
                             window.location="/index.html"
-                        }}>Guest</button>
-                        <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('register')}>Register</button>
+                        }}>{Language.textMap("Guest")}</button>
+                        <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('register')}>
+                            {Language.textMap("Register")}
+                        </button>
                     </form>
 
                     <form className="clearfix" style={{display:{true: "block", false: "none"}[this.state.formState=="register"]}}>
                         <div className="form-group">
-                            <label>Account</label>
+                            <label>{Language.textMap("Account")}</label>
                             <input className="form-control" value={this.state.registerAccount} onChange={this.handleStateChange.bind(this, "registerAccount")}/>
                         </div>
                         <div className="form-group">
-                            <label>Nickname</label>
+                            <label>{Language.textMap("Nick Name")}</label>
                             <input className="form-control" value={this.state.registerNickname} onChange={this.handleStateChange.bind(this, "registerNickname")}/>
                         </div>
                         <div className="form-group">
@@ -140,19 +142,23 @@ class LoginApp extends React.Component {
                             <input type="email" className="form-control" value={this.state.registerEmail} onChange={this.handleStateChange.bind(this, "registerEmail")}/>
                         </div>
                         <div className="form-group">
-                            <label>Resume</label>
+                            <label>{Language.textMap("Resume")}</label>
                             <textarea type="password" className="form-control" value={this.state.registerResume} onChange={this.handleStateChange.bind(this, "registerResume")}></textarea>
                         </div>
                         <div className="form-group">
-                            <label>Password</label>
+                            <label>{Language.textMap("Password")}</label>
                             <input type="password" className="form-control" value={this.state.registerPassword} onChange={this.handleStateChange.bind(this, "registerPassword")}/>
                         </div>
                         <div className="form-group">
-                            <label>Reinput Password</label>
+                            <label>{Language.textMap("Repeat Password")}</label>
                             <input type="password" className={["form-control", this.state.registerRePassword_state].join(" ")} value={this.state.registerRePassword} onChange={this.handleStateChange.bind(this, "registerRePassword")}/>
                         </div>
-                        <button type="button" className="btn btn-success btn-block" onClick={this.onClickRegisterBtn.bind(this)}>Register</button>
-                        <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('login')}>Login</button>
+                        <button type="button" className="btn btn-success btn-block" onClick={this.onClickRegisterBtn.bind(this)}>
+                            {Language.textMap("Register")}
+                        </button>
+                        <button type="button" className="btn btn-link pull-right" href="" onClick={this.handleFormClick('login')}>
+                            {Language.textMap("Login In")}
+                        </button>
                     </form>
                 </div>
             </div>

@@ -25,7 +25,7 @@ export default class Menu extends React.Component {
 
     onLogoutClick() {
         HttpUtils.get("/openapi/logout", {}, (data) => {
-            window.location.pathname = "/login.html"
+            window.location = "/login.html?lang="+Language.currLang.short
         }, (data) => {
             HttpUtil.alert("["+data.status+"]: "+data.responseText)
         })
