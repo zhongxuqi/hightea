@@ -85,8 +85,7 @@ export default class PersonalDocsList extends React.Component {
     }
 
     onSaveDoc(document) {
-        HttpUtils.post("/api/member/document", {
-            action: "edit",
+        HttpUtils.post("/api/member/document_status", {
             document: document,
         }, ((resp)=>{
             let documents = this.state.documents
@@ -97,6 +96,7 @@ export default class PersonalDocsList extends React.Component {
                     break;
                 }
             }
+            this.getDocuments(this.state.pageSize, 0)
         }).bind(this), (resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })

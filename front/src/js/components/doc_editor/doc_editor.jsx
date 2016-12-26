@@ -64,13 +64,29 @@ export default class DocEditor extends React.Component {
     }
 
     publishDoc(document) {
-        if (document.id == this.state.document.id) {
-            this.props.onConfirm("Warning","save current changes?",(()=>{
+        if (document.id == this.state.document.id && this.state.ischanged==true) {
+            this.props.onConfirm(Language.textMap("Warning"),Language.textMap("Whether to ")+Language.textMap("save")+" "+Language.textMap("the document")+" ?",(()=>{
                 let metadoc = this.state.document
-                this.saveDoc(metadoc)
+                metadoc.status = document.status
+                this.saveDoc(metadoc, (()=>{
+                    this.refs.editor.setValue("")
+                    this.state.ischanged = false
+                    this.state.document = {
+                        title:"",
+                        content:"",
+                        status:"status_draft",
+                    }
+                    this.setState({})
+                }).bind(this))
             }).bind(this))
         } else {
-            this.saveDoc(document)
+            HttpUtils.post("/api/member/document_status", {
+                document: document,
+            }, ((resp)=>{
+                this.getDrafts(this.state.pageSize, 0)
+            }).bind(this), (resp)=>{
+                HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+            })
         }
     }
 

@@ -59,6 +59,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	memberHandler.HandleFunc("/api/member/upload_video", mainHandler.ActionUpLoadVideo)
 	memberHandler.HandleFunc("/api/member/documents", mainHandler.ActionDocuments)
 	memberHandler.HandleFunc("/api/member/document", mainHandler.ActionDocument)
+	memberHandler.HandleFunc("/api/member/document_status", mainHandler.ActionDocumentStatus)
 	memberHandler.HandleFunc("/api/member/document/", mainHandler.ActionDocument)
 	memberHandler.HandleFunc("/api/member/drafts", mainHandler.ActionDrafts)
 	memberHandler.HandleFunc("/api/member/star/", mainHandler.ActionStar)

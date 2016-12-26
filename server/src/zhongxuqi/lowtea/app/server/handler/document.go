@@ -294,3 +294,49 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not Found", 404)
 	return
 }
+
+func (p *MainHandler) ActionDocumentStatus(w http.ResponseWriter, r *http.Request) {
+	var accountCookie *http.Cookie
+	var err error
+	accountCookie, err = r.Cookie("account")
+	if err != nil {
+		http.Error(w, "cookie find error: "+err.Error(), 400)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		var reqData struct {
+			Document model.Document `json:"document"`
+		}
+		utils.ReadReq2Struct(r, &reqData)
+
+		var document model.Document
+		err = p.DocumentColl.Find(bson.M{"_id": reqData.Document.Id}).One(&document)
+		if err != nil {
+			http.Error(w, "document find error: "+err.Error(), 400)
+			return
+		}
+		if document.Account != accountCookie.Value {
+			http.Error(w, errors.ERROR_PERMISSION_DENIED.Error(), 401)
+			return
+		}
+		p.DocumentColl.Update(bson.M{"_id": reqData.Document.Id}, bson.M{
+			"$set": bson.M{
+				"status": reqData.Document.Status,
+			},
+		})
+
+		var respBody struct {
+			Status  int           `json:"status"`
+			Message string        `json:"message"`
+			Id      bson.ObjectId `json:"id"`
+		}
+		respBody.Status = 200
+		respBody.Message = "success"
+		respBody.Id = reqData.Document.Id
+		respByte, _ := json.Marshal(&respBody)
+		w.Write(respByte)
+		return
+	}
+	http.Error(w, "Not Found", 404)
+}
