@@ -2,11 +2,14 @@ package local
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"time"
 	"zhongxuqi/lowtea/model"
+	"zhongxuqi/lowtea/utils"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -75,13 +78,25 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	}
 
 	// init img handler
-	handler.Handle("/lowtea_img/", http.FileServer(http.Dir("../media")))
+	imgFileHandler := http.FileServer(http.Dir("../media"))
+	handler.HandleFunc("/lowtea_img/", func(w http.ResponseWriter, r *http.Request) {
+		imgFileHandler.ServeHTTP(w, r)
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
+	})
 
 	// init audio handler
-	handler.Handle("/lowtea_audio/", http.FileServer(http.Dir("../media")))
+	audioFileHandler := http.FileServer(http.Dir("../media"))
+	handler.HandleFunc("/lowtea_audio/", func(w http.ResponseWriter, r *http.Request) {
+		audioFileHandler.ServeHTTP(w, r)
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
+	})
 
 	// init video handler
-	handler.Handle("/lowtea_video/", http.FileServer(http.Dir("../media")))
+	videoFileHandler := http.FileServer(http.Dir("../media"))
+	handler.HandleFunc("/lowtea_video/", func(w http.ResponseWriter, r *http.Request) {
+		videoFileHandler.ServeHTTP(w, r)
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
+	})
 }
 
 func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) {

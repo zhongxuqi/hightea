@@ -1,9 +1,12 @@
 package config
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"zhongxuqi/lowtea/app/server/handler"
+	"zhongxuqi/lowtea/utils"
 )
 
 // InitRouter init the router of server
@@ -25,6 +28,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	openAPIHandler.HandleFunc("/openapi/rootinfo", mainHandler.ActionRootEmail)
 	mainHandler.Mux.HandleFunc("/openapi/", func(w http.ResponseWriter, r *http.Request) {
 		openAPIHandler.ServeHTTP(w, r)
+
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	//---------------------------------
@@ -48,6 +53,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 		}
 
 		apiHandler.ServeHTTP(w, r)
+
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	// setup /api/member/ handler
@@ -86,6 +93,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 		}
 
 		adminHandler.ServeHTTP(w, r)
+
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	// setup /api/root/ handler
@@ -100,6 +109,8 @@ func InitRouter(mainHandler *handler.MainHandler) {
 		}
 
 		rootHandler.ServeHTTP(w, r)
+
+		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	// init web file handler

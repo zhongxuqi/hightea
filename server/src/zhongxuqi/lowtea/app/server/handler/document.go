@@ -232,7 +232,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if r.Method == http.MethodGet {
 		cmds := strings.Split(r.URL.Path, "/")
-		if len(cmds) < 4 {
+		if len(cmds) < 5 {
 			http.Error(w, errors.ERROR_EMPTY_ID.Error(), 400)
 			return
 		}
