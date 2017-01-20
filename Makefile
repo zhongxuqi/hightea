@@ -4,7 +4,7 @@ build-server:
 	GOPATH=${CURDIR}/server:$(GOPATH) && go build -o ./bin/lowtea zhongxuqi/lowtea/app/server
 
 build-front:
-	cd front && npm install && ./node_modules/webpack/bin/webpack.js
+	cd front && npm install && ./node_modules/gulp/bin/gulp.js build
 
 build-all: build-server build-front
 
