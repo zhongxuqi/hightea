@@ -27,6 +27,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	openAPIHandler.HandleFunc("/openapi/public_top_flag_documents", mainHandler.ActionPublicTopFlagDocuments)
 	openAPIHandler.HandleFunc("/openapi/rootinfo", mainHandler.ActionRootEmail)
 	mainHandler.Mux.HandleFunc("/openapi/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
 		openAPIHandler.ServeHTTP(w, r)
 
 		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
@@ -52,6 +53,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
 		apiHandler.ServeHTTP(w, r)
 
 		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)

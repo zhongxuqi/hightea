@@ -19,6 +19,9 @@ function login(account, password, resolve, reject) {
     fetch(NetConfig.Host + "/openapi/login", {
         method: "POST",
         credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
         body: JSON.stringify({
             account: account,
             expireTime: expireTime,
@@ -34,7 +37,24 @@ function login(account, password, resolve, reject) {
     })
 }
 
+function GetDocuments(params, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/documents?"+Object.keys(params).map((key) => {
+        return key + "=" + params[key]
+    }).join("&"), {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(resp)
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+}
+
 export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
+    GetDocuments: GetDocuments,
 }

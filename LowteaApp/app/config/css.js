@@ -8,6 +8,7 @@ export default {
         transparent_white: "#ffffff80",
         transparent: "rgba(0,0,0,0)",
         separation_line: "#e5e5e5",
+        white: "#ffffff",
     },
     font: {
         titleSize: 20,
