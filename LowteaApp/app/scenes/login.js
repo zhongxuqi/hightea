@@ -5,14 +5,33 @@ import {
     View,
     TextInput,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
+
+import Server from '../server/index.js'
 import Language from '../language/index.js'
 import BaseCSS from '../config/css.js'
+import MainScene from '../scenes/main.js'
 
 export default class LoginScene extends Component {
     constructor(props) {
         super(props)
-        this.state = {}
+        this.state = {
+            account: "",
+            password: "",
+        }
+    }
+
+    onLogin() {
+        if (this.state.account.length > 0 && this.state.password.length > 0) {
+            Server.login(this.state.account, this.state.password, ((res)=>{
+                this.props.navigator.push({
+                    component: MainScene
+                })
+            }).bind(this), (res)=>{
+                Alert.alert(Language.textMap("Login Failed"), Language.textMap("Account or password is wrong"))
+            })
+        }
     }
 
     render() {
@@ -29,6 +48,10 @@ export default class LoginScene extends Component {
                         underlineColorAndroid={BaseCSS.colors.transparent}
                         placeholderTextColor={'grey'}
                         selectionColor={'white'}
+                        value={this.state.account}
+                        onChangeText={((text)=>{
+                            this.setState({account: text})
+                        }).bind(this)}
                         placeholder={Language.textMap("Please Input Account")}/>
                 </View>
                 <View style={styles.textInputBg}>
@@ -37,11 +60,16 @@ export default class LoginScene extends Component {
                         underlineColorAndroid={BaseCSS.colors.transparent}
                         placeholderTextColor={'grey'}
                         selectionColor={'white'}
+                        secureTextEntry={true}
+                        value={this.state.password}
+                        onChangeText={((text)=>{
+                            this.setState({password: text})
+                        }).bind(this)}
                         placeholder={Language.textMap("Please Input Password")}/>
                 </View>
                 <TouchableOpacity
                     style={styles.loginBtn}
-                    onPress={()=>{}}>
+                    onPress={(()=>{this.onLogin()}).bind(this)}>
                     <Text style={styles.loginBtnText}>{Language.textMap("Login")}</Text>
                 </TouchableOpacity>
             </View>
@@ -77,7 +105,7 @@ const styles = StyleSheet.create({
     },
     loginBtn: Object.assign(BaseCSS.button, {
         marginHorizontal: 40,
-        padding: 5,
+        padding: 8,
         backgroundColor: BaseCSS.colors.green,
     }),
     loginBtnText: {

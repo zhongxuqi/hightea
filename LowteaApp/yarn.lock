@@ -2903,6 +2903,10 @@ react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/react-deep-force-update/download/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
+react-native-md5@^1.0.0:
+  version "1.0.0"
+  resolved "http://registry.npm.taobao.org/react-native-md5/download/react-native-md5-1.0.0.tgz#2320be24d674938ae5ef4f492698edbbfa0e0205"
+
 react-native@0.42.0:
   version "0.42.0"
   resolved "http://registry.npm.taobao.org/react-native/download/react-native-0.42.0.tgz#59b501603a63232598fff653a36307a26010402e"

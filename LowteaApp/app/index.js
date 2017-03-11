@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import Server from './server/index.js'
 import LoginScene from './scenes/login.js'
+import MainScene from './scenes/main.js'
 
 export default class WelcomeScene extends Component {
     constructor(props) {
@@ -17,6 +18,9 @@ export default class WelcomeScene extends Component {
         let props = this.props
         Server.GetSelfInfo((res) => {
             console.log(res)
+            props.navigator.push({
+                component: MainScene
+            })
         }, (err) => {
             props.navigator.push({
                 component: LoginScene,
