@@ -1,3 +1,4 @@
 [submodule "server/src/gopkg.in/mgo.v2"]
 	path = server/src/gopkg.in/mgo.v2
 	url = https://github.com/go-mgo/mgo.git
+	branch = v2

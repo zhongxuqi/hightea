@@ -1,6 +1,5 @@
 import md5 from "react-native-md5";
 import NetConfig from '../config/net.js'
-import {Alert} from 'react-native'
 
 function GetSelfInfo(resolve, reject) {
     fetch(NetConfig.Host + "/api/member/self", {
@@ -11,8 +10,6 @@ function GetSelfInfo(resolve, reject) {
         } else {
             reject(res)
         }
-    }).catch((err) => {
-        reject(err)
     })
 }
 
@@ -34,8 +31,6 @@ function login(account, password, resolve, reject) {
             if (typeof reject == "function") reject(resp)
             else console.log(resp)
         }
-    }).catch((err)=>{
-        Alert.alert("Http Error", JSON.stringify(err))
     })
 }
 

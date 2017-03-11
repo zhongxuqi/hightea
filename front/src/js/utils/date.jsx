@@ -14,7 +14,7 @@ function unixtime2String(unixTime) {
         return Math.floor(timeDist / 7 / 24 / 60 / 60) + Language.textMap(" weeks ago")
     } else {
         let thatTime = new Date(unixTime * 1000)
-        return thatTime.getYear() + "-" + thatTime.getMonth() + "-" + thatTime.getDay() + " " + thatTime.getHours() + ":" + thatTime.getMinutes() + ":" + thatTime.getSeconds()
+        return thatTime.getFullYear() + "-" + (thatTime.getMonth() + 1) + "-" + thatTime.getDate() + " " + thatTime.getHours() + ":" + thatTime.getMinutes() + ":" + thatTime.getSeconds()
     }
 }
 

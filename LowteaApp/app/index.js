@@ -17,7 +17,6 @@ export default class WelcomeScene extends Component {
     componentDidMount() {
         let props = this.props
         Server.GetSelfInfo((res) => {
-            console.log(res)
             props.navigator.push({
                 component: MainScene
             })
@@ -32,7 +31,7 @@ export default class WelcomeScene extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.welcome}>
-                Welcome to Lowtea!
+                    Welcome to Lowtea!
                 </Text>
             </View>
         )
