@@ -45,7 +45,35 @@ function GetDocuments(params, resolve, reject) {
         credentials: 'include',
     }).then((resp)=>{
         if (resp.ok) {
-            resolve(resp)
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+}
+
+function GetTopFlagDocuments(resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/top_flag_documents", {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+}
+
+function GetTopStarDocuments(resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/top_star_documents", {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
         } else {
             if (typeof reject == "function") reject(resp)
             else console.log(resp)
@@ -57,4 +85,6 @@ export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
     GetDocuments: GetDocuments,
+    GetTopFlagDocuments: GetTopFlagDocuments,
+    GetTopStarDocuments: GetTopStarDocuments,
 }
