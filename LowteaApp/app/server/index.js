@@ -81,10 +81,69 @@ function GetTopStarDocuments(resolve, reject) {
     })
 }
 
+function GetDocument(documentId, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/document/" + documentId, {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+}
+
+function ActionDocumentStar(documentId, action, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/star/" + documentId, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            action: action,
+        }),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+    
+}
+
+function ActionDocumentFlag(documentId, action, resolve, reject) {
+    fetch(NetConfig.Host + "/api/admin/flag/" + documentId, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            action: action,
+        }),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+    
+}
+
 export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
     GetDocuments: GetDocuments,
     GetTopFlagDocuments: GetTopFlagDocuments,
     GetTopStarDocuments: GetTopStarDocuments,
+    GetDocument: GetDocument,
+    ActionDocumentStar: ActionDocumentStar,
+    ActionDocumentFlag: ActionDocumentFlag,
 }

@@ -56,10 +56,6 @@ export default class NewsView extends Component {
         })
     }
 
-    onItemClick(document) {
-    
-    }
-
     render() {
         return (
             <View style={styles.container}>
@@ -71,7 +67,7 @@ export default class NewsView extends Component {
                     }).bind(this)}
                     renderRow={(document)=>{
                         return (
-                            <DocumentShortCut document={document} onClick={this.onItemClick.bind(this, document)}/>
+                            <DocumentShortCut document={document} navigator={this.props.navigator}/>
                         )
                     }}/>
             </View>

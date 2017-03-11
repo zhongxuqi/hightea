@@ -31,10 +31,6 @@ export default class StarsView extends Component {
             Alert.alert("Error", resp)
         })
     }
-        
-    onItemClick(document) {
-    
-    }
 
     render() {
         return (
@@ -44,7 +40,7 @@ export default class StarsView extends Component {
                     dataSource={this.state.dataSource.cloneWithRows(this.state.documents)}
                     renderRow={(document)=>{
                         return (
-                            <DocumentShortCut document={document} onClick={this.onItemClick.bind(this, document)}/>
+                            <DocumentShortCut document={document} navigator={this.props.navigator}/>
                         )
                     }}/>
             </View>

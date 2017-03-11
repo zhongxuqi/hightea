@@ -25,7 +25,7 @@ export default class LoginScene extends Component {
     onLogin() {
         if (this.state.account.length > 0 && this.state.password.length > 0) {
             Server.login(this.state.account, this.state.password, ((res)=>{
-                this.props.navigator.push({
+                this.props.navigator.resetTo({
                     component: MainScene
                 })
             }).bind(this), (res)=>{

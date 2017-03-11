@@ -17,7 +17,7 @@ export default class WelcomeScene extends Component {
     componentDidMount() {
         let props = this.props
         Server.GetSelfInfo((res) => {
-            props.navigator.push({
+            props.navigator.resetTo({
                 component: MainScene
             })
         }, (err) => {

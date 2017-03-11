@@ -18,7 +18,7 @@ export default class LowteaApp extends Component {
         initialRoute={{ component: WelcomeScene }}
         renderScene={(route, navigator) => {
           let TargetComponent = route.component
-          return <TargetComponent navigator={navigator}></TargetComponent>
+          return <TargetComponent navigator={navigator} data={route.data}></TargetComponent>
         }}
       ></Navigator>
     );

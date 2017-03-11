@@ -24,10 +24,10 @@ export default class MainScene extends Component {
         return (
             <View style={styles.container}>
                 <ViewPagerAndroid style={styles.main} initialPage={0} ref="viewPage" onPageSelected={this.onPageSelected.bind(this)}>
-                    <View><NewsView/></View>
-                    <View><FlagsView/></View>
-                    <View><StarsView/></View>
-                    <View><UserView/></View>
+                    <View><NewsView navigator={this.props.navigator}/></View>
+                    <View><FlagsView navigator={this.props.navigator}/></View>
+                    <View><StarsView navigator={this.props.navigator}/></View>
+                    <View><UserView navigator={this.props.navigator}/></View>
                 </ViewPagerAndroid>
                 <MainTabBar onTabSelected={this.setPage.bind(this)} ref="tabbar"/>
             </View>

@@ -8,6 +8,7 @@ import {
 import BaseCSS from '../config/css.js'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateUtils from '../utils/date.js'
+import PreviewScene from '../scenes/preview.js'
 
 export default class DocumentShortCut extends Component {
     constructor(props) {
@@ -17,9 +18,18 @@ export default class DocumentShortCut extends Component {
         }
     }
 
+    onPress() {
+        this.props.navigator.push({
+            component: PreviewScene,
+            data: {
+                document: this.props.document,
+            },
+        })
+    }
+
     render() {
         return (
-            <TouchableHighlight style={BaseCSS.container} onPress={this.props.onClick} underlayColor={BaseCSS.colors.green}
+            <TouchableHighlight style={BaseCSS.container} onPress={this.onPress.bind(this)} underlayColor={BaseCSS.colors.green}
                 onHideUnderlay={(()=>{
                     this.setState({press: false})
                 }).bind(this)}
