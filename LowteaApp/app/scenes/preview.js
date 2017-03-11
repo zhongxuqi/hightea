@@ -7,11 +7,22 @@ import {
     TouchableHighlight,
     WebView,
 } from 'react-native'
-import Markdown from 'react-native-simple-markdown'
+import marked from 'marked'
 import BaseCSS from '../config/css.js'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import NetConfig from '../config/net.js'
 import Server from '../server/index.js'
+
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false
+});
 
 export default class PreviewScene extends Component {
     constructor(props) {
@@ -20,7 +31,7 @@ export default class PreviewScene extends Component {
             backPress: false,
             starPress: false,
             flagPress: false,
-            document: {},
+            document: {content:""},
             flag: false,
             star: true,
         }
@@ -29,6 +40,7 @@ export default class PreviewScene extends Component {
 
     getDocument(documentId) {
         Server.GetDocument(documentId, ((resp)=>{
+            console.log(marked(resp.document.content))
             this.setState({
                 document: resp.document,
                 flag: resp.flag,
@@ -63,6 +75,7 @@ export default class PreviewScene extends Component {
             action="flag"
         }
         Server.ActionDocumentFlag(this.props.data.document.id, action, ((resp)=>{
+            marked()
             this.getDocument(this.props.data.document.id)
         }).bind(this), (resp)=>{
             Alert.alert("Error " + action, resp)
@@ -118,9 +131,7 @@ export default class PreviewScene extends Component {
                         </TouchableHighlight>
                     </View>
                 </View>
-                <View style={{flex:1, padding:7}}>
-                    <Markdown>{this.state.document.content}</Markdown>
-                </View>
+                <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}}/>
             </View>
         )
     }

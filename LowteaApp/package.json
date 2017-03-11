@@ -7,10 +7,10 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"marked": "^0.3.6",
 		"react": "~15.4.1",
 		"react-native": "0.42.0",
 		"react-native-md5": "^1.0.0",
-		"react-native-simple-markdown": "^1.0.60-rc.3",
 		"react-native-vector-icons": "^4.0.0"
 	},
 	"devDependencies": {
