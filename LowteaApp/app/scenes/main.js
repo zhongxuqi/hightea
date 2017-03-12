@@ -3,6 +3,7 @@ import {
     StyleSheet,
     View,
     ViewPagerAndroid,
+    BackAndroid,
 } from 'react-native'
 import BaseCSS from '../config/css.js'
 import MainTabBar from '../components/maintabbar.js'
@@ -12,6 +13,17 @@ import StarsView from '../components/stars.js'
 import UserView from '../components/user.js'
 
 export default class MainScene extends Component {
+    constructor(props) {
+        super(props)
+        BackAndroid.addEventListener("hardwareBackPress", (() => {
+            if (this.props.navigator.getCurrentRoutes().length > 1) {
+                this.props.navigator.pop()
+                return true
+            }
+            return false
+        }).bind(this))
+    }
+
     setPage(index) {
         this.refs.viewPage.setPage(index)
     }

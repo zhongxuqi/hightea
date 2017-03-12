@@ -11,7 +11,6 @@ import Language from '../../language/language.jsx'
 
 import './personaldocs_list.less'
 
-
 export default class PersonalDocsList extends React.Component {
     constructor(props) {
         super(props)

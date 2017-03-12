@@ -19,15 +19,6 @@ export default class UserInfoShortCut extends Component {
             headImag: "/img/head.png",
             userPress: false,
         }
-        this.getSelfInfo()
-    }
-
-    getSelfInfo() {
-        Server.GetSelfInfo(((resp) => {
-            this.setState({
-                user: resp.user,
-            })
-        }).bind(this))
     }
 
     formatHeadImg(rawImg) {
@@ -53,10 +44,10 @@ export default class UserInfoShortCut extends Component {
                 }).bind(this)}
                 onPress={this.onUserClick.bind(this)}>
                 <View style={styles.container}>
-                    <Image style={{width: 50, height: 50, marginRight: 10}} source={{uri: NetConfig.Host + this.formatHeadImg(this.state.user.headimg)}}/>
+                    <Image style={{width: 50, height: 50, marginRight: 10}} source={{uri: NetConfig.Host + this.formatHeadImg(this.props.user.headimg)}}/>
                     <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
-                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.state.user.account}</Text>
-                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.state.user.email}</Text>
+                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.account}</Text>
+                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.email}</Text>
                     </View>
                     <View style={{justifyContent: 'center'}}>
                         <Icon name="angle-right" size={30} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.userPress]}/>

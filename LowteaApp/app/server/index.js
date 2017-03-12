@@ -3,6 +3,7 @@ import NetConfig from '../config/net.js'
 
 function GetSelfInfo(resolve, reject) {
     fetch(NetConfig.Host + "/api/member/self", {
+        method: 'GET',
         credentials: 'include',
     }).then((res) => {
         if (res.ok) {
@@ -33,6 +34,32 @@ function login(account, password, resolve, reject) {
         } else {
             if (typeof reject == "function") reject(resp)
             else console.log(resp)
+        }
+    })
+}
+
+function GetMembers(resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/users", {
+        method: 'GET',
+        credentials: 'include',
+    }).then((res) => {
+        if (res.ok) {
+            resolve(JSON.parse(res._bodyText))
+        } else {
+            reject(res)
+        }
+    })
+}
+
+function GetRegisters(resolve, reject) {
+    fetch(NetConfig.Host + "/api/admin/registers", {
+        method: 'GET',
+        credentials: 'include',
+    }).then((res) => {
+        if (res.ok) {
+            resolve(JSON.parse(res._bodyText))
+        } else {
+            reject(res)
         }
     })
 }
@@ -134,7 +161,36 @@ function ActionDocumentFlag(documentId, action, resolve, reject) {
             else console.log(resp)
         }
     })
-    
+}
+
+function GetStarDocuments(resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/star_documents", {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
+}
+
+function GetDrafts(params, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/drafts?"+Object.keys(params).map((key) => {
+        return key + "=" + params[key]
+    }).join("&"), {
+        method: "GET",
+        credentials: 'include',
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else console.log(resp)
+        }
+    })
 }
 
 export default {
@@ -146,4 +202,8 @@ export default {
     GetDocument: GetDocument,
     ActionDocumentStar: ActionDocumentStar,
     ActionDocumentFlag: ActionDocumentFlag,
+    GetMembers: GetMembers,
+    GetRegisters: GetRegisters,
+    GetStarDocuments: GetStarDocuments,
+    GetDrafts: GetDrafts,
 }

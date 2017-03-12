@@ -10,6 +10,11 @@ import Server from '../server/index.js'
 import UserInfoShortCut from './user_info_shortcut.js'
 import MenuItem from './menu_item.js'
 import Language from '../language/index.js'
+import MyDocumentsScene from '../scenes/my_documents.js'
+import MyStarDocumentsScene from '../scenes/my_star_documents.js'
+import MyDraftsScene from '../scenes/my_drafts.js'
+import MembersScene from '../scenes/members.js'
+import RegistersScene from '../scenes/registers.js'
 
 export default class UserView extends Component {
     constructor(props) {
@@ -17,14 +22,15 @@ export default class UserView extends Component {
         this.state={
             user: {},
         }
+        this.getSelfInfo()
     }
 
     getSelfInfo() {
-        Server.GetSelfInfo((resp)=>{
+        Server.GetSelfInfo(((resp) => {
             this.setState({
                 user: resp.user,
             })
-        })
+        }).bind(this))
     }
 
     createNewPaper() {
@@ -32,14 +38,36 @@ export default class UserView extends Component {
     }
 
     showMyDrafts() {
-    
+        this.props.navigator.push({
+            component: MyDraftsScene,
+        })
+    }
+
+    showMyDocuments() {
+        this.props.navigator.push({
+            component: MyDocumentsScene,
+            data: {
+                user: this.state.user,
+            },
+        })
+    }
+
+    showMyStarDocuments() {
+        this.props.navigator.push({
+            component: MyStarDocumentsScene,
+        })
     }
 
     showMembers() {
-    
+        this.props.navigator.push({
+            component: MembersScene,
+        })
     }
 
-    showJoinMessages() {
+    showRegisters() {
+        this.props.navigator.push({
+            component: RegistersScene,
+        })
         
     }
 
@@ -47,14 +75,13 @@ export default class UserView extends Component {
         return (
             <ScrollView style={BaseCSS.container}>
                 <UserInfoShortCut user={this.state.user}/>
-                <MenuItem icon={"plus"} text={Language.textMap("Create New Paper")} onClick={this.createNewPaper}/>
-                <MenuItem icon={"file-text"} text={Language.textMap("My Drafts")} onClick={this.showMyDrafts}/>
-                <MenuItem icon={"group"} text={Language.textMap("Members")} onClick={this.showMembers}/>
-                <MenuItem icon={"address-book-o"} text={Language.textMap("Join Messages")} onClick={this.showJoinMessages}/>
+                <MenuItem icon={"plus"} text={Language.textMap("Create New Paper")} onClick={this.createNewPaper.bind(this)}/>
+                <MenuItem icon={"file-text"} text={Language.textMap("My Drafts")} onClick={this.showMyDrafts.bind(this)}/>
+                <MenuItem icon={"book"} text={Language.textMap("My Documents")} onClick={this.showMyDocuments.bind(this)}/>
+                <MenuItem icon={"star"} text={Language.textMap("My Stared Documents")} onClick={this.showMyStarDocuments.bind(this)}/>
+                <MenuItem icon={"group"} text={Language.textMap("Members")} onClick={this.showMembers.bind(this)}/>
+                <MenuItem icon={"address-book-o"} text={Language.textMap("Show Registers")} onClick={this.showRegisters.bind(this)}/>
             </ScrollView>
         )
     }
 }
-
-const styles=StyleSheet.create({
-})
