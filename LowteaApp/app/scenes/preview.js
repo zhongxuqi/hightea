@@ -75,7 +75,6 @@ export default class PreviewScene extends Component {
             action="flag"
         }
         Server.ActionDocumentFlag(this.props.data.document.id, action, ((resp)=>{
-            marked()
             this.getDocument(this.props.data.document.id)
         }).bind(this), (resp)=>{
             Alert.alert("Error " + action, resp)
