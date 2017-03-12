@@ -6,7 +6,7 @@ function GetSelfInfo(resolve, reject) {
         credentials: 'include',
     }).then((res) => {
         if (res.ok) {
-            resolve(res)
+            resolve(JSON.parse(res._bodyText))
         } else {
             reject(res)
         }
