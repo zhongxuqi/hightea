@@ -5,6 +5,7 @@ import {
     View,
     ListView,
     Text,
+    InteractionManager,
 } from 'react-native'
 import BaseCSS from '../config/css.js'
 import Server from '../server/index.js'
@@ -23,7 +24,9 @@ export default class NewsView extends Component {
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
             documents: [],
         }
-        this.getDocuments(0)
+        InteractionManager.runAfterInteractions(() => {
+            this.getDocuments(0)
+        })
     }
 
     getDocuments(pageIndex) {

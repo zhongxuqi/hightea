@@ -30,13 +30,41 @@ export default class RegistersScene extends Component {
     
     getRegisters() {
         Server.GetRegisters(((resp)=>{
-            if (resp.registers == null) return
+            if (resp.registers == null) resp.registers = []
             this.setState({
                 registers: resp.registers,
             })
         }).bind(this), (resp)=>{
             Alert.alert("Error", resp)
         })
+    }
+
+    agreeRegister(account) {
+        Alert.alert(Language.textMap("Notice"), Language.textMap("agree the register of") + " " + account + " ?", [{
+            text: Language.textMap("ok"),
+            onPress: (()=>{
+                Server.ActionRegister(account, "agree", ((resp)=>{
+                    this.getRegisters()
+                }).bind(this))
+            }).bind(this)
+        }, {
+            text: Language.textMap("cancel"),
+            onPress: ()=>{},
+        }])
+    }
+    
+    refuseRegister(account) {
+        Alert.alert(Language.textMap("Warning"), Language.textMap("Refuse the register of") + " " + account + " ?", [{
+            text: Language.textMap("ok"),
+            onPress: (()=>{
+                Server.ActionRegister(account, "deny", ((resp)=>{
+                    this.getRegisters()
+                }).bind(this))
+            }).bind(this)
+        }, {
+            text: Language.textMap("cancel"),
+            onPress: ()=>{},
+        }])
     }
     
     render() {
@@ -62,11 +90,13 @@ export default class RegistersScene extends Component {
                 <ListView 
                     enableEmptySections={true}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.registers)}
-                    renderRow={(register)=>{
+                    renderRow={((register)=>{
                         return (
-                            <RegisterShortCut register={register}/>
+                            <RegisterShortCut register={register}
+                                onRefuseClick={this.refuseRegister.bind(this, register.account)}
+                                onAgressClick={this.agreeRegister.bind(this, register.account)}/>
                         )
-                    }}/>
+                    }).bind(this)}/>
             </View>
         )
     }

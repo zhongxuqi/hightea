@@ -67,6 +67,26 @@ export default class MyDocumentsScene extends Component {
         })
     }
 
+    onPostDocumentStatus(document) {
+        Server.PostDocumentStatus(document, ((resp)=>{
+            this.getDocuments(0)
+        }).bind(this))
+    }
+
+    onDeleteDocument(document) {
+        Alert.alert("Danger", Language.textMap("delete the document") + " [ " + document.title + " ] ?", [{
+            text: Language.textMap("cancel"),
+            onPress: ()=>{},
+        }, {
+            text: Language.textMap("ok"),
+            onPress: (()=>{
+                Server.DeleteDocument(document.id, (resp)=>{
+                    this.getDocuments(0)
+                })
+            }).bind(this),
+        }])
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -95,7 +115,8 @@ export default class MyDocumentsScene extends Component {
                     }).bind(this)}
                     renderRow={(document)=>{
                         return (
-                            <DocumentShortCut document={document} navigator={this.props.navigator}/>
+                            <DocumentShortCut document={document} navigator={this.props.navigator} enableStatus={true} enableModal={true} enableDelete={true}
+                                onPostDocumentStatus={this.onPostDocumentStatus.bind(this)} onDeleteDocument={this.onDeleteDocument.bind(this)}/>
                         )
                     }}/>
             </View>

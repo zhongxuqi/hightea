@@ -6,6 +6,7 @@ import {
     Text,
     TouchableHighlight,
     WebView,
+    InteractionManager,
 } from 'react-native'
 import marked from 'marked'
 import BaseCSS from '../config/css.js'
@@ -35,7 +36,12 @@ export default class PreviewScene extends Component {
             flag: false,
             star: true,
         }
-        this.getDocument(this.props.data.document.id)
+    }
+
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(() => {
+            this.getDocument(this.props.data.document.id)
+        })
     }
 
     getDocument(documentId) {
