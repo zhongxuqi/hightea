@@ -47,7 +47,7 @@ export default class MembersScene extends Component {
                     dataSource={this.state.dataSource.cloneWithRows(this.state.users)}
                     renderRow={(user)=>{
                         return (
-                            <UserInfoShortCut user={user}/>
+                            <UserInfoShortCut user={user} navigator={this.props.navigator}/>
                         )
                     }}/>
             </View>

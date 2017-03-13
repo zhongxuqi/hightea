@@ -5,11 +5,14 @@ import {
     TouchableHighlight,
     Text,
     Image,
+    Picker,
+    Button,
 } from 'react-native'
 import BaseCSS from '../config/css.js'
 import Language from '../language/index.js'
 import NetConfig from '../config/net.js'
 import HeadBar from '../components/headbar.js'
+import Dialog from '../components/dialog.js'
 
 export default class UserInfoScene extends Component {
     constructor(props) {
@@ -21,16 +24,51 @@ export default class UserInfoScene extends Component {
             userintroPress: false,
             genderPress: false,
             languagePress: false,
+
+            selected_item: '',
+            dialogVisible: false,
+            dialog_title: '',
+            dialog_text: '',
+            dialog_type: 'text',
         }
     }
 
-    onHeadimgClick() {
-    
+    onItemClick(item) {
+        switch (item) {
+            case 'nickname':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'User Name Setting',
+                    dialog_text: this.props.data.user.nickname,
+                    dialog_type: 'text',
+                })
+                break
+        }
+    }
+
+    onActionClick() {
+        
     }
 
     render() {
         return (
             <View style={styles.container}>
+                <Dialog visible={this.state.dialogVisible} title={this.state.dialog_title} buttons={[{
+                    text: 'CANCEL',
+                    func: (()=>{this.setState({dialogVisible: false})}).bind(this),
+                }, {
+                    text: 'OK',
+                    func: this.onActionClick.bind(this),
+                }]}>
+                    {
+                        {
+                            text: (
+                                <View></View> 
+                            ),
+                        }[this.state.dialog_type]
+                    }
+                </Dialog>
                 <HeadBar onBackClick={(()=>{
                     this.props.navigator.pop()
                 }).bind(this)} title={Language.textMap("UserInfo")}/>
@@ -41,7 +79,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({headimgPress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.headimgPress]}>
@@ -58,7 +96,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({nicknamePress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'nickname')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.nicknamePress]}>
@@ -77,7 +115,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({emailPress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.emailPress]}>
@@ -96,7 +134,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({userintroPress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.userintroPress]}>
@@ -115,7 +153,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({genderPress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.genderPress]}>
@@ -134,7 +172,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({languagePress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.languagePress]}>
@@ -153,7 +191,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({passwordPress: true})
                     }).bind(this)}
-                    onPress={this.onHeadimgClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this)}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.passwordPress]}>

@@ -5,7 +5,6 @@ import {
     Text,
     TouchableHighlight,
     InteractionManager,
-    Modal,
     Picker,
     Button,
 } from 'react-native'
@@ -16,6 +15,7 @@ import PreviewScene from '../scenes/preview.js'
 import StatusView from '../components/status.js'
 import DocConfig from '../config/document.js'
 import Language from '../language/index.js'
+import Dialog from './dialog.js'
 
 export default class DocumentShortCut extends Component {
     constructor(props) {
@@ -86,32 +86,24 @@ export default class DocumentShortCut extends Component {
                 }).bind(this)}
                 onLongPress={this.onLongPress.bind(this)}>
                 <View style={styles.container}>
-                    <Modal visible={this.state.modalVisible} 
-                        transparent={true}
-                        onRequestClose={()=>{}}>
-                        <View style={{flex: 1, backgroundColor:BaseCSS.colors.transparent_black, alignItems:'center', justifyContent:'center'}}>
-                            <View style={{flexDirection: 'column', backgroundColor: BaseCSS.colors.white, padding: 10, borderRadius: 3}}>
-                                <Picker style={{width: 300}} selectedValue={this.state.status}
-                                    onValueChange={(status) => this.setState({status: status})}>
-                                    {
-                                        DocConfig.status.map((item, i)=>{
-                                            return (
-                                                <Picker.Item key={i} label={Language.textMap(item.label)} value={item.value} />
-                                            )
-                                        })
-                                    }
-                                </Picker>
-                                <View style={{flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                    <View style={{marginRight: 10}}>
-                                        <Button title={Language.textMap("cancel")} onPress={this.onCancelClick.bind(this)}/>
-                                    </View>
-                                    <View>
-                                        <Button title={Language.textMap("ok")} onPress={this.onOkClick.bind(this)}/>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                    <Dialog visible={this.state.modalVisible} title={Language.textMap("Select doucment status")} buttons={[{
+                        text: 'CANCEL',
+                        func: this.onCancelClick.bind(this),
+                    }, {
+                        text: 'OK',
+                        func: this.onOkClick.bind(this),
+                    }]}>
+                        <Picker style={{width: 300}} selectedValue={this.state.status}
+                            onValueChange={(status) => this.setState({status: status})}>
+                            {
+                                DocConfig.status.map((item, i)=>{
+                                    return (
+                                        <Picker.Item key={i} label={Language.textMap(item.label)} value={item.value} />
+                                    )
+                                })
+                            }
+                        </Picker>
+                    </Dialog>
                     <View style={{flex: 1, flexDirection: 'column'}}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                             <Text style={{false:styles.title,true:styles.title_active}[this.state.press]}>{this.props.document.title}</Text>
