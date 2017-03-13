@@ -10,6 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import BaseCSS from '../config/css.js'
 import NetConfig from '../config/net.js'
 import Server from '../server/index.js'
+import UserInfoScene from '../scenes/user_info.js'
 
 export default class UserInfoShortCut extends Component {
     constructor(props) {
@@ -21,16 +22,13 @@ export default class UserInfoShortCut extends Component {
         }
     }
 
-    formatHeadImg(rawImg) {
-        let headImg = rawImg
-        if (headImg == "" || headImg == undefined) {
-            headImg = "/img/head.png"
-        }
-        return headImg
-    }
-
     onUserClick() {
-    
+        this.props.navigator.push({
+            component: UserInfoScene,
+            data: {
+                user: this.props.user,
+            },
+        })
     }
 
     render() {
@@ -44,7 +42,7 @@ export default class UserInfoShortCut extends Component {
                 }).bind(this)}
                 onPress={this.onUserClick.bind(this)}>
                 <View style={styles.container}>
-                    <Image style={{width: 50, height: 50, marginRight: 10}} source={{uri: NetConfig.Host + this.formatHeadImg(this.props.user.headimg)}}/>
+                    <Image style={{width: 50, height: 50, marginRight: 10}} source={{uri: NetConfig.Host + NetConfig.FormatHeadImg(this.props.user.headimg)}}/>
                     <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
                         <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.account}</Text>
                         <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.email}</Text>

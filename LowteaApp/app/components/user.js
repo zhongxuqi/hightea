@@ -68,13 +68,12 @@ export default class UserView extends Component {
         this.props.navigator.push({
             component: RegistersScene,
         })
-        
     }
 
     render() {
         return (
             <ScrollView style={BaseCSS.container}>
-                <UserInfoShortCut user={this.state.user}/>
+                <UserInfoShortCut user={this.state.user} navigator={this.props.navigator}/>
                 <MenuItem icon={"plus"} text={Language.textMap("Create New Paper")} onClick={this.createNewPaper.bind(this)}/>
                 <MenuItem icon={"file-text"} text={Language.textMap("My Drafts")} onClick={this.showMyDrafts.bind(this)}/>
                 <MenuItem icon={"book"} text={Language.textMap("My Documents")} onClick={this.showMyDocuments.bind(this)}/>
