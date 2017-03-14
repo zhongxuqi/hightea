@@ -35,8 +35,23 @@ function textMap(rawText) {
     return currLang.textMap(rawText)
 }
 
+function getGenders() {
+    return [{
+        label: currLang.textMap('male'),
+        value: 'male',
+    }, {
+        label: currLang.textMap('female'),
+        value: 'female',
+    }, {
+        label: currLang.textMap('secret'),
+        value: '',
+    }]
+}
+
 export default {
+    SelectLanguage: selectLanguage,
     languages: languages,
     currLang: currLang,
     textMap: textMap,
+    GetGenders: getGenders,
 }

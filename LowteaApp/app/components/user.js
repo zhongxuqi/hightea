@@ -5,6 +5,7 @@ import {
     Text,
     ScrollView,
 } from 'react-native'
+import Events from 'events'
 import BaseCSS from '../config/css.js'
 import Server from '../server/index.js'
 import UserInfoShortCut from './user_info_shortcut.js'
@@ -16,12 +17,18 @@ import MyDraftsScene from '../scenes/my_drafts.js'
 import MembersScene from '../scenes/members.js'
 import RegistersScene from '../scenes/registers.js'
 
+let eventEmitter = new Events.EventEmitter()
+
 export default class UserView extends Component {
     constructor(props) {
         super(props)
         this.state={
             user: {},
         }
+        eventEmitter.on("updateUserInfo", this.getSelfInfo.bind(this))
+    }
+
+    componentDidMount() {
         this.getSelfInfo()
     }
 

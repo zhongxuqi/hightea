@@ -7,12 +7,17 @@ import {
     Image,
     Picker,
     Button,
+    TextInput,
 } from 'react-native'
+import Events from 'events'
 import BaseCSS from '../config/css.js'
 import Language from '../language/index.js'
 import NetConfig from '../config/net.js'
 import HeadBar from '../components/headbar.js'
 import Dialog from '../components/dialog.js'
+import Server from '../server/index.js'
+
+let eventEmitter = new Events.EventEmitter()
 
 export default class UserInfoScene extends Component {
     constructor(props) {
@@ -28,7 +33,7 @@ export default class UserInfoScene extends Component {
             selected_item: '',
             dialogVisible: false,
             dialog_title: '',
-            dialog_text: '',
+            dialog_value: '',
             dialog_type: 'text',
         }
     }
@@ -40,15 +45,75 @@ export default class UserInfoScene extends Component {
                     selected_item: item,
                     dialogVisible: true,
                     dialog_title: 'User Name Setting',
-                    dialog_text: this.props.data.user.nickname,
+                    dialog_value: this.props.data.user.nickname,
                     dialog_type: 'text',
+                })
+                break
+            case 'email':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'Email Setting',
+                    dialog_value: this.props.data.user.email,
+                    dialog_type: 'text',
+                })
+                break
+            case 'userintro':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'Introduce Setting',
+                    dialog_value: this.props.data.user.userintro,
+                    dialog_type: 'text',
+                })
+                break
+            case 'gender':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'Gender Setting',
+                    dialog_value: this.props.data.user.gender,
+                    dialog_type: 'gender',
                 })
                 break
         }
     }
 
     onActionClick() {
-        
+        switch (this.state.selected_item) {
+            case 'nickname':
+                Server.PostSelf(Object.assign(this.props.data.user,{
+                    nickname: this.state.dialog_value, 
+                }), ((resp)=>{
+                    eventEmitter.emit("updateUserInfo")
+                    this.setState({dialogVisible: false})
+                }).bind(this))
+                break
+            case 'email':
+                Server.PostSelf(Object.assign(this.props.data.user,{
+                    email: this.state.dialog_value, 
+                }), ((resp)=>{
+                    eventEmitter.emit("updateUserInfo")
+                    this.setState({dialogVisible: false})
+                }).bind(this))
+                break
+            case 'userintro':
+                Server.PostSelf(Object.assign(this.props.data.user,{
+                    userintro: this.state.dialog_value, 
+                }), ((resp)=>{
+                    eventEmitter.emit("updateUserInfo")
+                    this.setState({dialogVisible: false})
+                }).bind(this))
+                break
+            case 'gender':
+                Server.PostSelf(Object.assign(this.props.data.user,{
+                    gender: this.state.dialog_value, 
+                }), ((resp)=>{
+                    eventEmitter.emit("updateUserInfo")
+                    this.setState({dialogVisible: false})
+                }).bind(this))
+                break
+        }
     }
 
     render() {
@@ -64,7 +129,24 @@ export default class UserInfoScene extends Component {
                     {
                         {
                             text: (
-                                <View></View> 
+                                <TextInput value={this.state.dialog_value}
+                                    onChangeText={((text)=>{
+                                        this.setState({dialog_value: text})
+                                    }).bind(this)}/> 
+                            ),
+                            gender: (
+                                <Picker style={{minWidth: 300}} selectedValue={this.state.dialog_value}
+                                    onValueChange={((value)=>{
+                                        this.setState({dialog_value: value})
+                                    }).bind(this)}>
+                                    {
+                                        Language.GetGenders().map((item, i)=>{
+                                            return (
+                                                <Picker.Item key={i} label={item.label} value={item.value} />
+                                            )
+                                        })
+                                    }
+                                </Picker>
                             ),
                         }[this.state.dialog_type]
                     }
@@ -115,7 +197,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({emailPress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'email')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.emailPress]}>
@@ -134,7 +216,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({userintroPress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'userintro')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.userintroPress]}>
@@ -153,7 +235,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({genderPress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'gender')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.genderPress]}>

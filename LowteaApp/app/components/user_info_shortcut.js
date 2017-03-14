@@ -44,7 +44,7 @@ export default class UserInfoShortCut extends Component {
                 <View style={styles.container}>
                     <Image style={{width: 50, height: 50, marginRight: 10}} source={{uri: NetConfig.Host + NetConfig.FormatHeadImg(this.props.user.headimg)}}/>
                     <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
-                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.account}</Text>
+                        <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.nickname}</Text>
                         <Text style={{false:styles.userinfo_text,true:styles.userinfo_text_active}[this.state.userPress]}>{this.props.user.email}</Text>
                     </View>
                     <View style={{justifyContent: 'center'}}>

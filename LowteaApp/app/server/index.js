@@ -258,6 +258,24 @@ function DeleteDocument(documentId, resolve, reject) {
     })
 }
 
+function PostSelf(self, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/self", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(self),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else handleError(resp)
+        }
+    })
+}
+
 export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
@@ -274,4 +292,5 @@ export default {
     ActionRegister: ActionRegister,
     PostDocumentStatus: PostDocumentStatus,
     DeleteDocument: DeleteDocument,
+    PostSelf: PostSelf,
 }
