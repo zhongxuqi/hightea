@@ -48,10 +48,28 @@ function getGenders() {
     }]
 }
 
+function Short2Language(short) {
+    for (let i=0;i<languages.length;i++) {
+        if (languages[i].short == short) {
+            return languages[i].value
+        }
+    }
+}
+
+function Language2Short(lang) {
+    for (let i=0;i<languages.length;i++) {
+        if (languages[i].value == lang) {
+            return languages[i].short
+        }
+    }
+}
+
 export default {
     SelectLanguage: selectLanguage,
     languages: languages,
     currLang: currLang,
     textMap: textMap,
     GetGenders: getGenders,
+    Short2Language: Short2Language,
+    Language2Short: Language2Short,
 }

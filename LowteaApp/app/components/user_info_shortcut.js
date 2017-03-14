@@ -27,6 +27,7 @@ export default class UserInfoShortCut extends Component {
             component: UserInfoScene,
             data: {
                 user: this.props.user,
+                enableEdit: this.props.enableEdit,
             },
         })
     }

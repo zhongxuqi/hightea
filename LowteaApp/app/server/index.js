@@ -276,6 +276,27 @@ function PostSelf(self, resolve, reject) {
     })
 }
 
+function PostPassword(oldPassword, newPassword, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/self_password", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            password: oldPassword,
+            newPassword: newPassword,
+        }),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else handleError(resp)
+        }
+    })
+}
+
 export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
@@ -293,4 +314,5 @@ export default {
     PostDocumentStatus: PostDocumentStatus,
     DeleteDocument: DeleteDocument,
     PostSelf: PostSelf,
+    PostPassword: PostPassword,
 }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {
     StyleSheet,
+    Alert,
     View,
     TouchableHighlight,
     Text,
@@ -35,10 +36,15 @@ export default class UserInfoScene extends Component {
             dialog_title: '',
             dialog_value: '',
             dialog_type: 'text',
+
+            oldPassword: '',
+            newPassword: '',
+            reNewPassword: '',
         }
     }
 
     onItemClick(item) {
+        if (this.props.data.enableEdit !== true) return
         switch (item) {
             case 'nickname':
                 this.setState({
@@ -74,6 +80,27 @@ export default class UserInfoScene extends Component {
                     dialog_title: 'Gender Setting',
                     dialog_value: this.props.data.user.gender,
                     dialog_type: 'gender',
+                })
+                break
+            case 'language':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'Language Setting',
+                    dialog_value: this.props.data.user.language,
+                    dialog_type: 'language',
+                })
+                break
+            case 'password':
+                this.setState({
+                    selected_item: item,
+                    dialogVisible: true,
+                    dialog_title: 'Password Setting',
+                    dialog_value: this.props.data.user.language,
+                    dialog_type: 'password',
+                    oldPassword: '',
+                    newPassword: '',
+                    reNewPassword: '',
                 })
                 break
         }
@@ -113,6 +140,25 @@ export default class UserInfoScene extends Component {
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
+            case 'language':
+                Server.PostSelf(Object.assign(this.props.data.user,{
+                    language: this.state.dialog_value, 
+                }), ((resp)=>{
+                    eventEmitter.emit("updateUserInfo")
+                    this.setState({dialogVisible: false})
+                }).bind(this))
+                break
+            case 'password':
+                if (this.state.newPassword !== this.state.reNewPassword) {
+                    Alert.alert(Language.textMap("Error"), Language.textMap("two new password is not same"))
+                    return
+                }
+                Server.PostPassword(this.state.oldPassword, this.state.newPassword, (resp)=>{
+                    this.setState({dialogVisible: false})
+                }, (resp)=>{
+                    Alert.alert(Language.textMap("Error"), Language.textMap("Password is wrong"))
+                })
+                break
         }
     }
 
@@ -147,6 +193,42 @@ export default class UserInfoScene extends Component {
                                         })
                                     }
                                 </Picker>
+                            ),
+                            language: (
+                                <Picker style={{minWidth: 300}} selectedValue={this.state.dialog_value}
+                                    onValueChange={((value)=>{
+                                        this.setState({dialog_value: value})
+                                    }).bind(this)}>
+                                    {
+                                        Language.languages.map((item, i)=>{
+                                            return (
+                                                <Picker.Item key={i} label={item.value} value={item.short} />
+                                            )
+                                        })
+                                    }
+                                </Picker>
+                            ),
+                            password: (
+                                <View style={{flexDirection: 'column'}}>
+                                    <TextInput value={this.state.oldPassword}
+                                        placeholder={Language.textMap("Please Input Password")}
+                                        secureTextEntry={true}
+                                        onChangeText={((text)=>{
+                                            this.setState({oldPassword: text})
+                                        }).bind(this)}/> 
+                                    <TextInput value={this.state.newPassword}
+                                        placeholder={Language.textMap("Please Input New Password")}
+                                        secureTextEntry={true}
+                                        onChangeText={((text)=>{
+                                            this.setState({newPassword: text})
+                                        }).bind(this)}/> 
+                                    <TextInput value={this.state.reNewPassword}
+                                        placeholder={Language.textMap("Please ReInput New Password")}
+                                        secureTextEntry={true}
+                                        onChangeText={((text)=>{
+                                            this.setState({reNewPassword: text})
+                                        }).bind(this)}/> 
+                                </View>
                             ),
                         }[this.state.dialog_type]
                     }
@@ -254,7 +336,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({languagePress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'language')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.languagePress]}>
@@ -262,7 +344,7 @@ export default class UserInfoScene extends Component {
                             </Text>
                         </View>
                         <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.languagePress]}>
-                            { this.props.data.user.language }
+                            { Language.Short2Language(this.props.data.user.language) }
                         </Text>
                     </View>
                 </TouchableHighlight>
@@ -273,7 +355,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({passwordPress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'password')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.passwordPress]}>
