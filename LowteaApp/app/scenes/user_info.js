@@ -11,6 +11,7 @@ import {
     TextInput,
 } from 'react-native'
 import Events from 'events'
+import ImagePicker from 'react-native-image-picker'
 import BaseCSS from '../config/css.js'
 import Language from '../language/index.js'
 import NetConfig from '../config/net.js'
@@ -46,6 +47,30 @@ export default class UserInfoScene extends Component {
     onItemClick(item) {
         if (this.props.data.enableEdit !== true) return
         switch (item) {
+            case 'headimg':
+                ImagePicker.showImagePicker({
+                    title: 'Select Head Image',
+                    cancelButtonTitle: Language.textMap('CANCEL'),
+                    takePhotoButtonTitle: Language.textMap('From Photo'),
+                    chooseFromLibraryButtonTitle: Language.textMap('From Image'),
+                }, (resp)=>{
+                    if (resp.didCancel) {
+                    } else if (resp.error) {
+                    } else if ( resp.customButton) {
+                    } else {
+                        Server.PostImage(resp.uri, (resp)=>{
+                            Server.PostSelf(Object.assign(this.props.data.user,{
+                                headimg: resp.imageUrl, 
+                            }), ((resp)=>{
+                                eventEmitter.emit("updateUserInfo")
+                                this.setState({dialogVisible: false})
+                            }).bind(this))
+                        }, (resp)=>{
+                            Alert.alert(Language.textMap("Error"), JSON.stringify(resp))
+                        })
+                    }
+                })
+                break
             case 'nickname':
                 this.setState({
                     selected_item: item,
@@ -243,7 +268,7 @@ export default class UserInfoScene extends Component {
                     onShowUnderlay={(()=>{
                         this.setState({headimgPress: true})
                     }).bind(this)}
-                    onPress={this.onItemClick.bind(this)}>
+                    onPress={this.onItemClick.bind(this, 'headimg')}>
                     <View style={styles.info_item}>
                         <View style={{flex: 1, flexDirection: 'row'}}>
                             <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.headimgPress]}>

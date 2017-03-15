@@ -297,6 +297,30 @@ function PostPassword(oldPassword, newPassword, resolve, reject) {
     })
 }
 
+function PostImage(imageFile, resolve, reject) {
+    let formData = new FormData()
+    formData.append("imagefile", {
+        uri:imageFile,
+        type: 'multipart/form-data',
+        name: 'imagefile'
+    })
+    fetch(NetConfig.Host + "/api/member/upload_image", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else handleError(resp)
+        }
+    })
+}
+
 export default {
     GetSelfInfo: GetSelfInfo,
     login: login,
@@ -315,4 +339,5 @@ export default {
     DeleteDocument: DeleteDocument,
     PostSelf: PostSelf,
     PostPassword: PostPassword,
+    PostImage: PostImage,
 }
