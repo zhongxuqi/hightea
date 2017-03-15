@@ -367,7 +367,7 @@ export default class UserInfoScene extends Component {
                             </Text>
                         </View>
                         <Text style={{false:styles.info_item_text,true:styles.info_item_text_active}[this.state.genderPress]}>
-                            { this.props.data.user.gender }
+                            { Language.Gender2Text(this.props.data.user.gender) }
                         </Text>
                     </View>
                 </TouchableHighlight>

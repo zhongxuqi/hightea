@@ -48,7 +48,16 @@ function getGenders() {
     }]
 }
 
+function gender2Text(gender) {
+    return {
+        'male': currLang.textMap('male'),
+        'female': currLang.textMap('female'),
+        '': currLang.textMap('secret'),
+    }[gender]
+}
+
 function Short2Language(short) {
+    if (short == '') short = 'en'
     for (let i=0;i<languages.length;i++) {
         if (languages[i].short == short) {
             return languages[i].value
@@ -72,4 +81,5 @@ export default {
     GetGenders: getGenders,
     Short2Language: Short2Language,
     Language2Short: Language2Short,
+    Gender2Text: gender2Text,
 }
