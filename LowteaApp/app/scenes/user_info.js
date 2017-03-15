@@ -18,6 +18,7 @@ import NetConfig from '../config/net.js'
 import HeadBar from '../components/headbar.js'
 import Dialog from '../components/dialog.js'
 import Server from '../server/index.js'
+import LoginScene from './login.js'
 
 let eventEmitter = new Events.EventEmitter()
 
@@ -185,6 +186,22 @@ export default class UserInfoScene extends Component {
                 })
                 break
         }
+    }
+
+    onLogoutClick() {
+        Alert.alert(Language.textMap("Warning"), Language.textMap("Logout the account") + " ?", [{
+            text: 'cancel',
+            onPress: ()=>{}
+        }, {
+            text: "ok",
+            onPress: (()=>{
+                Server.Logout((resp)=>{
+                    this.props.navigator.resetTo({
+                        component: LoginScene,
+                    })
+                })
+            }).bind(this)
+        }])
     }
 
     render() {
@@ -392,6 +409,18 @@ export default class UserInfoScene extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
+
+                {
+                    {
+                        false: null,
+                        true: (
+                            <TouchableHighlight style={{flexDirection: 'column'}} underlayColor={BaseCSS.colors.transparent}
+                                onPress={this.onLogoutClick.bind(this)}>
+                                <Text style={styles.logoutBtn}>{Language.textMap("Logout")}</Text>
+                            </TouchableHighlight>
+                        ),
+                    }[this.props.data.enableEdit===true]
+                }
             </View>
         )
     }
@@ -417,5 +446,16 @@ const styles=StyleSheet.create({
     info_item_text_active: {
         fontSize: BaseCSS.font.contentSize,
         color: BaseCSS.colors.white,
+    },
+    logoutBtn: {
+        color: BaseCSS.colors.white,
+        backgroundColor: BaseCSS.colors.warning,
+        fontSize: BaseCSS.font.contentSize,
+        marginHorizontal: 50,
+        marginVertical: 10,
+        padding: 7,
+        borderRadius: 3,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
 })

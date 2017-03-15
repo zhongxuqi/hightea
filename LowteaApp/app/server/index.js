@@ -43,6 +43,19 @@ function login(account, password, resolve, reject) {
     })
 }
 
+function Logout(resolve, reject) {
+    fetch(NetConfig.Host + "/openapi/logout", {
+        method: 'GET',
+        credentials: 'include',
+    }).then((res) => {
+        if (res.ok) {
+            resolve(JSON.parse(res._bodyText))
+        } else {
+            reject(res)
+        }
+    })
+}
+
 function GetMembers(resolve, reject) {
     fetch(NetConfig.Host + "/api/member/users", {
         method: 'GET',
@@ -322,8 +335,9 @@ function PostImage(imageFile, resolve, reject) {
 }
 
 export default {
-    GetSelfInfo: GetSelfInfo,
     login: login,
+    Logout: Logout,
+    GetSelfInfo: GetSelfInfo,
     GetDocuments: GetDocuments,
     GetTopFlagDocuments: GetTopFlagDocuments,
     GetTopStarDocuments: GetTopStarDocuments,
