@@ -6,17 +6,32 @@ import {
     TouchableHighlight,
     TextInput,
     Text,
+    WebView,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Language from '../language/index.js'
 import BaseCSS from '../config/css.js'
 import StringUtils from '../utils/string.js'
+import marked from 'marked'
+marked.setOptions({
+    renderer: new marked.Renderer(),
+    gfm: true,
+    tables: true,
+    breaks: true,
+    pedantic: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false
+});
+import NetConfig from '../config/net.js'
 
 export default class DocEditorScene extends Component {
     constructor(props) {
         super(props)
         this.state = {
             backPress: false,
+
+            previewActive: false,
 
             previewPress: false, 
             boldPress: false,
@@ -37,6 +52,12 @@ export default class DocEditorScene extends Component {
 
     onBackClick() {
         this.props.navigator.pop()
+    }
+
+    togglePreview() {
+        this.setState({
+            previewActive: !this.state.previewActive,
+        })
     }
 
     toggleHeading() {
@@ -158,7 +179,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="bold" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.boldPress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.togglePreview.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({previewPress: false})
                             }).bind(this)}
@@ -166,35 +187,44 @@ export default class DocEditorScene extends Component {
                                 this.setState({previewPress: true})
                             }).bind(this)}
                             underlayColor={BaseCSS.colors.green}>
-                            <View style={{false:styles.tool_btn,true:styles.tool_btn_active}[this.state.previewPress]}>
-                                <Icon name="eye" size={25} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.previewPress]}/>
+                            <View style={{false:styles.tool_btn,true:styles.tool_btn_active}[this.state.previewPress||this.state.previewActive]}>
+                                <Icon name="eye" size={25} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.previewPress||this.state.previewActive]}/>
                             </View>
                         </TouchableHighlight>
                     </View>
                 </View>
-                <TextInput style={styles.content}
-                    multiline={true}
-                    blurOnSubmit={false}
-                    textAlignVertical='top'
-                    value={this.state.document.content}
-                    onChangeText={((text)=>{
-                        this.state.document.content = text
-                        this.setState({})
-                    }).bind(this)}
-                    onSubmitEditing={(()=>{
-                        if (timeout) clearTimeout(timeout)
-                        timeout = setTimeout((()=>{
-                            this.state.document.content += '\n'
-                            this.setState({})
-                            timeout = undefined
-                        }).bind(this), 100)
-                    }).bind(this)}
-                    onSelectionChange={((event)=>{
-                        this.setState({
-                            cursorStart: event.nativeEvent.selection.start,
-                            cursorEnd: event.nativeEvent.selection.end,
-                        })
-                    }).bind(this)}/>
+                {
+                    {
+                        false: (
+                            <TextInput style={styles.content}
+                                multiline={true}
+                                blurOnSubmit={false}
+                                textAlignVertical='top'
+                                value={this.state.document.content}
+                                onChangeText={((text)=>{
+                                    this.state.document.content = text
+                                    this.setState({})
+                                }).bind(this)}
+                                onSubmitEditing={(()=>{
+                                    if (timeout) clearTimeout(timeout)
+                                    timeout = setTimeout((()=>{
+                                        this.state.document.content += '\n'
+                                        this.setState({})
+                                        timeout = undefined
+                                    }).bind(this), 100)
+                                }).bind(this)}
+                                onSelectionChange={((event)=>{
+                                    this.setState({
+                                        cursorStart: event.nativeEvent.selection.start,
+                                        cursorEnd: event.nativeEvent.selection.end,
+                                    })
+                                }).bind(this)}/>
+                        ),
+                        true: (
+                            <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}}/>
+                        ),
+                    }[this.state.previewActive]
+                }
             </View>
         )
     }
