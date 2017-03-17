@@ -10,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Language from '../language/index.js'
 import BaseCSS from '../config/css.js'
+import StringUtils from '../utils/string.js'
 
 export default class DocEditorScene extends Component {
     constructor(props) {
@@ -36,6 +37,23 @@ export default class DocEditorScene extends Component {
 
     onBackClick() {
         this.props.navigator.pop()
+    }
+
+    toggleHeading() {
+        let {before, line, after} = StringUtils.Parse2BeforeLineAfter(this.state.document.content, this.state.cursorStart)
+        let headStr = line.match(/^#* /)
+
+        if (headStr == null) {
+            this.state.document.content = before + "# " + line + after
+        } else {
+            headStr = headStr[0]
+            if (headStr.length < 7) {
+                this.state.document.content = before + "#" + line + after
+            } else {
+                this.state.document.content = before + line.replace(headStr, "") + after
+            }
+        }
+        this.setState({})
     }
 
     render() {
@@ -116,7 +134,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="quote-left" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.quotePress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.toggleHeading.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({headerPress: false})
                             }).bind(this)}
@@ -173,8 +191,8 @@ export default class DocEditorScene extends Component {
                     }).bind(this)}
                     onSelectionChange={((event)=>{
                         this.setState({
-                            cursorStart: event.selection.start,
-                            cursorEnd: event.selectionEnd,
+                            cursorStart: event.nativeEvent.selection.start,
+                            cursorEnd: event.nativeEvent.selection.end,
                         })
                     }).bind(this)}/>
             </View>
