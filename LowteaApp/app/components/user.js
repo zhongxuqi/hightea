@@ -16,6 +16,7 @@ import MyStarDocumentsScene from '../scenes/my_star_documents.js'
 import MyDraftsScene from '../scenes/my_drafts.js'
 import MembersScene from '../scenes/members.js'
 import RegistersScene from '../scenes/registers.js'
+import DocEditorScene from '../scenes/doc_editor.js'
 
 let eventEmitter = new Events.EventEmitter()
 
@@ -41,7 +42,9 @@ export default class UserView extends Component {
     }
 
     createNewPaper() {
-    
+        this.props.navigator.push({
+            component: DocEditorScene,
+        })
     }
 
     showMyDrafts() {
