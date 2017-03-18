@@ -17,15 +17,17 @@ export default class WelcomeScene extends Component {
 
     componentDidMount() {
         let props = this.props
-        Server.GetSelfInfo((res) => {
-            props.navigator.resetTo({
-                component: MainScene
+        setTimeout((()=>{
+            Server.GetSelfInfo((res) => {
+                props.navigator.resetTo({
+                    component: MainScene
+                })
+            }, (err) => {
+                props.navigator.push({
+                    component: LoginScene,
+                })
             })
-        }, (err) => {
-            props.navigator.push({
-                component: LoginScene,
-            })
-        })
+        }).bind(this), 1000)
     }
 
     render() {
@@ -52,5 +54,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10,
     fontWeight: 'bold',
+    color: 'black',
   },
 });
