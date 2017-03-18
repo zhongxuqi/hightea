@@ -1,5 +1,5 @@
-function Parse2BeforeLineAfter(str, cursor) {
-    let before = '', line = '', after = ''
+function Parse2BeforeLeftRightAfter(str, cursor) {
+    let before = '', left = '', right = '', after = ''
     let strCursorBefore = str.substring(0, cursor),
         strCursorAfter = str.substring(cursor)
     let lineBegin = strCursorBefore.lastIndexOf("\n"),
@@ -8,11 +8,23 @@ function Parse2BeforeLineAfter(str, cursor) {
         before = strCursorBefore.substring(0, lineBegin + 1)
     }
     if (lineEnd >= 0) {
+        left = strCursorBefore.substring(lineBegin + 1)
+        right = strCursorAfter.substring(0, lineEnd)
         after = strCursorAfter.substring(lineEnd)
     } else {
-        line = strCursorBefore.substring(lineBegin + 1) + strCursorAfter
+        left = strCursorBefore.substring(lineBegin + 1)
+        right = strCursorAfter
     }
-    return {before,line,after}
+    return {before,left,right,after}
+}
+
+function Parse2BeforeLineAfter(str, cursor) {
+    let {before,left,right,after} = Parse2BeforeLeftRightAfter(str, cursor)
+    return {
+        before: before,
+        line: left + right,
+        after: after,
+    }
 }
 
 export default {

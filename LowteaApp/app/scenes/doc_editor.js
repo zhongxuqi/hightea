@@ -24,6 +24,9 @@ marked.setOptions({
     smartypants: false
 });
 import NetConfig from '../config/net.js'
+import Dialog from '../components/dialog.js'
+import ImagePicker from 'react-native-image-picker'
+import Server from '../server/index.js'
 
 export default class DocEditorScene extends Component {
     constructor(props) {
@@ -47,6 +50,14 @@ export default class DocEditorScene extends Component {
             },
             cursorStart: 0,
             cursorEnd: 0,
+
+            chainDialogVisible: false,
+            dialogTitle: '',
+            dialogType: 'chain',
+            dialogValue: '',
+
+            dialogLinkTitle: '',
+            dialogLinkValue: '',
         }
     }
 
@@ -60,7 +71,14 @@ export default class DocEditorScene extends Component {
         })
     }
 
+    toggleBold() {
+        if (this.state.previewActive) return
+        this.state.document.content = _toggleBlock(this.state.document.content, this.state.cursorStart, this.state.cursorEnd, "bold")
+        this.setState({})
+    }
+
     toggleHeading() {
+        if (this.state.previewActive) return
         let {before, line, after} = StringUtils.Parse2BeforeLineAfter(this.state.document.content, this.state.cursorStart)
         let headStr = line.match(/^#* /)
 
@@ -77,10 +95,101 @@ export default class DocEditorScene extends Component {
         this.setState({})
     }
 
+    toggleQuote() {
+        if (this.state.previewActive) return
+        this.state.document.content = _toggleLineHeader(this.state.document.content, this.state.cursorStart, ">")
+        this.setState({})
+    }
+
+    toggleChain() {
+        if (this.state.previewActive) return
+        this.setState({
+            chainDialogVisible: true,
+            dialogTitle: Language.textMap("Insert Link"),
+            dialogLinkTitle: '',
+            dialogLinkValue: '',
+        })
+    }
+
+    toggleImage() {
+        if (this.state.previewActive) return
+        ImagePicker.showImagePicker({
+            title: 'Select Head Image',
+            cancelButtonTitle: Language.textMap('CANCEL'),
+            takePhotoButtonTitle: Language.textMap('From Photo'),
+            chooseFromLibraryButtonTitle: Language.textMap('From Image'),
+        }, ((resp)=>{
+            if (resp.didCancel) {
+            } else if (resp.error) {
+            } else if ( resp.customButton) {
+            } else {
+                Server.PostImage(resp.uri, ((resp)=>{
+                    let start = this.state.document.content.substring(0, this.state.cursorStart),
+                        end = this.state.document.content.substring(this.state.cursorStart)
+                    this.state.document.content = start + "\n<img src=\""+resp.imageUrl+"\" style=\"max-width:100%\"></img>\n" + end
+                    this.setState({})
+                }).bind(this), (resp)=>{
+                    Alert.alert(Language.textMap("Error"), JSON.stringify(resp))
+                })
+            }
+        }).bind(this))
+    }
+
+    onCancelClick() {
+        this.setState({
+            chainDialogVisible: false,
+        })
+    }
+
+    onOkClick() {
+        switch (this.state.dialogType) {
+            case 'chain':
+                let start = this.state.document.content.substring(0, this.state.cursorStart),
+                    end = this.state.document.content.substring(this.state.cursorStart),
+                    url = this.state.dialogLinkValue
+                if (!/:\/\//.test(url)) url = "http://"+url
+                this.state.document.content = start + "["+this.state.dialogLinkTitle+"]("+url+")" + end
+                break
+        }
+        this.setState({
+            chainDialogVisible: false,
+        })
+    }
+
     render() {
         let timeout = false
         return (
             <View style={{flex: 1,flexDirection: 'column'}}>
+                <Dialog visible={this.state.chainDialogVisible} title={this.state.dialogTitle} buttons={[{
+                        text: 'CANCEL',
+                        func: this.onCancelClick.bind(this),
+                    }, {
+                        text: 'OK',
+                        func: this.onOkClick.bind(this),
+                    }]}>
+                    {
+                        {
+                            chain: (
+                                <View style={{flexDirection: 'column'}}>
+                                    <TextInput value={this.state.dialogLinkTitle}
+                                        onChangeText={((text)=>{
+                                            this.setState({
+                                                dialogLinkTitle: text,
+                                            })
+                                        }).bind(this)}
+                                        placeholder={Language.textMap("please input title")}/>
+                                    <TextInput value={this.state.dialogLinkValue}
+                                        onChangeText={((text)=>{
+                                            this.setState({
+                                                dialogLinkValue: text,
+                                            })
+                                        }).bind(this)}
+                                        placeholder={Language.textMap("please input url")}/>
+                                </View>
+                            ),
+                        }[this.state.dialogType]
+                    }
+                </Dialog>
                 <View style={styles.headbar}>
                     <TouchableHighlight onPress={this.onBackClick.bind(this)}
                         onHideUnderlay={(()=>{
@@ -119,7 +228,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="file-video-o" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.videoPress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.toggleImage.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({imagePress: false})
                             }).bind(this)}
@@ -131,7 +240,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="file-image-o" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.imagePress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.toggleChain.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({chainPress: false})
                             }).bind(this)}
@@ -143,7 +252,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="chain" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.chainPress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.toggleQuote.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({quotePress: false})
                             }).bind(this)}
@@ -167,7 +276,7 @@ export default class DocEditorScene extends Component {
                                 <Icon name="header" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.headerPress]}/>
                             </View>
                         </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.toggleBold.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({boldPress: false})
                             }).bind(this)}
@@ -253,3 +362,41 @@ const styles=StyleSheet.create({
         backgroundColor: BaseCSS.colors.green,
     },
 })
+
+function _toggleBlock(str, sectionStart, sectionEnd, type) {
+    let tag_chars
+    switch (type) {
+        case 'bold':
+            tag_chars = "\\*\\*"
+            break
+        default:
+            tag_chars = "\\*\\*"
+            break
+    }
+
+    let before = '', section = str.substring(sectionStart, sectionEnd), after = ''
+    if (new RegExp(tag_chars + "$").test(str.substring(0, sectionStart))) {
+        before = str.substring(0, sectionStart - tag_chars.length)
+    } else {
+        before = str.substring(0, sectionStart) + "**"
+    }
+    if (new RegExp("^" + tag_chars).test(str.substring(sectionEnd))) {
+        after = str.substring(sectionEnd + tag_chars.length)
+    } else {
+        after = "**" + str.substring(sectionEnd)
+    }
+    return before + section + after
+}
+
+function _toggleLineHeader(str, cursor, header) {
+	let re
+    if (header == "*") re = new RegExp("^\\"+header+" ")
+    else re = new RegExp("^"+header+" ")
+
+    let {before, line, after} = StringUtils.Parse2BeforeLineAfter(str, cursor)
+    if (re.test(line)) {
+        return before + line.substring(2) + after
+    } else {
+        return before + header + " " + line + after
+    }
+}
