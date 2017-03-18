@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {
+    Alert,
     StyleSheet,
     View,
     Text,
@@ -16,6 +17,8 @@ import StatusView from '../components/status.js'
 import DocConfig from '../config/document.js'
 import Language from '../language/index.js'
 import Dialog from './dialog.js'
+import Server from '../server/index.js'
+import DocEditorScene from '../scenes/doc_editor.js'
 
 export default class DocumentShortCut extends Component {
     constructor(props) {
@@ -61,13 +64,40 @@ export default class DocumentShortCut extends Component {
         })
     }
 
+    onEditDocument(document) {
+        this.props.navigator.push({
+            component: DocEditorScene,
+            data: {
+                documentId: document.id,
+            },
+        })
+    }
+
     onDeleteDocument() {
-        if (typeof this.props.onDeleteDocument === 'function') {
-            this.props.onDeleteDocument(this.props.document)
-        }
+        Alert.alert("Danger", Language.textMap("delete the document") + " [ " + this.props.document.title + " ] ?", [{
+            text: Language.textMap("cancel"),
+            onPress: ()=>{},
+        }, {
+            text: Language.textMap("ok"),
+            onPress: (()=>{
+                Server.DeleteDocument(this.props.document.id, (resp)=>{
+                    if (typeof this.props.onRefreshDocuments == "function") {
+                        this.props.onRefreshDocuments()
+                    }
+                })
+            }).bind(this),
+        }])
     }
 
     render() {
+        let editBtn = (
+            <TouchableHighlight underlayColor={BaseCSS.colors.transparent}
+                onPress={this.onEditDocument.bind(this, this.props.document)}>
+                <View style={{paddingVertical: 3, paddingHorizontal: 6, backgroundColor: BaseCSS.colors.success, borderRadius: 3, marginRight: 10}}>
+                    <Icon name="pencil" size={25} style={{color: BaseCSS.colors.white}}/>
+                </View>
+            </TouchableHighlight>
+        )
         let deleteBtn = (
             <TouchableHighlight underlayColor={BaseCSS.colors.transparent}
                 onPress={this.onDeleteDocument.bind(this, this.props.document)}>
@@ -121,8 +151,14 @@ export default class DocumentShortCut extends Component {
                     {
                         {
                             false: null,
+                            true: editBtn,
+                        }[this.props.enableEdit===true]
+                    }
+                    {
+                        {
+                            false: null,
                             true: deleteBtn,
-                        }[this.props.enableDelete===true]
+                        }[this.props.enableEdit===true]
                     }
                 </View>
             </TouchableHighlight>

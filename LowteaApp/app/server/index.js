@@ -234,6 +234,27 @@ function ActionRegister(account, action, resolve, reject) {
     })
 }
 
+function PostDocument(action, document, resolve, reject) {
+    fetch(NetConfig.Host + "/api/member/document", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            action: action,
+            document: document,
+        }),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(JSON.parse(resp._bodyText))
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else handleError(resp)
+        }
+    })
+}
+
 function PostDocumentStatus(document, resolve, reject) {
     fetch(NetConfig.Host + "/api/member/document_status", {
         method: "POST",
@@ -349,6 +370,7 @@ export default {
     GetStarDocuments: GetStarDocuments,
     GetDrafts: GetDrafts,
     ActionRegister: ActionRegister,
+    PostDocument: PostDocument,
     PostDocumentStatus: PostDocumentStatus,
     DeleteDocument: DeleteDocument,
     PostSelf: PostSelf,

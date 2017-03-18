@@ -46,7 +46,6 @@ export default class PreviewScene extends Component {
 
     getDocument(documentId) {
         Server.GetDocument(documentId, ((resp)=>{
-            console.log(marked(resp.document.content))
             this.setState({
                 document: resp.document,
                 flag: resp.flag,

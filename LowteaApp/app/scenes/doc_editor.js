@@ -7,6 +7,8 @@ import {
     TextInput,
     Text,
     WebView,
+    ToastAndroid,
+    InteractionManager,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Language from '../language/index.js'
@@ -27,6 +29,7 @@ import NetConfig from '../config/net.js'
 import Dialog from '../components/dialog.js'
 import ImagePicker from 'react-native-image-picker'
 import Server from '../server/index.js'
+import EventUtils from '../utils/events.js'
 
 export default class DocEditorScene extends Component {
     constructor(props) {
@@ -46,6 +49,7 @@ export default class DocEditorScene extends Component {
             savePress: false,
 
             document: {
+                title: '',
                 content: '',
             },
             cursorStart: 0,
@@ -59,6 +63,46 @@ export default class DocEditorScene extends Component {
             dialogLinkTitle: '',
             dialogLinkValue: '',
         }
+    }
+
+    componentDidMount() {
+        if (this.props.data !== undefined) {
+            InteractionManager.runAfterInteractions((() => {
+                this.getDocument(this.props.data.documentId)
+            }).bind(this))
+        }
+    }
+
+    getDocument(documentId) {
+        Server.GetDocument(documentId, ((resp)=>{
+            this.setState({
+                document: resp.document,
+            })
+        }).bind(this))
+    }
+
+    postDocument() {
+        let action
+        if (this.state.document.id == undefined) {
+            action = "add"
+        } else {
+            action = "edit"
+        }
+        Server.PostDocument(action, {
+            id: this.state.document.id,
+            title: this.state.document.title,
+            content: this.state.document.content,
+            status: {
+                true: "status_draft",
+                false: this.state.document.status,
+            }[action == "add"],
+        }, ((resp)=>{
+            this.getDocument(resp.id)
+            EventUtils.Emit("refreshSelfDocs")
+            ToastAndroid.showWithGravity(Language.textMap("Save Success"), ToastAndroid.SHORT, ToastAndroid.CENTER);
+        }).bind(this), (resp)=>{
+            Alert.alert(Language.textMap("Error"), "Save Failed")
+        })
     }
 
     onBackClick() {
@@ -204,7 +248,7 @@ export default class DocEditorScene extends Component {
                         </View>
                     </TouchableHighlight>
                     <View style={{flex: 1, flexDirection:'row-reverse'}}>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
+                        <TouchableHighlight onPress={this.postDocument.bind(this)}
                             onHideUnderlay={(()=>{
                                 this.setState({savePress: false})
                             }).bind(this)}
@@ -214,18 +258,6 @@ export default class DocEditorScene extends Component {
                             underlayColor={BaseCSS.colors.green}>
                             <View style={[{false:styles.tool_btn,true:styles.tool_btn_active}[this.state.savePress], {paddingHorizontal: 8}]}>
                                 <Icon name="save" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.savePress]}/>
-                            </View>
-                        </TouchableHighlight>
-                        <TouchableHighlight onPress={(()=>{}).bind(this)}
-                            onHideUnderlay={(()=>{
-                                this.setState({videoPress: false})
-                            }).bind(this)}
-                            onShowUnderlay={(()=>{
-                                this.setState({videoPress: true})
-                            }).bind(this)}
-                            underlayColor={BaseCSS.colors.green}>
-                            <View style={[{false:styles.tool_btn,true:styles.tool_btn_active}[this.state.videoPress], {paddingHorizontal: 8}]}>
-                                <Icon name="file-video-o" size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.videoPress]}/>
                             </View>
                         </TouchableHighlight>
                         <TouchableHighlight onPress={this.toggleImage.bind(this)}
@@ -305,29 +337,39 @@ export default class DocEditorScene extends Component {
                 {
                     {
                         false: (
-                            <TextInput style={styles.content}
-                                multiline={true}
-                                blurOnSubmit={false}
-                                textAlignVertical='top'
-                                value={this.state.document.content}
-                                onChangeText={((text)=>{
-                                    this.state.document.content = text
-                                    this.setState({})
-                                }).bind(this)}
-                                onSubmitEditing={(()=>{
-                                    if (timeout) clearTimeout(timeout)
-                                    timeout = setTimeout((()=>{
-                                        this.state.document.content += '\n'
+                            <View style={{flexDirection: 'column', flex: 1}}>
+                                <TextInput style={styles.title} value={this.state.document.title}
+                                    onChangeText={((text)=>{
+                                        this.state.document.title = text
                                         this.setState({})
-                                        timeout = undefined
-                                    }).bind(this), 100)
-                                }).bind(this)}
-                                onSelectionChange={((event)=>{
-                                    this.setState({
-                                        cursorStart: event.nativeEvent.selection.start,
-                                        cursorEnd: event.nativeEvent.selection.end,
-                                    })
-                                }).bind(this)}/>
+                                    }).bind(this)}
+                                    placeholder={Language.textMap("Input Title Here")}/>
+                                <TextInput style={styles.content}
+                                    underlineColorAndroid={BaseCSS.colors.transparent}
+                                    multiline={true}
+                                    blurOnSubmit={false}
+                                    textAlignVertical='top'
+                                    value={this.state.document.content}
+                                    onChangeText={((text)=>{
+                                        this.state.document.content = text
+                                        this.setState({})
+                                    }).bind(this)}
+                                    onSubmitEditing={(()=>{
+                                        if (timeout) clearTimeout(timeout)
+                                        timeout = setTimeout((()=>{
+                                            this.state.document.content += '\n'
+                                            this.setState({})
+                                            timeout = undefined
+                                        }).bind(this), 100)
+                                    }).bind(this)}
+                                    onSelectionChange={((event)=>{
+                                        this.setState({
+                                            cursorStart: event.nativeEvent.selection.start,
+                                            cursorEnd: event.nativeEvent.selection.end,
+                                        })
+                                    }).bind(this)}
+                                    placeholder={Language.textMap("Input Content Here")}/>
+                            </View>
                         ),
                         true: (
                             <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}}/>
@@ -346,9 +388,14 @@ const styles=StyleSheet.create({
         borderBottomWidth: 1,
         justifyContent: 'center',
     },
+    title: {
+        borderBottomColor: BaseCSS.colors.separation_line,
+        borderBottomWidth: 1,
+    },
     content: {
         flex: 1,
         textAlign: 'left',
+        borderBottomWidth: 0,
     },
     tool_btn: {
         justifyContent: 'center',

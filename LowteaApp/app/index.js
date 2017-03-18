@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Image,
 } from 'react-native';
 import Server from './server/index.js'
 import LoginScene from './scenes/login.js'
@@ -30,6 +31,7 @@ export default class WelcomeScene extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <Image style={{width:200,height:200}} source={require("../img/icon.png")}/>
                 <Text style={styles.welcome}>
                     Welcome to Lowtea!
                 </Text>
@@ -43,11 +45,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#8bc34a',
   },
   welcome: {
-    fontSize: 20,
+    fontSize: 30,
     textAlign: 'center',
     margin: 10,
+    fontWeight: 'bold',
   },
 });

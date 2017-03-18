@@ -6,6 +6,7 @@ import {
     ListView,
     Text,
     TouchableHighlight,
+    InteractionManager,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import BaseCSS from '../config/css.js'
@@ -13,6 +14,7 @@ import Server from '../server/index.js'
 import DocumentShortCut from '../components/document_shortcut.js'
 import Language from '../language/index.js'
 import HeadBar from '../components/headbar.js'
+import EventUtils from '../utils/events.js'
 
 export default class MyDocumentsScene extends Component {
     constructor(props) {
@@ -27,7 +29,18 @@ export default class MyDocumentsScene extends Component {
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
             documents: [],
         }
-        this.getDocuments(0)
+    }
+
+    componentDidMount() {
+        this.mylistener = this.getDocuments.bind(this, 0)
+        EventUtils.On("refreshSelfDocs", this.mylistener)
+        InteractionManager.runAfterInteractions((() => {
+            this.getDocuments(0)
+        }).bind(this))
+    }
+
+    componentWillUnmount() {
+        EventUtils.RemoveListener("refreshSelfDocs", this.mylistener)
     }
     
     onBackClick() {
@@ -42,7 +55,6 @@ export default class MyDocumentsScene extends Component {
             pageIndex: pageIndex,
             account: this.props.data.user.account,
         }, ((resp)=>{
-            console.log(resp)
             if (resp.documents == null) return
             let documents = this.state.documents
             if (pageIndex == 0) {
@@ -73,20 +85,6 @@ export default class MyDocumentsScene extends Component {
         }).bind(this))
     }
 
-    onDeleteDocument(document) {
-        Alert.alert("Danger", Language.textMap("delete the document") + " [ " + document.title + " ] ?", [{
-            text: Language.textMap("cancel"),
-            onPress: ()=>{},
-        }, {
-            text: Language.textMap("ok"),
-            onPress: (()=>{
-                Server.DeleteDocument(document.id, (resp)=>{
-                    this.getDocuments(0)
-                })
-            }).bind(this),
-        }])
-    }
-
     render() {
         return (
             <View style={styles.container}>
@@ -99,8 +97,10 @@ export default class MyDocumentsScene extends Component {
                     }).bind(this)}
                     renderRow={(document)=>{
                         return (
-                            <DocumentShortCut document={document} navigator={this.props.navigator} enableStatus={true} enableModal={true} enableDelete={true}
-                                onPostDocumentStatus={this.onPostDocumentStatus.bind(this)} onDeleteDocument={this.onDeleteDocument.bind(this)}/>
+                            <DocumentShortCut document={document} navigator={this.props.navigator} enableStatus={true} enableModal={true} enableEdit={true}
+                                onPostDocumentStatus={this.onPostDocumentStatus.bind(this)} onRefreshDocuments={(()=>{
+                                    this.getDocuments(0)
+                                }).bind(this)}/>
                         )
                     }}/>
             </View>

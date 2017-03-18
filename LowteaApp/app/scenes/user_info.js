@@ -10,7 +10,6 @@ import {
     Button,
     TextInput,
 } from 'react-native'
-import Events from 'events'
 import ImagePicker from 'react-native-image-picker'
 import BaseCSS from '../config/css.js'
 import Language from '../language/index.js'
@@ -19,8 +18,7 @@ import HeadBar from '../components/headbar.js'
 import Dialog from '../components/dialog.js'
 import Server from '../server/index.js'
 import LoginScene from './login.js'
-
-let eventEmitter = new Events.EventEmitter()
+import EventUtils from '../utils/events.js'
 
 export default class UserInfoScene extends Component {
     constructor(props) {
@@ -63,7 +61,7 @@ export default class UserInfoScene extends Component {
                             Server.PostSelf(Object.assign(this.props.data.user,{
                                 headimg: resp.imageUrl, 
                             }), ((resp)=>{
-                                eventEmitter.emit("updateUserInfo")
+                                EventUtils.Emit("updateUserInfo")
                                 this.setState({dialogVisible: false})
                             }).bind(this))
                         }, (resp)=>{
@@ -138,7 +136,7 @@ export default class UserInfoScene extends Component {
                 Server.PostSelf(Object.assign(this.props.data.user,{
                     nickname: this.state.dialog_value, 
                 }), ((resp)=>{
-                    eventEmitter.emit("updateUserInfo")
+                    EventUtils.Emit("updateUserInfo")
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
@@ -146,7 +144,7 @@ export default class UserInfoScene extends Component {
                 Server.PostSelf(Object.assign(this.props.data.user,{
                     email: this.state.dialog_value, 
                 }), ((resp)=>{
-                    eventEmitter.emit("updateUserInfo")
+                    EventUtils.Emit("updateUserInfo")
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
@@ -154,7 +152,7 @@ export default class UserInfoScene extends Component {
                 Server.PostSelf(Object.assign(this.props.data.user,{
                     userintro: this.state.dialog_value, 
                 }), ((resp)=>{
-                    eventEmitter.emit("updateUserInfo")
+                    EventUtils.Emit("updateUserInfo")
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
@@ -162,7 +160,7 @@ export default class UserInfoScene extends Component {
                 Server.PostSelf(Object.assign(this.props.data.user,{
                     gender: this.state.dialog_value, 
                 }), ((resp)=>{
-                    eventEmitter.emit("updateUserInfo")
+                    EventUtils.Emit("updateUserInfo")
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
@@ -170,7 +168,7 @@ export default class UserInfoScene extends Component {
                 Server.PostSelf(Object.assign(this.props.data.user,{
                     language: this.state.dialog_value, 
                 }), ((resp)=>{
-                    eventEmitter.emit("updateUserInfo")
+                    EventUtils.Emit("updateUserInfo")
                     this.setState({dialogVisible: false})
                 }).bind(this))
                 break
@@ -218,9 +216,11 @@ export default class UserInfoScene extends Component {
                         {
                             text: (
                                 <TextInput value={this.state.dialog_value}
+                                    underlineColorAndroid={BaseCSS.colors.transparent}
                                     onChangeText={((text)=>{
                                         this.setState({dialog_value: text})
-                                    }).bind(this)}/> 
+                                    }).bind(this)}
+                                    style={[BaseCSS.textinput, {minWidth: 250}]}/> 
                             ),
                             gender: (
                                 <Picker style={{minWidth: 300}} selectedValue={this.state.dialog_value}
@@ -254,22 +254,28 @@ export default class UserInfoScene extends Component {
                                 <View style={{flexDirection: 'column'}}>
                                     <TextInput value={this.state.oldPassword}
                                         placeholder={Language.textMap("Please Input Password")}
+                                        underlineColorAndroid={BaseCSS.colors.transparent}
                                         secureTextEntry={true}
                                         onChangeText={((text)=>{
                                             this.setState({oldPassword: text})
-                                        }).bind(this)}/> 
+                                        }).bind(this)}
+                                        style={[BaseCSS.textinput, {minWidth: 250, marginBottom: 10}]}/> 
                                     <TextInput value={this.state.newPassword}
                                         placeholder={Language.textMap("Please Input New Password")}
+                                        underlineColorAndroid={BaseCSS.colors.transparent}
                                         secureTextEntry={true}
                                         onChangeText={((text)=>{
                                             this.setState({newPassword: text})
-                                        }).bind(this)}/> 
+                                        }).bind(this)}
+                                        style={[BaseCSS.textinput, {minWidth: 250, marginBottom: 10}]}/> 
                                     <TextInput value={this.state.reNewPassword}
                                         placeholder={Language.textMap("Please ReInput New Password")}
+                                        underlineColorAndroid={BaseCSS.colors.transparent}
                                         secureTextEntry={true}
                                         onChangeText={((text)=>{
                                             this.setState({reNewPassword: text})
-                                        }).bind(this)}/> 
+                                        }).bind(this)}
+                                        style={[BaseCSS.textinput, {minWidth: 250}]}/> 
                                 </View>
                             ),
                         }[this.state.dialog_type]

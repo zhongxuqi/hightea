@@ -6,6 +6,7 @@ import {
     ListView,
     Text,
     TouchableHighlight,
+    InteractionManager,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import BaseCSS from '../config/css.js'
@@ -21,7 +22,12 @@ export default class MyStarDocumentsScene extends Component {
             dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1.id !== r2.id}),
             documents: [],
         }
-        this.getDocuments()
+    }
+
+    componentDidMount() {
+        InteractionManager.runAfterInteractions(() => {
+            this.getDocuments()
+        })
     }
     
     onBackClick() {
