@@ -43,6 +43,24 @@ function login(account, password, resolve, reject) {
     })
 }
 
+function register(params, resolve, reject) {
+    fetch(NetConfig.Host + "/openapi/register", {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(params),
+    }).then((resp)=>{
+        if (resp.ok) {
+            resolve(resp)
+        } else {
+            if (typeof reject == "function") reject(resp)
+            else handleError(resp)
+        }
+    })
+}
+
 function Logout(resolve, reject) {
     fetch(NetConfig.Host + "/openapi/logout", {
         method: 'GET',
@@ -357,6 +375,7 @@ function PostImage(imageFile, resolve, reject) {
 
 export default {
     login: login,
+    register: register,
     Logout: Logout,
     GetSelfInfo: GetSelfInfo,
     GetDocuments: GetDocuments,
