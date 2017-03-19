@@ -8,6 +8,8 @@ import {
 import Server from './server/index.js'
 import LoginScene from './scenes/login.js'
 import MainScene from './scenes/main.js'
+import BaseCSS from './config/css.js'
+import Language from './language/index.js'
 
 export default class WelcomeScene extends Component {
     constructor(props) {
@@ -18,7 +20,8 @@ export default class WelcomeScene extends Component {
     componentDidMount() {
         let props = this.props
         setTimeout((()=>{
-            Server.GetSelfInfo((res) => {
+            Server.GetSelfInfo((resp) => {
+                Language.SelectLanguage(resp.user.language)
                 props.navigator.resetTo({
                     component: MainScene
                 })
@@ -47,13 +50,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#8bc34a',
+    backgroundColor: BaseCSS.colors.yellow_green,
   },
   welcome: {
     fontSize: 30,
     textAlign: 'center',
     margin: 10,
     fontWeight: 'bold',
-    color: 'black',
+    color: '#333333',
   },
 });

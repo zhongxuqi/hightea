@@ -11,6 +11,7 @@ import NewsView from '../components/news.js'
 import FlagsView from '../components/flags.js'
 import StarsView from '../components/stars.js'
 import UserView from '../components/user.js'
+import EventUtils from '../utils/events.js'
 
 export default class MainScene extends Component {
     constructor(props) {

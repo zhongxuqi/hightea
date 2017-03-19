@@ -78,7 +78,8 @@ export default class RegistersScene extends Component {
                         return (
                             <RegisterShortCut register={register}
                                 onRefuseClick={this.refuseRegister.bind(this, register.account)}
-                                onAgressClick={this.agreeRegister.bind(this, register.account)}/>
+                                onAgressClick={this.agreeRegister.bind(this, register.account)}
+                                user={this.props.data.user}/>
                         )
                     }).bind(this)}/>
             </View>

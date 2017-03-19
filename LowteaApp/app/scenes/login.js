@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
         borderColor:"#d8dee2",
         borderRadius:4,
         borderWidth:1,
-        minWidth: 400,
+        minWidth: "60%",
         paddingVertical: 30,
         backgroundColor: "#fff",
     },
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     modeBtn: {
-        width: 400,
+        width: "60%",
         marginHorizontal: 40,
         marginVertical: 15,
         padding: 8,

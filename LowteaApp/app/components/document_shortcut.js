@@ -93,7 +93,7 @@ export default class DocumentShortCut extends Component {
         let editBtn = (
             <TouchableHighlight underlayColor={BaseCSS.colors.transparent}
                 onPress={this.onEditDocument.bind(this, this.props.document)}>
-                <View style={{paddingVertical: 3, paddingHorizontal: 6, backgroundColor: BaseCSS.colors.success, borderRadius: 3, marginRight: 10}}>
+                <View style={{paddingVertical: 3, paddingHorizontal: 6, backgroundColor: BaseCSS.colors.green, borderRadius: 3, marginRight: 10}}>
                     <Icon name="pencil" size={25} style={{color: BaseCSS.colors.white}}/>
                 </View>
             </TouchableHighlight>
@@ -142,9 +142,9 @@ export default class DocumentShortCut extends Component {
                             }
                         </View>
                         <View style={styles.infobar}>
-                            <Icon name="star" size={BaseCSS.font.contentSize} style={{false:styles.info_icon,true:styles.info_icon_active}[this.state.press]}/>
+                            <Icon name="star" size={BaseCSS.font.contentSize} style={[{color: BaseCSS.colors.green}, {false:styles.info_icon,true:styles.info_icon_active}[this.state.press]]}/>
                             <Text style={{false:styles.info_text,true:styles.info_text_active}[this.state.press]}>{this.props.document.starNum}</Text>
-                            <Icon name="pencil" size={BaseCSS.font.contentSize} style={{false:styles.info_icon,true:styles.info_icon_active}[this.state.press]}/>
+                            <Icon name="pencil" size={BaseCSS.font.contentSize} style={[{color: BaseCSS.colors.green}, {false:styles.info_icon,true:styles.info_icon_active}[this.state.press]]}/>
                             <Text style={{false:styles.info_text,true:styles.info_text_active}[this.state.press]}>{DateUtils.unixtime2String(this.props.document.modifyTime)}</Text>
                         </View>
                     </View>
@@ -176,10 +176,13 @@ const styles=StyleSheet.create({
     },
     title: {
         fontSize: BaseCSS.font.titleSize,
+        fontWeight: 'bold',
         margin: 7,
+        color: "black",
     },
     title_active: {
         fontSize: BaseCSS.font.titleSize,
+        fontWeight: 'bold',
         margin: 7,
         color: BaseCSS.colors.white,
     },

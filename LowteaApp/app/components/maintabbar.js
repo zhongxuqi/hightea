@@ -12,20 +12,24 @@ export default class MainTabBar extends Component {
         super(props)
         this.state = {
             tabs: [{
-                title: 'News',
-                icon: 'newspaper-o',
+                title: Language.textMap('News'),
+                icon: 'file-text-o',
+                active_icon: 'file-text',
                 active: true,
             }, {
-                title: 'Flags',
+                title: Language.textMap('Flags'),
                 icon: 'flag-o',
+                active_icon: 'flag',
                 active: false,
             }, {
-                title: 'Stars',
+                title: Language.textMap('Stars'),
                 icon: 'star-o',
+                active_icon: 'star',
                 active: false,
             }, {
-                title: 'User',
+                title: Language.textMap('User'),
                 icon: 'user-o',
+                active_icon: 'user',
                 active: false,
             }],
         }
@@ -51,7 +55,7 @@ export default class MainTabBar extends Component {
                 {
                     this.state.tabs.map((item, index)=>{
                         return (
-                            <MainTab key={index} title={item.title} icon={item.icon} active={item.active} onPress={this.onTabPress.bind(this, index)}/>
+                            <MainTab key={index} title={item.title} icon={item.icon} active_icon={item.active_icon} active={item.active} onPress={this.onTabPress.bind(this, index)}/>
                         )
                     })
                 }

@@ -116,8 +116,8 @@ export default class PreviewScene extends Component {
                             }).bind(this)}
                             underlayColor={BaseCSS.colors.green}>
                             <View style={styles.headLeftBtn}>
-                                <Icon name={{false:"star-o",true:"star"}[this.state.star]} size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.starPress]}/>
-                                <Text style={{false:styles.headLeftBtnText,true:styles.headLeftBtnTextActive}[this.state.starPress]}>{this.state.document.starNum}</Text>
+                                <Icon name={{false:"star-o",true:"star"}[this.state.star]} size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.green}[this.state.starPress||this.state.star]}/>
+                                <Text style={[{false: {color:BaseCSS.colors.black}, true: {color:BaseCSS.colors.green}}[this.state.star], {false:styles.headLeftBtnText,true:styles.headLeftBtnTextActive}[this.state.starPress]]}>{this.state.document.starNum}</Text>
                             </View>
                         </TouchableHighlight>
                         <TouchableHighlight onPress={this.onFlagClick.bind(this)}
@@ -129,8 +129,8 @@ export default class PreviewScene extends Component {
                             }).bind(this)}
                             underlayColor={BaseCSS.colors.green}>
                             <View style={styles.headLeftBtn}>
-                                <Icon name={{false:"flag-o",true:"flag"}[this.state.flag]} size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.flagPress]}/>
-                                <Text style={{false:styles.headLeftBtnText,true:styles.headLeftBtnTextActive}[this.state.flagPress]}>{this.state.document.flagNum}</Text>
+                                <Icon name={{false:"flag-o",true:"flag"}[this.state.flag]} size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.green}[this.state.flagPress||this.state.flag]}/>
+                                <Text style={[{false: {color:BaseCSS.colors.black}, true: {color:BaseCSS.colors.green}}[this.state.flag], {false:styles.headLeftBtnText,true:styles.headLeftBtnTextActive}[this.state.flagPress]]}>{this.state.document.flagNum}</Text>
                             </View>
                         </TouchableHighlight>
                     </View>
@@ -161,7 +161,6 @@ const styles=StyleSheet.create({
     headLeftBtnText: {
         marginLeft: 4,
         fontSize: BaseCSS.font.contentSize,
-        color: BaseCSS.colors.black,
     },
     headLeftBtnTextActive: {
         marginLeft: 4,
@@ -172,6 +171,6 @@ const styles=StyleSheet.create({
         flex: 1,
         fontWeight: 'bold',
         fontSize: BaseCSS.font.titleSize,
-        color: BaseCSS.colors.green,
+        color: 'black',
     },
 })

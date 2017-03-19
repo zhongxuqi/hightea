@@ -38,14 +38,23 @@ export default class RegisterShortCut extends Component {
                 onPress={this.onRegisterClick.bind(this)}>
                 <View style={styles.container}>
                     <Text style={{false:styles.register_text,true:styles.register_text_active}[this.state.press]}>{this.props.register.email}</Text>
-                    <Button 
-                        onPress={this.props.onAgressClick}
-                        title={Language.textMap("agree")}
-                        color={BaseCSS.colors.success}/>
-                    <Button 
-                        onPress={this.props.onRefuseClick}
-                        title={Language.textMap("refuse")}
-                        color={BaseCSS.colors.warning}/>
+                    {
+                        {
+                            false: null,
+                            true: (
+                                <View style={{flexDirection:'row'}}>
+                                    <Button 
+                                        onPress={this.props.onAgressClick}
+                                        title={Language.textMap("agree")}
+                                        color={BaseCSS.colors.success}/>
+                                    <Button 
+                                        onPress={this.props.onRefuseClick}
+                                        title={Language.textMap("refuse")}
+                                        color={BaseCSS.colors.warning}/>
+                                </View>
+                            ),
+                        }[this.props.user.role=="admin"||this.props.user.role=="root"]
+                    }
                 </View>
             </TouchableHighlight>
         )

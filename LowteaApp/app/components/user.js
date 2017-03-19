@@ -80,6 +80,9 @@ export default class UserView extends Component {
     showRegisters() {
         this.props.navigator.push({
             component: RegistersScene,
+            data: {
+                user: this.state.user,
+            },
         })
     }
 

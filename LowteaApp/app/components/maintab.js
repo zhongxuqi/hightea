@@ -27,7 +27,8 @@ export default class MainTab extends Component {
                 }).bind(this)}    
                 onPress={this.props.onPress}>
                 <View style={{false:styles.button,true:styles.button_active}[this.props.active||this.state.press]}>
-                    <Icon name={this.props.icon} size={20} color={{false:BaseCSS.colors.green,true:BaseCSS.colors.white}[this.props.active||this.state.press]}/>
+                    <Icon name={{false:this.props.icon,true:this.props.active_icon}[this.props.active||this.state.press]}
+                        size={20} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.blue}[this.props.active||this.state.press]}/>
                     <Text style={{false:styles.text,true:styles.text_active}[this.props.active||this.state.press]}>{this.props.title}</Text>
                 </View>
             </TouchableHighlight>
@@ -46,8 +47,8 @@ const styles=StyleSheet.create({
         paddingVertical: 7,
     },
     button_active: {
-        backgroundColor: BaseCSS.colors.green,
-        borderTopColor: BaseCSS.colors.green,
+        backgroundColor: BaseCSS.colors.transparent,
+        borderTopColor: BaseCSS.colors.separation_line,
         borderTopWidth: 1,
         flexDirection: 'column',
         justifyContent: 'center',
@@ -55,9 +56,9 @@ const styles=StyleSheet.create({
         paddingVertical: 7,
     },
     text: {
-        color: BaseCSS.colors.green,
+        color: BaseCSS.colors.black,
     },
     text_active: {
-        color: BaseCSS.colors.white,
+        color: BaseCSS.colors.blue,
     },
 })
