@@ -26,11 +26,12 @@ export default class PersonalDocsList extends React.Component {
             },
             topStarDocuments: [],
         }
-        if (this.props.userInfo.account != undefined && this.props.userInfo.account != "") {
-            this.getDocuments(this.state.pageSize, 0)
-        }
-        
-        HttpUtils.get("/api/member/self_top_star_documents",{},((resp)=>{
+    }
+
+    componentDidMount() {
+        HttpUtils.get("/api/member/user_top_star_documents",{
+            account: this.props.routeParams.account,
+        },((resp)=>{
             let topStarDocuments = []
             for (let i=0;i<resp.documents.length;i++) {
                 let document = resp.documents[i]
@@ -41,20 +42,18 @@ export default class PersonalDocsList extends React.Component {
         }).bind(this), (resp)=>{
             HttpUtils.alert("["+resp.status+"] "+resp.responseText)
         })
+        this.getDocuments(this.state.pageSize, 0)
     }
 
     componentWillReceiveProps(props) {
-        this.props = props
-        if (this.props.userInfo.account != undefined && this.props.userInfo.account != "") {
-            this.getDocuments(this.state.pageSize, 0)
-        }
+        this.getDocuments(this.state.pageSize, 0)
     }
     
     getDocuments(pageSize, pageIndex) {
         HttpUtils.get("/api/member/documents", {
             pageSize: pageSize,
             pageIndex: pageIndex,
-            account: this.props.userInfo.account,
+            account: this.props.routeParams.account,
             keyword: this.state.keyword,
         }, ((resp) => {
             if (resp.documents == null) resp.documents = []

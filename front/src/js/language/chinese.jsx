@@ -92,5 +92,6 @@ chineseTextMap["Guest"] = "访客"
 chineseTextMap["Resume"] = "简历"
 chineseTextMap["Repeat Password"] = "重复密码"
 chineseTextMap["Register"] = "注册"
+chineseTextMap["Documents"] = "文章"
 
 export default chineseTextMap;

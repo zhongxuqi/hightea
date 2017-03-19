@@ -19,6 +19,7 @@ import Dialog from '../components/dialog.js'
 import Server from '../server/index.js'
 import LoginScene from './login.js'
 import EventUtils from '../utils/events.js'
+import MyDocumentsScene from '../scenes/my_documents.js'
 
 export default class UserInfoScene extends Component {
     constructor(props) {
@@ -48,10 +49,10 @@ export default class UserInfoScene extends Component {
         switch (item) {
             case 'headimg':
                 ImagePicker.showImagePicker({
-                    title: 'Select Head Image',
+                    title: Language.textMap('Select Head Image'),
                     cancelButtonTitle: Language.textMap('CANCEL'),
-                    takePhotoButtonTitle: Language.textMap('From Photo'),
-                    chooseFromLibraryButtonTitle: Language.textMap('From Image'),
+                    takePhotoButtonTitle: Language.textMap('From Camera'),
+                    chooseFromLibraryButtonTitle: Language.textMap('From Photo'),
                 }, (resp)=>{
                     if (resp.didCancel) {
                     } else if (resp.error) {
@@ -74,7 +75,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'User Name Setting',
+                    dialog_title: Language.textMap('User Name Setting'),
                     dialog_value: this.props.data.user.nickname,
                     dialog_type: 'text',
                 })
@@ -83,7 +84,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'Email Setting',
+                    dialog_title: Language.textMap('Email Setting'),
                     dialog_value: this.props.data.user.email,
                     dialog_type: 'text',
                 })
@@ -92,7 +93,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'Introduce Setting',
+                    dialog_title: Language.textMap('Introduce Setting'),
                     dialog_value: this.props.data.user.userintro,
                     dialog_type: 'text',
                 })
@@ -101,7 +102,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'Gender Setting',
+                    dialog_title: Language.textMap('Gender Setting'),
                     dialog_value: this.props.data.user.gender,
                     dialog_type: 'gender',
                 })
@@ -110,7 +111,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'Language Setting',
+                    dialog_title: Language.textMap('Language Setting'),
                     dialog_value: this.props.data.user.language,
                     dialog_type: 'language',
                 })
@@ -119,7 +120,7 @@ export default class UserInfoScene extends Component {
                 this.setState({
                     selected_item: item,
                     dialogVisible: true,
-                    dialog_title: 'Password Setting',
+                    dialog_title: Language.textMap('Password Setting'),
                     dialog_value: this.props.data.user.language,
                     dialog_type: 'password',
                     oldPassword: '',
@@ -186,6 +187,15 @@ export default class UserInfoScene extends Component {
         }
     }
 
+    onDocumentsClick() {
+        this.props.navigator.push({
+            component: MyDocumentsScene,
+            data: {
+                user: this.props.data.user,
+            },
+        })
+    }
+
     onLogoutClick() {
         Alert.alert(Language.textMap("Warning"), Language.textMap("Logout the account") + " ?", [{
             text: 'cancel',
@@ -206,10 +216,10 @@ export default class UserInfoScene extends Component {
         return (
             <View style={styles.container}>
                 <Dialog visible={this.state.dialogVisible} title={this.state.dialog_title} buttons={[{
-                    text: 'CANCEL',
+                    text: Language.textMap('CANCEL'),
                     func: (()=>{this.setState({dialogVisible: false})}).bind(this),
                 }, {
-                    text: 'OK',
+                    text: Language.textMap('OK'),
                     func: this.onActionClick.bind(this),
                 }]}>
                     {
@@ -269,7 +279,7 @@ export default class UserInfoScene extends Component {
                                         }).bind(this)}
                                         style={[BaseCSS.textinput, {minWidth: 250, marginBottom: 10}]}/> 
                                     <TextInput value={this.state.reNewPassword}
-                                        placeholder={Language.textMap("Please ReInput New Password")}
+                                        placeholder={Language.textMap("Please Repeat New Password")}
                                         underlineColorAndroid={BaseCSS.colors.transparent}
                                         secureTextEntry={true}
                                         onChangeText={((text)=>{
@@ -415,10 +425,14 @@ export default class UserInfoScene extends Component {
                         </Text>
                     </View>
                 </TouchableHighlight>
-
                 {
                     {
-                        false: null,
+                        false: (
+                            <TouchableHighlight style={{flexDirection: 'column'}} underlayColor={BaseCSS.colors.transparent}
+                                onPress={this.onDocumentsClick.bind(this)}>
+                                <Text style={[styles.logoutBtn, {backgroundColor:BaseCSS.colors.info}]}>{Language.textMap("His/Her Documents")}</Text>
+                            </TouchableHighlight>
+                        ),
                         true: (
                             <TouchableHighlight style={{flexDirection: 'column'}} underlayColor={BaseCSS.colors.transparent}
                                 onPress={this.onLogoutClick.bind(this)}>

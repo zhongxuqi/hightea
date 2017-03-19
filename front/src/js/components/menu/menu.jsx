@@ -121,7 +121,7 @@ export default class Menu extends React.Component {
                     </li>
 
                     <li className={{true: 'active', false:''}[this.state.menuState == 'personaldocs_list']}>
-                        <Link to="/personaldocs_list" onClick={this.onMenuItemClick.bind(this, 'personaldocs_list')}>
+                        <Link to={"/personaldocs_list/" + this.props.userInfo.account} onClick={this.onMenuItemClick.bind(this, 'personaldocs_list')}>
                             <span className="glyphicon glyphicon-file"></span>
                             {Language.textMap("My Documents")}
                         </Link>

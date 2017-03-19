@@ -165,6 +165,7 @@ export default class UsersManager extends React.Component {
                                                 </td>
                                                 <td>{user.email}</td>
                                                 <td>
+                                                    <a type="button" className="btn btn-info btn-xs" href={"#/personaldocs_list/" + user.account} style={{marginRight: "10px"}}>{Language.textMap("Documents")}</a>
                                                     <button type="button" className="btn btn-info btn-xs" onClick={this.onClickActionUser.bind(this, "info", user)}>{Language.textMap("Detail")}</button>
                                                     <div style={{display:{true:"inline-block", false:"none"}[this.props.userInfo.role=="admin"||this.props.userInfo.role=="root"]}}>
                                                         <button type="button" className="btn btn-warning btn-xs" style={{display:{false: "inline-block", true:"none"}[user.isEdit]}} onClick={this.showUserEdit.bind(this, user)}>{Language.textMap("Edit")}</button>

@@ -213,16 +213,18 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 	http.Error(w, "Not Found", 404)
 }
 
-func (p *MainHandler) ActionSelfTopStarDocuments(w http.ResponseWriter, r *http.Request) {
-	var accountCookie *http.Cookie
+func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.Request) {
 	var err error
-	accountCookie, err = r.Cookie("account")
-	if err != nil {
-		http.Error(w, "cookie find error: "+err.Error(), 400)
-		return
-	}
 
 	if r.Method == http.MethodGet {
+		err = r.ParseForm()
+		if err != nil {
+			http.Error(w, "parse url form error: "+err.Error(), 400)
+			return
+		}
+
+		account := r.Form.Get("account")
+
 		var respBody struct {
 			Documents starDocuments `json:"documents"`
 			MemberNum int           `json:"memberNum"`
@@ -244,7 +246,7 @@ func (p *MainHandler) ActionSelfTopStarDocuments(w http.ResponseWriter, r *http.
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
 			stardoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": accountCookie.Value}).Select(bson.M{
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": account}).Select(bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,

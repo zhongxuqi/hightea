@@ -74,7 +74,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	memberHandler.HandleFunc("/api/member/star/", mainHandler.ActionStar)
 	memberHandler.HandleFunc("/api/member/star_documents", mainHandler.ActionStarDocuments)
 	memberHandler.HandleFunc("/api/member/top_star_documents", mainHandler.ActionTopStarDocuments)
-	memberHandler.HandleFunc("/api/member/self_top_star_documents", mainHandler.ActionSelfTopStarDocuments)
+	memberHandler.HandleFunc("/api/member/user_top_star_documents", mainHandler.ActionUserTopStarDocuments)
 	memberHandler.HandleFunc("/api/member/top_flag_documents", mainHandler.ActionTopFlagDocuments)
 	apiHandler.HandleFunc("/api/member/", func(w http.ResponseWriter, r *http.Request) {
 		memberHandler.ServeHTTP(w, r)

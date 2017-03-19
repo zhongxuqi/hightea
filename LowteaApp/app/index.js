@@ -37,9 +37,9 @@ export default class WelcomeScene extends Component {
         return (
             <View style={styles.container}>
                 <Image style={{width:200,height:200}} source={require("../img/icon.png")}/>
-                <Text style={styles.welcome}>
+                {/*<Text style={styles.welcome}>
                     Welcome to Lowtea!
-                </Text>
+                </Text>*/}
             </View>
         )
     }

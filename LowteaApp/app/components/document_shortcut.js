@@ -116,11 +116,11 @@ export default class DocumentShortCut extends Component {
                 }).bind(this)}
                 onLongPress={this.onLongPress.bind(this)}>
                 <View style={styles.container}>
-                    <Dialog visible={this.state.modalVisible} title={Language.textMap("Select doucment status")} buttons={[{
-                        text: 'CANCEL',
+                    <Dialog visible={this.state.modalVisible} title={Language.textMap("Select document status")} buttons={[{
+                        text: Language.textMap('CANCEL'),
                         func: this.onCancelClick.bind(this),
                     }, {
-                        text: 'OK',
+                        text: Language.textMap('OK'),
                         func: this.onOkClick.bind(this),
                     }]}>
                         <Picker style={{width: 300}} selectedValue={this.state.status}

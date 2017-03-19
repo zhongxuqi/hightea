@@ -88,7 +88,7 @@ export default class MyDocumentsScene extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <HeadBar onBackClick={this.onBackClick.bind(this)} title={Language.textMap("My Documents")}/>
+                <HeadBar onBackClick={this.onBackClick.bind(this)} title={Language.textMap("Documents") + "(" + this.props.data.user.account + ")"}/>
                 <ListView 
                     enableEmptySections={true}
                     dataSource={this.state.dataSource.cloneWithRows(this.state.documents)}
