@@ -98,7 +98,7 @@ export default class LoginScene extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
-                    <Image style={{width:100,height:100,marginBottom:20}} source={require("../../img/icon.png")}/>
+                    <Image style={{width:100,height:100,marginBottom:16}} source={require("../../img/icon.png")}/>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={styles.title}>
                             {Language.textMap("Welcome to lowtea")}
@@ -249,31 +249,31 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: BaseCSS.colors.bg_grey,
-        paddingTop: 100,
+        paddingTop: "8%",
         overflow: 'scroll',
     },
     title: {
         flex:1,
-        fontSize: 30,
+        fontSize: 25,
         textAlign: 'center',
         color: 'black',
-        marginBottom: 20,
+        marginBottom: 16,
     },
     form: {
         flexDirection:'column',
         borderColor:"#d8dee2",
         borderRadius:4,
         borderWidth:1,
-        width: "90%",
+        width: "80%",
         maxWidth: 400,
-        paddingVertical: 30,
+        paddingVertical: 15,
         backgroundColor: "#fff",
     },
     subtitle: {
         fontWeight: 'bold',
         marginHorizontal: 40,
         marginBottom: 10,
-        fontSize: 18,
+        fontSize: 15,
         color: "black",
     },
     textInputBg: {
@@ -284,10 +284,10 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 1,
-        fontSize: BaseCSS.font.contentSize,
+        fontSize: 13,
         color: 'black',
-        padding: 7,
-        marginBottom: 20,
+        paddingHorizontal: 3,
+        paddingVertical: 0,
         borderColor: "#d1d5da",
         borderWidth: 1,
         borderRadius: 4,
@@ -299,14 +299,14 @@ const styles = StyleSheet.create({
     }),
     loginBtnText: {
         flex: 1,
-        fontSize: 20,
+        fontSize: 15,
         textAlign: 'center',
         justifyContent: 'center',
         color: 'white',
         fontWeight: 'bold',
     },
     modeBtn: {
-        width: "90%",
+        width: "80%",
         maxWidth: 400,
         marginHorizontal: 40,
         marginVertical: 15,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
         backgroundColor: BaseCSS.colors.info,
         textAlign: 'center',
         color: 'white',
-        fontSize: 20,
+        fontSize: 15,
         borderRadius: 4,
     },
 });
