@@ -141,6 +141,7 @@ export default class UsersManager extends React.Component {
                             <thead>
                                 <tr>
                                     <th>{Language.textMap("Head Picture")}</th>
+                                    <th>{Language.textMap("Account")}</th>
                                     <th>{Language.textMap("Nick Name")}</th>
                                     <th>{Language.textMap("Role")}</th>
                                     <th>{Language.textMap("Email")}</th>
@@ -153,6 +154,7 @@ export default class UsersManager extends React.Component {
                                         return (
                                             <tr key={user.account}>
                                                 <td className="head-img"><img src={{true:"/img/head.png",false:user.headimg}[user.headimg==""]} style={{width:"30px",height:"30px"}}/></td>
+                                                <td>{user.account}</td>
                                                 <td>{user.nickname}</td>
                                                 <td style={{display:{false: "table-cell", true:"none"}[user.isEdit]}}>
                                                     {Language.textMap(user.role)}

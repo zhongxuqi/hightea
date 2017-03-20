@@ -39,6 +39,8 @@ func InitDB(mainHander *handler.MainHandler) {
 		if err != nil {
 			panic(err)
 		}
+	} else {
+		mainHander.Config.FlagExpiredTime = appConf.FlagExpiredTime
 	}
 
 	mainHander.UserColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.UserColl)

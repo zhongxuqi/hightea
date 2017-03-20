@@ -66,16 +66,19 @@ export default class DocShortcut extends React.Component {
                     </div>
                 </div>
                 <p className="doc-shortcut-abstract">{this.props.document.content.substring(0,100)}</p>
-                <ul className="doc-shortcut-data clearfix">
-                    <li>
+                <div className="doc-shortcut-data clearfix lowtea-table">
+                    <div className="lowtea-table-cell">
+                        <span className="label label-info lowtea-badge-account">{this.props.document.account}</span>
+                    </div>
+                    <div className="lowtea-table-cell">
                         <span className="glyphicon glyphicon-star"></span>
                         {this.props.document.starNum}
-                    </li>
-                    <li>
+                    </div>
+                    <div className="lowtea-table-cell">
                         <span className="glyphicon glyphicon-pencil"></span>
                         { DateUtils.unixtime2String(this.props.document.modifyTime) }
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         )
     }

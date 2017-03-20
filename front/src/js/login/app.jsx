@@ -109,6 +109,7 @@ class LoginApp extends React.Component {
     render() {
         return (
             <div className="lowtea-login-container">
+                <img className="lowtea-logo" src="/img/logo2.png"/>
                 <div className="lowtea-login-form">
                     <form className="clearfix" style={{display:{true: "block", false: "none"}[this.state.formState=="login"]}}>
                         <div className="orm-group">

@@ -8,7 +8,9 @@ export default class DocSideShortcut extends React.Component {
     render() {
         return (
             <div className="doc-side-shortcut clearfix lowtea-table">
-                <h5 className="doc-side-shortcut-title lowtea-table-cell"><a onClick={(()=>{this.props.onClick(this.props.document)}).bind(this)}>{this.props.document.title}</a></h5>
+                <h5 className="doc-side-shortcut-title lowtea-table-cell"><a onClick={(()=>{this.props.onClick(this.props.document)}).bind(this)}>
+                    {this.props.document.title}
+                </a></h5>
                 <div className="dropdown lowtea-table-cell" style={{width:"1%"}}>
                     <button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                         <span className="fa fa-toggle-down"></span>

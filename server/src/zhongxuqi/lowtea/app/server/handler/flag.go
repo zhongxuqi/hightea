@@ -121,7 +121,13 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 		respBody.Documents = flagDocuments{}
 		for _, documentId := range documentIds {
 			flagdoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&flagdoc)
+			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
+				"_id":        1,
+				"title":      1,
+				"modifyTime": 1,
+				"status":     1,
+				"account":    1,
+			}).One(&flagdoc)
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})

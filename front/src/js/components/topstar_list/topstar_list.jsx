@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactTooltip from 'react-tooltip'
 
 import Language from '../../language/language.jsx'
 
@@ -13,7 +14,9 @@ export default class TopStarList extends React.Component {
                     {
                         this.props.documents.map((document)=>{
                             return (
-                                <a key={document.id} href={"#/doc_reader/"+document.id} className="list-group-item">
+                                <a key={document.id} href={"#/doc_reader/"+document.id} className="list-group-item"
+                                    data-tip={Language.textMap("Account") + ": "+ document.account}>
+                                    <ReactTooltip place="left"/>
                                     {document.title}
                                     <span className="badge">{document.starPercent}%</span>
                                 </a>

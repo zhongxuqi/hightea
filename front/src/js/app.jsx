@@ -86,7 +86,7 @@ export default class Main extends React.Component {
                 <div className="col-md-2 col-xs-2" style={{padding:"0px", margin:"0px", height:'100%'}}>
                     <Menu userInfo={this.state.userInfo}></Menu>
                 </div>
-                <div className="col-md-10 col-xs-10" style={{padding:"0px", margin:"0px", height:'100%'}}>
+                <div className="col-md-10 col-xs-10" style={{padding:"0px", margin:"0px", height:'100%', overflowY:'scroll'}}>
                     {
                         React.cloneElement(this.props.children, {
                             userInfo: this.state.userInfo,

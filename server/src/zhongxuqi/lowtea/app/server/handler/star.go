@@ -190,6 +190,7 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
+				"account":    1,
 			}).One(&stardoc)
 			if err != nil {
 				if err == mgo.ErrNotFound {
@@ -251,6 +252,7 @@ func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
+				"account":    1,
 			}).One(&stardoc)
 			if err != nil {
 				if err == mgo.ErrNotFound {
