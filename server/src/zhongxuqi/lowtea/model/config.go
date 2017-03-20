@@ -37,4 +37,5 @@ type DBConfig struct {
 
 type OSSConfig struct {
 	OssProvider string `json:"ossProvider"`
+	MediaPath   string `json:"mediaPath"`
 }

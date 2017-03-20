@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io/ioutil"
 
+	"path/filepath"
 	"zhongxuqi/lowtea/app/server/handler"
 )
 
@@ -30,4 +31,8 @@ func InitEnv(mainHandler *handler.MainHandler) {
 		mainHandler.Config.DBConfig.DBName = APPNAME
 	}
 
+	mainHandler.Config.OssConfig.MediaPath, err = filepath.Abs(mainHandler.Config.OssConfig.MediaPath)
+	if err != nil {
+		panic(err)
+	}
 }

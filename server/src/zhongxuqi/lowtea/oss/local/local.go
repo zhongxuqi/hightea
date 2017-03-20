@@ -15,16 +15,24 @@ import (
 )
 
 const (
-	imagePath = "../media/lowtea_img"
-	audioPath = "../media/lowtea_audio"
-	videoPath = "../media/lowtea_video"
+	imagePathName = "/lowtea_img"
+	audioPathName = "/lowtea_audio"
+	videoPathName = "/lowtea_video"
 )
 
 type LocalOss struct {
+	ImagePath string
+	AudioPath string
+	VideoPath string
 }
 
 func NewOss(handler *http.ServeMux, cfg *model.OSSConfig) (ret *LocalOss) {
-	ret = &LocalOss{}
+	ret = &LocalOss{
+		ImagePath: cfg.MediaPath + imagePathName,
+		AudioPath: cfg.MediaPath + audioPathName,
+		VideoPath: cfg.MediaPath + audioPathName,
+	}
+	fmt.Printf("%+v\n", ret)
 	ret.InitOss(handler, cfg)
 	return
 }
@@ -36,44 +44,44 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	var err error
 
 	// init img dir
-	dirInfo, err = os.Stat(imagePath)
+	dirInfo, err = os.Stat(p.ImagePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			os.MkdirAll(imagePath, 0750)
+			os.MkdirAll(p.ImagePath, 0750)
 		} else {
 			panic(err)
 		}
 	} else {
 		if !dirInfo.IsDir() {
-			panic(errors.New(imagePath + " is not a directionary"))
+			panic(errors.New(p.ImagePath + " is not a directionary"))
 		}
 	}
 
 	// init audio dir
-	dirInfo, err = os.Stat(audioPath)
+	dirInfo, err = os.Stat(p.AudioPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			os.MkdirAll(audioPath, 0750)
+			os.MkdirAll(p.AudioPath, 0750)
 		} else {
 			panic(err)
 		}
 	} else {
 		if !dirInfo.IsDir() {
-			panic(errors.New(audioPath + " is not a directionary"))
+			panic(errors.New(p.AudioPath + " is not a directionary"))
 		}
 	}
 
 	// init video dir
-	dirInfo, err = os.Stat(videoPath)
+	dirInfo, err = os.Stat(p.VideoPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			os.MkdirAll(videoPath, 0750)
+			os.MkdirAll(p.VideoPath, 0750)
 		} else {
 			panic(err)
 		}
 	} else {
 		if !dirInfo.IsDir() {
-			panic(errors.New(videoPath + "is not a directionary"))
+			panic(errors.New(p.VideoPath + "is not a directionary"))
 		}
 	}
 
