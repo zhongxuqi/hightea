@@ -140,6 +140,20 @@ export default class Menu extends React.Component {
                             {Language.textMap("Members List")}
                         </Link>
                     </li>
+
+                    {
+                        {
+                            false: null,
+                            true: (
+                                <li className={{true: 'active', false:''}[this.state.menuState == 'system_manager']}>
+                                    <Link to="/system_manager" onClick={this.onMenuItemClick.bind(this, 'system_manager')}>
+                                        <span className="glyphicon glyphicon-user"></span>
+                                        {Language.textMap("System Manager")}
+                                    </Link>
+                                </li>
+                            ),
+                        }[this.props.userInfo.role=='root']
+                    }
                 </ul>
                 
                 <div className="modal fade" id="passwordModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -32,7 +32,6 @@ func NewOss(handler *http.ServeMux, cfg *model.OSSConfig) (ret *LocalOss) {
 		AudioPath: cfg.MediaPath + audioPathName,
 		VideoPath: cfg.MediaPath + audioPathName,
 	}
-	fmt.Printf("%+v\n", ret)
 	ret.InitOss(handler, cfg)
 	return
 }

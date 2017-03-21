@@ -101,6 +101,9 @@ func InitRouter(mainHandler *handler.MainHandler) {
 
 	// setup /api/root/ handler
 	rootHandler.HandleFunc("/api/root/flag_expired_time", mainHandler.ActionFlagExpiredTime)
+	rootHandler.HandleFunc("/api/root/dump_system", mainHandler.DumpSystem)
+	rootHandler.HandleFunc("/api/root/dumpfiles", mainHandler.DumpFiles)
+	rootHandler.HandleFunc("/api/root/download_dumpfile/", mainHandler.DownloadDumpFile)
 	apiHandler.HandleFunc("/api/root/", func(w http.ResponseWriter, r *http.Request) {
 
 		// check permission

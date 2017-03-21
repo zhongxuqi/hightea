@@ -9,6 +9,7 @@ import PersonalDraftsList from './components/personaldrafts_list/personaldrafts_
 import UserSettings from './components/user_settings/user_settings.jsx'
 import UsersManager from './components/users_manager/users_manager.jsx'
 import DocReader from './components/doc_reader/doc_reader.jsx'
+import SystemManager from './components/system_manager/system_manager.jsx'
 
 import DocEditor from './components/doc_editor/doc_editor.jsx'
 
@@ -129,6 +130,7 @@ render((
       <Route path="users_manager" component={UsersManager}/>
       <Route path="user_settings" component={UserSettings}/>
       <Route path="doc_reader/:id" component={DocReader}/>
+      <Route path="system_manager" component={SystemManager}/>
 
       <Route path="personaldrafts_list" component={PersonalDraftsList}/>
     </Route>
