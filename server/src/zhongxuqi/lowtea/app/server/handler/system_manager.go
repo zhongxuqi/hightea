@@ -8,25 +8,39 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"sort"
 	"strings"
 	"zhongxuqi/lowtea/model"
 )
 
 const (
-	dumpPath   = "../dumps"
-	dumpSuffix = ".tar.gz"
+	dumpFileName = "./dump-all.sh"
+	dumpPath     = "../dumps"
+	dumpSuffix   = ".tar.gz"
 )
+
+var (
+	dumpShellPath string
+)
+
+func init() {
+	absPath, _ := filepath.Abs("../" + dumpFileName)
+	dumpShellPath = filepath.Dir(absPath)
+}
 
 func (p *MainHandler) DumpSystem(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		go func() {
-			cmd := exec.Command("cd .. && ./dump-all.sh", p.Config.DBConfig.Host, p.Config.DBConfig.DBName, p.Config.OssConfig.MediaPath)
+			cmd := exec.Command("bash", "-c", strings.Join([]string{"cd .. &&", dumpFileName, p.Config.DBConfig.Host, p.Config.DBConfig.DBName, p.Config.OssConfig.MediaPath}, " "))
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			err := cmd.Run()
 			if err != nil {
 				fmt.Println("dump error: " + err.Error())
+				return
 			}
+			fmt.Println(string(out.Bytes()))
 		}()
 		b, _ := json.Marshal(&model.RespBase{
 			Status: 200,
@@ -36,6 +50,12 @@ func (p *MainHandler) DumpSystem(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Error(w, "Not Found", 404)
 }
+
+type filename []string
+
+func (a filename) Len() int           { return len(a) }
+func (a filename) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a filename) Less(i, j int) bool { return a[i] > a[j] }
 
 func (p *MainHandler) DumpFiles(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
@@ -56,6 +76,7 @@ func (p *MainHandler) DumpFiles(w http.ResponseWriter, r *http.Request) {
 				ret.Files = append(ret.Files, file.Name())
 			}
 		}
+		sort.Sort(filename(ret.Files))
 		ret.Status = 200
 		b, _ := json.Marshal(ret)
 		w.Write(b)
