@@ -89,7 +89,7 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			"modifyTime": 1,
 			"status":     1,
 			"account":    1,
-		}).Sort("-createTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
+		}).Sort("-modifyTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
 		if err != nil {
 			http.Error(w, "find documents error: "+err.Error(), 500)
 			return

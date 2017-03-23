@@ -61,6 +61,7 @@ export default class MarkdownEditor extends React.Component {
             },
             tabSize: 4,
         });
+        this.codemirror.setOption('lineWrapping', true)
         let preView = document.getElementById("preview"),
             cm = this.codemirror;
         cm.on("update", (()=>{
