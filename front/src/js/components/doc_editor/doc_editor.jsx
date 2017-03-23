@@ -113,15 +113,6 @@ export default class DocEditor extends React.Component {
                         status: document.status,
                     },
                 })
-            } else if (action == "edit" && document.status != "status_draft" && document.id == this.state.document.id) {
-                this.refs.editor.setValue("")
-                this.setState({
-                    document: {
-                        title:"",
-                        content:"",
-                        status:"status_draft",
-                    },
-                })
             }
             if (callback != undefined) callback()
             this.getDrafts(this.state.pageSize, 0)
