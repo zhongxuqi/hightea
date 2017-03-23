@@ -74,7 +74,7 @@ export default class DocumentShortCut extends Component {
     }
 
     onDeleteDocument() {
-        Alert.alert("Danger", Language.textMap("delete the document") + " [ " + this.props.document.title + " ] ?", [{
+        Alert.alert(Language.textMap("Danger"), Language.textMap("delete the document") + " [ " + this.props.document.title + " ] ?", [{
             text: Language.textMap("cancel"),
             onPress: ()=>{},
         }, {

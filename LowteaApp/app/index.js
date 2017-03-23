@@ -10,6 +10,7 @@ import LoginScene from './scenes/login.js'
 import MainScene from './scenes/main.js'
 import BaseCSS from './config/css.js'
 import Language from './language/index.js'
+import UserModel from './models/user.js'
 
 export default class WelcomeScene extends Component {
     constructor(props) {
@@ -22,6 +23,7 @@ export default class WelcomeScene extends Component {
         setTimeout((()=>{
             Server.GetSelfInfo((resp) => {
                 Language.SelectLanguage(resp.user.language)
+                UserModel.SetUser(resp.user)
                 props.navigator.resetTo({
                     component: MainScene
                 })

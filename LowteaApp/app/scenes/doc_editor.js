@@ -9,6 +9,7 @@ import {
     WebView,
     ToastAndroid,
     InteractionManager,
+    Linking,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Language from '../language/index.js'
@@ -373,7 +374,13 @@ export default class DocEditorScene extends Component {
                             </View>
                         ),
                         true: (
-                            <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}}/>
+                            <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}} ref="webview"
+                                onNavigationStateChange={((navState)=>{
+                                    if (navState.url.indexOf(NetConfig.Host) < 0 && navState.url.indexOf("://") > 0) {
+                                        this.refs.webview.stopLoading()
+                                        Linking.openURL(navState.url);
+                                    }
+                                }).bind(this)}/>
                         ),
                     }[this.state.previewActive]
                 }

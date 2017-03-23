@@ -7,12 +7,14 @@ import {
     TouchableHighlight,
     WebView,
     InteractionManager,
+    Linking,
 } from 'react-native'
 import marked from 'marked'
 import BaseCSS from '../config/css.js'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import NetConfig from '../config/net.js'
 import Server from '../server/index.js'
+import User from '../models/user.js'
 
 marked.setOptions({
     renderer: new marked.Renderer(),
@@ -73,6 +75,7 @@ export default class PreviewScene extends Component {
     }
 
     onFlagClick() {
+        if (User.GetUser().role !== 'admin' || User.GetUser().role !== 'root') return
         let action
         if (this.state.flag) {
             action="unflag"
@@ -84,7 +87,6 @@ export default class PreviewScene extends Component {
         }).bind(this), (resp)=>{
             Alert.alert("Error " + action, resp)
         })
-    
     }
 
     render() {
@@ -135,7 +137,13 @@ export default class PreviewScene extends Component {
                         </TouchableHighlight>
                     </View>
                 </View>
-                <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}}/>
+                <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}} ref="webview"
+                    onNavigationStateChange={((navState)=>{
+                        if (navState.url.indexOf(NetConfig.Host) < 0 && navState.url.indexOf("://") > 0) {
+                            this.refs.webview.stopLoading()
+                            Linking.openURL(navState.url);
+                        }
+                    }).bind(this)}/>
             </View>
         )
     }
