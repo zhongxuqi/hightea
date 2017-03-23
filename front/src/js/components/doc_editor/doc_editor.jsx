@@ -30,6 +30,7 @@ export default class DocEditor extends React.Component {
 
     componentDidMount() {
         this.refs.editor.setValue(this.state.document.content)
+        if ("id" in this.props.routeParams) this.openDocumentById(this.props.routeParams.id)
     }
 
     getDrafts(pageSize, pageIndex) {
@@ -219,6 +220,17 @@ export default class DocEditor extends React.Component {
             this.state.ischanged = false
             this.setState({})
         }
+    }
+
+    openDocumentById(id) {
+        HttpUtils.get("/api/member/document/"+id,{},((resp)=>{
+            this.setState({
+                document:resp.document,
+            })
+            this.refs.editor.setValue(resp.document.content)
+        }).bind(this),(resp)=>{
+            HttpUtils.alert("["+resp.status+"] "+resp.responseText)
+        })
     }
 
     render() {

@@ -25,6 +25,8 @@ export default class PersonalDocsList extends React.Component {
                 message: "",
             },
             topStarDocuments: [],
+
+            isSelf: this.props.routeParams.account === this.props.userInfo.account,
         }
     }
 
@@ -126,7 +128,8 @@ export default class PersonalDocsList extends React.Component {
                     <div className="clearfix" style={{margin:"0px 30px", paddingBottom:"10px"}}>
                         <DocListTitle docTotal={this.state.docTotal}></DocListTitle>
 
-                        <DocsList documents={this.state.documents} onSaveDoc={this.onSaveDoc.bind(this)} onDeleteDoc={this.onDeleteDoc.bind(this)}></DocsList>
+                        <DocsList documents={this.state.documents} onSaveDoc={this.onSaveDoc.bind(this)}
+                            onDeleteDoc={this.onDeleteDoc.bind(this)} isSelf={this.state.isSelf}></DocsList>
 
                         <div style={{width:"100%"}}>
                             <LoadingBtn ref="LoadingBtn" onClick={(()=>{

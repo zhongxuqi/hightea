@@ -125,6 +125,7 @@ render((
     <Route path="/" component={Main}>
       <IndexRoute component={DocsOverView}/>
       <Route path="doc_editor" component={DocEditor}/>
+      <Route path="doc_editor/:id" component={DocEditor}/>
       <Route path="stardocs_list" component={StarDocsList}/>
       <Route path="personaldocs_list/:account" component={PersonalDocsList}/>
       <Route path="users_manager" component={UsersManager}/>

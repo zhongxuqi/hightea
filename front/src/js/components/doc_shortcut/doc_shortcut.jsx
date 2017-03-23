@@ -18,6 +18,19 @@ export default class DocShortcut extends React.Component {
                     <div className="lowtea-table-cell" style={{width:"99%"}}>
                         <span className="label label-info">{TransUtils.status2string(this.props.document.status)}</span>
                     </div>
+                    {
+                        {
+                            false: null,
+                            true: (
+                                <div className="lowtea-table-cell" style={{width:"1%", paddingRight:"10px", display:{true:"table-cell", false:"none"}[this.props.onDeleteDoc!=undefined]}}>
+                                    <a type="button" className="btn btn-default lowtea-doc-btn" 
+                                        href={"#/doc_editor/" + this.props.document.id}>
+                                        <span className="fa fa-pencil"></span>
+                                    </a>
+                                </div>
+                            ),
+                        }[this.props.isSelf]
+                    }
                     <div className="lowtea-table-cell dropdown" style={{width:"1%", paddingRight:"10px", display:{true:"table-cell", false:"none"}[this.props.onSaveDoc!=undefined]}}>
                         <button className="btn btn-default dropdown-toggle lowtea-doc-btn" type="button" data-toggle="dropdown">
                             <span className="fa fa-toggle-down"></span>
