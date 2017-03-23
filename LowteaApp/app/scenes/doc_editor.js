@@ -88,6 +88,7 @@ export default class DocEditorScene extends Component {
         } else {
             action = "edit"
         }
+        if (this.state.document.title.length == 0 || this.state.document.content.length == 0) return
         Server.PostDocument(action, {
             id: this.state.document.id,
             title: this.state.document.title,

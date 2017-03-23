@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"sort"
 	"strings"
 	"zhongxuqi/lowtea/model"
@@ -19,15 +18,6 @@ const (
 	dumpPath     = "../dumps"
 	dumpSuffix   = ".tar.gz"
 )
-
-var (
-	dumpShellPath string
-)
-
-func init() {
-	absPath, _ := filepath.Abs("../" + dumpFileName)
-	dumpShellPath = filepath.Dir(absPath)
-}
 
 func (p *MainHandler) DumpSystem(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {

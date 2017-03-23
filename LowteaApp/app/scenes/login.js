@@ -35,6 +35,11 @@ export default class LoginScene extends Component {
 
     onLogin() {
         if (this.state.account.length > 0 && this.state.password.length > 0) {
+            if (!/^[a-zA-Z0-9]+$/.test(this.state.account)) {
+                Alert.alert(Language.textMap("Error"), Language.textMap("Account must be a-z, A-Z and 0-9"))
+                return
+            }
+
             Server.login(this.state.account, this.state.password, ((res)=>{
                 this.props.navigator.resetTo({
                     component: MainScene
@@ -42,6 +47,8 @@ export default class LoginScene extends Component {
             }).bind(this), (res)=>{
                 Alert.alert(Language.textMap("Login Failed"), Language.textMap("Account or password is wrong"))
             })
+        } else {
+            ToastAndroid.showWithGravity(Language.textMap('Please Input Account and Password'), ToastAndroid.SHORT, ToastAndroid.CENTER);
         }
     }
 
@@ -54,6 +61,10 @@ export default class LoginScene extends Component {
     onRegister() {
         if (this.state.register_account.length == 0) {
             Alert.alert(Language.textMap("Error"), Language.textMap("Please Input Account"))
+            return
+        }
+        if (!/^[a-zA-Z0-9]+$/.test(this.state.register_account)) {
+            Alert.alert(Language.textMap("Error"), Language.textMap("Account must be a-z, A-Z and 0-9"))
             return
         }
         if (this.state.register_nickname.length == 0) {
@@ -115,6 +126,7 @@ export default class LoginScene extends Component {
                                             underlineColorAndroid={BaseCSS.colors.transparent}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
+                                            keyboardType={"ascii-capable"}
                                             value={this.state.account}
                                             onChangeText={((text)=>{
                                                 this.setState({account: text})
@@ -149,6 +161,7 @@ export default class LoginScene extends Component {
                                             underlineColorAndroid={BaseCSS.colors.transparent}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
+                                            keyboardType={"ascii-capable"}
                                             value={this.state.register_account}
                                             onChangeText={((text)=>{
                                                 this.setState({register_account: text})

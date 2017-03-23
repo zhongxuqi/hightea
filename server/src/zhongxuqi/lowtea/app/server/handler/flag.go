@@ -135,6 +135,7 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 				continue
 			}
 			flagdoc.FlagNum, _ = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()
+			flagdoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
 			respBody.Documents = append(respBody.Documents, &flagdoc)
 		}
 		sort.Sort(respBody.Documents)

@@ -140,5 +140,7 @@ chineseTextMap["Password is not equal to the repeat"] = "两次输入密码不�
 chineseTextMap["Welcome to lowtea"] = "欢迎使用Lowtea"
 chineseTextMap["His/Her Documents"] = "他/她的文章"
 chineseTextMap["Documents"] = "文章"
+chineseTextMap["Account must be a-z, A-Z and 0-9"] = "账号必须是0-9、a-z或者A-Z"
+chineseTextMap["Please Input Account and Password"] = "请填写账号和密码"
 
 export default chineseTextMap;
