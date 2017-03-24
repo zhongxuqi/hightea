@@ -64,11 +64,11 @@ export default class PublicMain extends React.Component {
 
     render() {
         return (
-            <div style={{height:'100%'}}>
-                <nav className="navbar navbar-default topbar" role="navigation">
+            <div>
+                <nav className="navbar navbar-inverse topbar" role="navigation">
                     <div className="container-fluid">
                         <div className="navbar-header">
-                            <a className="navbar-brand">{this.state.rootEmail}</a>
+                            <a className="navbar-brand"><img alt="Brand" src="/img/icon_reverse.png"/></a>
                         </div>
 
                         <div className="collapse navbar-collapse">
@@ -93,7 +93,7 @@ export default class PublicMain extends React.Component {
                     </div>
                 </nav>
 
-                <div className="col-md-12 col-xs-12" style={{padding:"0px", margin:"0px", height:'100%'}}>
+                <div className="col-md-12 col-xs-12" style={{padding:"0px", margin:"0px"}}>
                     {
                         React.cloneElement(this.props.children, {
                             onConfirm: this.onConfirm.bind(this),
