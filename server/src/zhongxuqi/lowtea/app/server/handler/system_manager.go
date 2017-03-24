@@ -75,14 +75,15 @@ func (p *MainHandler) DumpFiles(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not Found", 404)
 }
 
-func (p *MainHandler) DownloadDumpFile(w http.ResponseWriter, r *http.Request) {
+func (p *MainHandler) ActionDumpFile(w http.ResponseWriter, r *http.Request) {
+	cmds := strings.Split(r.URL.Path, "/")
+	if len(cmds) > 5 {
+		http.Error(w, "Not Found", 404)
+		return
+	}
+	dumpFileName := cmds[len(cmds)-1]
+
 	if r.Method == http.MethodGet {
-		cmds := strings.Split(r.URL.Path, "/")
-		if len(cmds) > 5 {
-			http.Error(w, "Not Found", 404)
-			return
-		}
-		dumpFileName := cmds[len(cmds)-1]
 		var err error
 		if _, err = os.Stat(dumpPath + "/" + dumpFileName); os.IsNotExist(err) {
 			http.Error(w, "file is not exist", 400)
@@ -99,6 +100,17 @@ func (p *MainHandler) DownloadDumpFile(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/octet-stream")
 		w.Header().Add("Content-Disposition", "attachment; filename=\""+dumpFileName+"\"")
 		w.Write(data)
+		return
+	} else if r.Method == http.MethodDelete {
+		err := os.Remove(dumpPath + "/" + dumpFileName)
+		if err != nil {
+			http.Error(w, "dumpfile delete error: "+err.Error(), 500)
+			return
+		}
+		b, _ := json.Marshal(&model.RespBase{
+			Status: 200,
+		})
+		w.Write(b)
 		return
 	}
 	http.Error(w, "Not Found", 404)

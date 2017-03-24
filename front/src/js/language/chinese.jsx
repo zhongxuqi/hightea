@@ -93,5 +93,6 @@ chineseTextMap["Resume"] = "简历"
 chineseTextMap["Repeat Password"] = "重复密码"
 chineseTextMap["Register"] = "注册"
 chineseTextMap["Documents"] = "文章"
+chineseTextMap["Whether to delete the dumpfile"] = "是否删除备份文件"
 
 export default chineseTextMap;

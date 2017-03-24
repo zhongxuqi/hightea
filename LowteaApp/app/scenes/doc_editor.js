@@ -31,6 +31,7 @@ import Dialog from '../components/dialog.js'
 import ImagePicker from 'react-native-image-picker'
 import Server from '../server/index.js'
 import EventUtils from '../utils/events.js'
+import NavigatorUtil from '../utils/navigator.js'
 
 export default class DocEditorScene extends Component {
     constructor(props) {
@@ -64,6 +65,7 @@ export default class DocEditorScene extends Component {
             dialogLinkTitle: '',
             dialogLinkValue: '',
         }
+        NavigatorUtil.SetShowAlert(true)
     }
 
     componentDidMount() {

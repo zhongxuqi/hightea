@@ -6,6 +6,7 @@ import {
     ListView,
     Text,
     InteractionManager,
+    RefreshControl,
 } from 'react-native'
 import BaseCSS from '../config/css.js'
 import Server from '../server/index.js'
@@ -15,6 +16,7 @@ export default class NewsView extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            refreshing: false,
             pageInfo: {
                 pageSize: 15,
                 pageIndex: 0,
@@ -72,7 +74,14 @@ export default class NewsView extends Component {
                         return (
                             <DocumentShortCut document={document} navigator={this.props.navigator}/>
                         )
-                    }}/>
+                    }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.refreshing}
+                            onRefresh={this.getDocuments.bind(this, 0)}
+                            colors={[BaseCSS.colors.blue]}
+                            tintColor={BaseCSS.colors.blue}/>
+                    }/>
             </View>
         )
     }

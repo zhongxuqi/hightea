@@ -31,6 +31,17 @@ export default class SystemManager extends React.Component {
         })
     }
 
+    deleteDumpFile(filename) {
+        this.props.onConfirm(Language.textMap("Warning"), 
+                Language.textMap("Whether to delete the dumpfile")+" ?", (()=>{
+            HttpUtils.delete("/api/root/dumpfile/"+filename, {}, ((resp) => {
+                this.getDumpFiles()
+            }).bind(this), (data) => {
+                HttpUtils.alert("["+data.status+"]: "+data.responseText)
+            })
+        }).bind(this))
+    }
+
     render() {
         return (
             <div className="system_manager clearfix">
@@ -63,9 +74,10 @@ export default class SystemManager extends React.Component {
                                             <tr key={i}>
                                                 <td>{file}</td>
                                                 <td>
-                                                    <a type="button" className="btn btn-info btn-xs" href={"/api/root/download_dumpfile/" + file} style={{marginRight: "10px"}} target="_blank">
+                                                    <a type="button" className="btn btn-info btn-xs" href={"/api/root/dumpfile/" + file} style={{marginRight: "10px"}} target="_blank">
                                                         {Language.textMap("DownLoad")}
                                                     </a>
+                                                    <button type="button" className="btn btn-warning btn-xs" style={{marginRight: "10px"}} onClick={this.deleteDumpFile.bind(this,file)}>{Language.textMap("Delete")}</button>
                                                 </td>
                                             </tr>
                                         )

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {
+    Alert,
     StyleSheet,
     View,
     ViewPagerAndroid,
@@ -12,21 +13,28 @@ import FlagsView from '../components/flags.js'
 import StarsView from '../components/stars.js'
 import UserView from '../components/user.js'
 import EventUtils from '../utils/events.js'
-import DocEditorScene from './doc_editor.js'
 import Language from '../language/index.js'
+import NavigatorUtil from '../utils/navigator.js'
 
 export default class MainScene extends Component {
     constructor(props) {
         super(props)
         BackAndroid.addEventListener("hardwareBackPress", (() => {
-            if (this.props.navigator.getCurrentRoutes().length > 1) {
-                this.props.navigator.pop()
+            if (NavigatorUtil.GetShowAlert()) {
+                Alert.alert(Language.textMap("Warning"), Language.textMap("whether confirm to go back") + " ?",[{
+                    text: Language.textMap('CANCEL'),
+                    onPress: ()=>{},
+                }, {
+                    text: Language.textMap('OK'),
+                    onPress: (()=>{
+                        NavigatorUtil.SetShowAlert(false)
+                        this.props.navigator.pop()
+                    }).bind(this)
+                }])
                 return true
             }
-            let routes = this.props.getCurrentRoutes()
-            let lastRoute = routes[routes.length - 1]
-            if (lastRoute.Component == DocEditorScene) {
-                Alert.alert(Language.textMap("Warning"), Language.textMap("whether confirm to go back") + " ?")
+            if (this.props.navigator.getCurrentRoutes().length > 1) {
+                this.props.navigator.pop()
                 return true
             }
             return false
