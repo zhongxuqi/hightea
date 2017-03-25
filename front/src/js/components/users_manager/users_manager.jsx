@@ -1,4 +1,5 @@
 import React from 'react';
+import md5 from 'js-md5'
 
 import HttpUtils from '../../utils/http.jsx'
 import Language from '../../language/language.jsx'
@@ -14,6 +15,11 @@ export default class UsersManager extends React.Component {
             confirmModal: {},
             userInfo: props.userInfo,
             rootEmail: "",
+            password: {
+                newPassword: '',
+                reNewPassword: '',
+                hasError: false,
+            },
         }
         this.updateUsersList()
         if (this.props.userInfo.role == "root" || this.props.userInfo.role == "admin") {
@@ -123,10 +129,54 @@ export default class UsersManager extends React.Component {
         }
     }
 
+    onChangePassword(key, event) {
+        if (key == "newPassword") {
+            this.state.password.newPassword = event.target.value
+        } else if (key == "reNewPassword") {
+            this.state.password.reNewPassword = event.target.value
+        }
+
+        if (this.state.password.newPassword != this.state.password.reNewPassword) {
+            this.state.password.hasError = true
+        } else {
+            this.state.password.hasError = false
+        }
+        this.setState({})
+    }
+
+    onClickResetPassword(user) {
+        this.setState({
+            password: {
+                oldPassword: "",
+                newPassword: "",
+                reNewPassword: "",
+                hasError: false,
+            },
+            currUser: user,
+        })
+        $("#resetPasswordModal").modal("show")
+    }
+
+    onResetPassword() {
+        if (this.state.password.newPassword != this.state.password.reNewPassword) {
+            return
+        }
+        $("#resetPasswordModal").modal("hide")
+        
+        HttpUtils.post("/api/root/reset_password", {
+            account: this.state.currUser.account,
+            password: md5.hex(this.state.password.newPassword),
+        }, ((data) => {
+            HttpUtils.notice(Language.textMap("Success to reset password")+" !")
+        }).bind(this), ((data) => {
+            HttpUtils.alert("["+data.status+"] "+data.responseText)
+        }).bind(this))
+    }
+
     render() {
         return (
             <div className="users_manager clearfix">
-                <div className={["lowtea-users-table", {true: "col-md-8 col-lg-8 col-sm-8", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
+                <div className={["lowtea-users-table", {true: "col-md-9 col-lg-9 col-sm-9", false:""}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]].join(" ")}>
                     <div className="panel panel-default">
                         <div className="panel-heading lowtea-table" style={{width:"100%"}}>
                             <div className="lowtea-table-cell" style={{width:"99%"}}>
@@ -177,6 +227,13 @@ export default class UsersManager extends React.Component {
                                                     <div style={{display:{true:"inline-block",false:"none"}[this.props.userInfo.role=="root"||(this.props.userInfo.role=="admin"&&user.role=="member")]}}>
                                                         <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickActionUser.bind(this, "delete", user)}>{Language.textMap("Delete")}</button>
                                                     </div>
+                                                    {
+                                                        {
+                                                            true: (
+                                                                <button type="button" className="btn btn-danger btn-xs" onClick={this.onClickResetPassword.bind(this, user)}>{Language.textMap("Reset Password")}</button>           
+                                                            ),
+                                                        }[this.props.userInfo.role=="root"]
+                                                    }
                                                 </td>
                                             </tr>
                                         )
@@ -187,7 +244,7 @@ export default class UsersManager extends React.Component {
                     </div>
                 </div>
 
-                <div className="col-md-4 col-lg-4 col-sm-4 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
+                <div className="col-md-3 col-lg-3 col-sm-3 lowtea-table" style={{display:{true: "block", false: "none"}[this.state.userInfo.role=="root"||this.state.userInfo.role=="admin"]}}>
                     <div className="panel panel-default">
                         <div className="panel-heading">{Language.textMap("Registers")}</div>
 
@@ -263,6 +320,39 @@ export default class UsersManager extends React.Component {
                             </div>
                             <div className="modal-body">
                                 { "currRegister" in this.state ? this.state.currRegister.resume:''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="modal fade" id="resetPasswordModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <button type="button" className="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span className="sr-only">Close</span></button>
+                                <h4 className="modal-title" id="myModalLabel">{Language.textMap("Change Password")}</h4>
+                            </div>
+                            <div className="modal-body">
+                                <form className="form-horizontal" role="form">
+                                    <div className="form-group">
+                                        <label className="col-sm-4 control-label">{Language.textMap("New Password")}</label>
+                                        <div className="col-sm-8">
+                                            <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <label className="col-sm-4 control-label">{Language.textMap("Repeat New Password")}</label>
+                                        <div className="col-sm-8">
+                                            <input type="password" className={["form-control", {true:"input-error"}[this.state.password.hasError]].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-default" data-dismiss="modal">{Language.textMap("Cancel")}</button>
+                                <button type="button" className="btn btn-primary" onClick={this.onResetPassword.bind(this)}>
+                                    {Language.textMap("Save")}
+                                </button>
                             </div>
                         </div>
                     </div>

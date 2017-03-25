@@ -96,7 +96,8 @@ func (p *MainHandler) CheckSession(w http.ResponseWriter, r *http.Request) (err 
 func (p *MainHandler) getSignStr(account string, expireTime int64) (rawStr string, err error) {
 	rawStr = ""
 	if account == model.ROOT {
-		rawStr += model.ROOT + p.Config.RootPassword + strconv.FormatInt(expireTime, 10)
+		password := md5.Sum([]byte(p.Config.RootPassword))
+		rawStr += model.ROOT + string(hex.EncodeToString(password[:])) + strconv.FormatInt(expireTime, 10)
 	} else {
 		var user model.User
 		err = p.UserColl.Find(bson.M{"account": account}).One(&user)

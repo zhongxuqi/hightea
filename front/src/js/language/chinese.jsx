@@ -94,5 +94,7 @@ chineseTextMap["Repeat Password"] = "重复密码"
 chineseTextMap["Register"] = "注册"
 chineseTextMap["Documents"] = "文章"
 chineseTextMap["Whether to delete the dumpfile"] = "是否删除备份文件"
+chineseTextMap["Reset Password"] = "重置密码"
+chineseTextMap["Success to reset password"] = "成功重置密码"
 
 export default chineseTextMap;

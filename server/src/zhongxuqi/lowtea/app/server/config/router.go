@@ -104,6 +104,7 @@ func InitRouter(mainHandler *handler.MainHandler) {
 	rootHandler.HandleFunc("/api/root/dump_system", mainHandler.DumpSystem)
 	rootHandler.HandleFunc("/api/root/dumpfiles", mainHandler.DumpFiles)
 	rootHandler.HandleFunc("/api/root/dumpfile/", mainHandler.ActionDumpFile)
+	rootHandler.HandleFunc("/api/root/reset_password", mainHandler.ResetPassword)
 	apiHandler.HandleFunc("/api/root/", func(w http.ResponseWriter, r *http.Request) {
 
 		// check permission

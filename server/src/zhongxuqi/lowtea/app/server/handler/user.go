@@ -271,3 +271,28 @@ func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(retStr)
 	return
 }
+
+func (p *MainHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		var params struct {
+			Account  string `json:"account"`
+			Password string `json:"password"`
+		}
+		err := utils.ReadReq2Struct(r, &params)
+		if err != nil {
+			http.Error(w, "read params error: "+err.Error(), 400)
+			return
+		}
+		err = p.UserColl.Update(&bson.M{"account": params.Account}, &bson.M{"$set": bson.M{"password": params.Password}})
+		if err != nil {
+			http.Error(w, "reset password error: "+err.Error(), 500)
+			return
+		}
+		retStr, _ := json.Marshal(model.RespBase{
+			Status: 200,
+		})
+		w.Write(retStr)
+		return
+	}
+	http.Error(w, "Not Found", 404)
+}

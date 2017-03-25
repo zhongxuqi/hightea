@@ -2,6 +2,7 @@
 
 import React from 'react'
 import {Link} from 'react-router'
+import md5 from 'js-md5'
 
 import UserBadge from '../user_badge/user_badge.jsx'
 import HttpUtils from '../../utils/http.jsx'
@@ -69,8 +70,8 @@ export default class Menu extends React.Component {
         $("#passwordModal").modal("hide")
         
         HttpUtils.post("/api/member/self_password", {
-            password: this.state.password.oldPassword, 
-            newPassword: this.state.password.newPassword,
+            password: md5.hex(this.state.password.oldPassword), 
+            newPassword: md5.hex(this.state.password.newPassword),
         }, ((data) => {
             HttpUtils.notice("Success to save password!")
         }).bind(this), ((data) => {

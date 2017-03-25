@@ -66,7 +66,7 @@ class LoginApp extends React.Component {
             let account = this.state.loginAccount, 
                 password = this.state.loginPassword,
                 expireTime = Math.floor(new Date().getTime() / 1000 + 60)
-            let sign = md5.hex(account + password + expireTime)
+            let sign = md5.hex(account + md5.hex(password) + expireTime)
             
             HttpUtils.post("/openapi/login", {
                 account: account,
@@ -88,7 +88,7 @@ class LoginApp extends React.Component {
             nickname: this.state.registerNickname,
             email: this.state.registerEmail,
             resume: this.state.registerResume,
-            password: this.state.registerPassword,
+            password: md5.hex(this.state.registerPassword),
         }, ((data) => {
             HttpUtils.notice(Language.textMap("Register has sent, wait for callback"))
             this.setState({
