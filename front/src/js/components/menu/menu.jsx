@@ -19,7 +19,7 @@ export default class Menu extends React.Component {
                 oldPassword: "",
                 newPassword: "",
                 reNewPassword: "",
-                status: "",
+                hasError: false,
             },
         }
     }
@@ -42,7 +42,7 @@ export default class Menu extends React.Component {
                 oldPassword: "",
                 newPassword: "",
                 reNewPassword: "",
-                status: "",
+                hasError: false,
             }
         })
         $("#passwordModal").modal("show")
@@ -58,9 +58,9 @@ export default class Menu extends React.Component {
         }
 
         if (this.state.password.newPassword != this.state.password.reNewPassword) {
-            this.state.password.status = "input-error"
+            this.state.password.hasError = true
         } else {
-            this.state.password.status = ""
+            this.state.password.hasError = false
         }
         this.setState({})
     }
@@ -178,10 +178,10 @@ export default class Menu extends React.Component {
                                             <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
                                         </div>
                                     </div>
-                                    <div className="form-group">
+                                    <div className={["form-group", {true:"has-error"}[this.state.password.hasError]].join(" ")}>
                                         <label className="col-sm-4 control-label">{Language.textMap("Repeat New Password")}</label>
                                         <div className="col-sm-8">
-                                            <input type="password" className={["form-control", this.state.password.status].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
+                                            <input type="password" className={["form-control", {true:"input-error"}[this.state.password.hasError]].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
                                         </div>
                                     </div>
                                 </form>

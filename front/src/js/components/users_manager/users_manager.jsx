@@ -340,7 +340,7 @@ export default class UsersManager extends React.Component {
                                             <input type="password" className="form-control" value={this.state.password.newPassword} onChange={this.onChangePassword.bind(this, "newPassword")}/>
                                         </div>
                                     </div>
-                                    <div className="form-group">
+                                    <div className={["form-group", {true:"has-error"}[this.state.password.hasError]].join(" ")}>
                                         <label className="col-sm-4 control-label">{Language.textMap("Repeat New Password")}</label>
                                         <div className="col-sm-8">
                                             <input type="password" className={["form-control", {true:"input-error"}[this.state.password.hasError]].join(" ")} value={this.state.password.reNewPassword} onChange={this.onChangePassword.bind(this, "reNewPassword")}/>
