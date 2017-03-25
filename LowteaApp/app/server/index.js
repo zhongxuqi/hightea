@@ -21,7 +21,7 @@ function GetSelfInfo(resolve, reject) {
 
 function login(account, password, resolve, reject) {
     let expireTime = Math.floor(new Date().getTime() / 1000 + 60),
-        sign = md5.hex_md5(account + password + expireTime)
+        sign = md5.hex_md5(account + md5.hex_md5(password) + expireTime)
     fetch(NetConfig.Host + "/openapi/login", {
         method: "POST",
         credentials: 'include',
@@ -50,7 +50,13 @@ function register(params, resolve, reject) {
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(params),
+        body: JSON.stringify({
+            account: params.account,
+            nickname: params.nickname,
+            email: params.email,
+            resume: params.resume,
+            password: md5.hex_md5(params.password),
+        }),
     }).then((resp)=>{
         if (resp.ok) {
             resolve(resp)
@@ -336,8 +342,8 @@ function PostPassword(oldPassword, newPassword, resolve, reject) {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            password: oldPassword,
-            newPassword: newPassword,
+            password: md5.hex_md5(oldPassword),
+            newPassword: md5.hex_md5(newPassword),
         }),
     }).then((resp)=>{
         if (resp.ok) {

@@ -11,7 +11,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"sync"
 	"time"
 	"zhongxuqi/lowtea/config"
 	"zhongxuqi/lowtea/model"
@@ -28,8 +27,7 @@ var (
 // MainHandler ...
 type MainHandler struct {
 	Mux          *http.ServeMux
-	SessMap      map[string]int64
-	SessMapMutex *sync.Mutex
+	SessModel    *model.SessionModel
 	Config       model.Config
 	Oss          oss.OssIBase
 	AppConfColl  *mgo.Collection
@@ -43,34 +41,17 @@ type MainHandler struct {
 // New new MainHandler
 func New() (handler *MainHandler) {
 	handler = &MainHandler{
-		Mux:          http.NewServeMux(),
-		SessMap:      make(map[string]int64, 0),
-		SessMapMutex: &sync.Mutex{},
+		Mux: http.NewServeMux(),
 	}
 
 	// GC for session
 	go func() {
 		for {
-			handler.clearSession()
 			time.Sleep(5 * time.Minute)
+			handler.SessModel.ClearSessionByLimitTime(time.Now().Unix())
 		}
 	}()
 	return
-}
-
-func (p *MainHandler) clearSession() {
-	p.SessMapMutex.Lock()
-	keys := make([]string, 0)
-	now := time.Now().Unix()
-	for k, v := range p.SessMap {
-		if v < now {
-			keys = append(keys, k)
-		}
-	}
-	for _, k := range keys {
-		delete(p.SessMap, k)
-	}
-	p.SessMapMutex.Unlock()
 }
 
 // CheckSession check the session of request
@@ -80,12 +61,16 @@ func (p *MainHandler) CheckSession(w http.ResponseWriter, r *http.Request) (err 
 	if err != nil {
 		return
 	}
-	p.SessMapMutex.Lock()
-	defer p.SessMapMutex.Unlock()
-	if expireTime, ok := p.SessMap[tokenCookie.Value]; !ok || expireTime < time.Now().Unix() {
+	var sess model.Session
+	sess, err = p.SessModel.GetSessionByToken(tokenCookie.Value)
+	if err != nil {
+		err = errors.New("find session error: " + err.Error())
+		return
+	}
+	if sess.ExpiredTime < time.Now().Unix() {
 		err = ERROR_SESSION_INVALID
 		return
-	} else if expireTime-time.Now().Unix() < config.SESSION_UPDATE_TIME {
+	} else if sess.ExpiredTime-time.Now().Unix() < config.SESSION_UPDATE_TIME {
 		accountCookie, err = r.Cookie("account")
 		p.UpdateSession(w, accountCookie.Value)
 	}
@@ -149,7 +134,7 @@ func (p *MainHandler) UpdateSession(w http.ResponseWriter, account string) {
 		HttpOnly: true,
 	}
 	w.Header().Add("Set-Cookie", tokenCookie.String())
-	p.SessMap[token] = expireTime.Unix()
+	p.SessModel.InsertSession(token, expireTime.Unix())
 }
 
 // ClearSession update the session of http header

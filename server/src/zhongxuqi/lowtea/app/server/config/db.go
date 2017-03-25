@@ -43,15 +43,20 @@ func InitDB(mainHander *handler.MainHandler) {
 		mainHander.Config.FlagExpiredTime = appConf.FlagExpiredTime
 	}
 
-	mainHander.UserColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.UserColl)
-	mainHander.RegisterColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.RegisterColl)
+	appDB := sess.DB(mainHander.Config.DBConfig.DBName)
 
-	mainHander.DocumentColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.DocumentColl)
+	mainHander.UserColl = appDB.C(mainHander.Config.DBConfig.UserColl)
+	mainHander.RegisterColl = appDB.C(mainHander.Config.DBConfig.RegisterColl)
+
+	mainHander.DocumentColl = appDB.C(mainHander.Config.DBConfig.DocumentColl)
 	mainHander.DocumentColl.EnsureIndexKey("createTime")
 
-	mainHander.StarColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.StarColl)
+	mainHander.StarColl = appDB.C(mainHander.Config.DBConfig.StarColl)
 	mainHander.StarColl.EnsureIndexKey("account", "documentId")
 
-	mainHander.FlagColl = sess.DB(mainHander.Config.DBConfig.DBName).C(mainHander.Config.DBConfig.FlagColl)
+	mainHander.FlagColl = appDB.C(mainHander.Config.DBConfig.FlagColl)
 	mainHander.FlagColl.EnsureIndexKey("createTime", "account", "documentId")
+
+	// init session collection
+	mainHander.SessModel = model.NewSessionModel(appDB)
 }
