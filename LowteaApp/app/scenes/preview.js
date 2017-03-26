@@ -75,7 +75,7 @@ export default class PreviewScene extends Component {
     }
 
     onFlagClick() {
-        if (User.GetUser().role !== 'admin' || User.GetUser().role !== 'root') return
+        if (User.GetUser().role !== 'admin' && User.GetUser().role !== 'root') return
         let action
         if (this.state.flag) {
             action="unflag"
