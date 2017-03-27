@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import NetConfig from '../config/net.js'
 import Server from '../server/index.js'
 import User from '../models/user.js'
+import Language from '../language/index.js'
 
 marked.setOptions({
     renderer: new marked.Renderer(),
@@ -106,7 +107,7 @@ export default class PreviewScene extends Component {
                         </View>
                     </TouchableHighlight>
                     <View style={{flex: 1, flexDirection: 'row', height: 40, alignItems: 'center', justifyContent: 'center'}}>
-                        <Text style={styles.title}>{this.state.document.title}</Text>
+                        <Text style={styles.title}>{Language.textMap("Document Content")}</Text>
                     </View>
                     <View style={{flexDirection: 'row', justifyContent:'flex-end'}}>
                         <TouchableHighlight onPress={this.onStarClick.bind(this)}
@@ -137,7 +138,7 @@ export default class PreviewScene extends Component {
                         </TouchableHighlight>
                     </View>
                 </View>
-                <WebView source={{html:marked(this.state.document.content), baseUrl:NetConfig.Host}} ref="webview"
+                <WebView source={{html:marked("## "+this.state.document.title+"\n***\n" + this.state.document.content), baseUrl:NetConfig.Host}} ref="webview"
                     onNavigationStateChange={((navState)=>{
                         if (navState.url.indexOf(NetConfig.Host) < 0 && navState.url.indexOf("://") > 0) {
                             this.refs.webview.stopLoading()

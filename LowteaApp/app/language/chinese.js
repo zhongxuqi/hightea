@@ -144,5 +144,6 @@ chineseTextMap["Account must be a-z, A-Z and 0-9"] = "账号必须是0-9、a-z�
 chineseTextMap["Please Input Account and Password"] = "请填写账号和密码"
 chineseTextMap["whether confirm to go back"] = "确认返回"
 chineseTextMap["delete the document"] = "是否删除文档"
+chineseTextMap["Document Content"] = "文章内容"
 
 export default chineseTextMap;

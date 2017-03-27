@@ -32,7 +32,7 @@ export default class HeadBar extends Component {
                         <Icon name="angle-left" size={30} color={{false:BaseCSS.colors.black,true:BaseCSS.colors.white}[this.state.backPress]}/>
                     </View>
                 </TouchableHighlight>
-                <View style={{flex: 1, flexDirection: 'row', height: 40, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{flex: 1, flexDirection: 'row', height: 40, alignItems: 'center'}}>
                     <Text style={styles.title}>{this.props.title}</Text>
                 </View>
             </View>
@@ -52,6 +52,5 @@ const styles=StyleSheet.create({
         fontWeight: 'bold',
         fontSize: BaseCSS.font.titleSize,
         color: BaseCSS.colors.green,
-        textAlign: 'center',
     },
 })
