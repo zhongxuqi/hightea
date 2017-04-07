@@ -1,6 +1,8 @@
 import gulp from 'gulp'
 import webpack from 'webpack-stream'
 import browserSync from 'browser-sync'
+import yargs from 'yargs'
+
 let browserSyncInstance = browserSync.create()
 
 import WebpackProdConfig from './webpack.config.js'
@@ -20,15 +22,19 @@ gulp.task("build:dev", ()=>{
 })
 
 gulp.task("serve", ["build:dev"], ()=>{
+    let argv = ((ya)=>{
+        ya = ya.alias('p', 'proxy')
+        return ya.argv
+    }
+    )(yargs)
+
     browserSyncInstance.init({
-        host: 'localhost',
-        port: 7777,
-        proxy: 'localhost:7070',
+        host: '0.0.0.0',
+        proxy: argv.proxy || 'http://localhost:7070',
         files: "./dist/*",
     })
     let watcher = gulp.watch("./src/**/*", ['build:dev'])
     watcher.on("change", (done)=>{
-        console.log("test")
         browserSyncInstance.reload()
     })
 })

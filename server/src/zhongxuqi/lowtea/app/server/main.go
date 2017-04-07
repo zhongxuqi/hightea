@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -24,5 +25,6 @@ func main() {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
+	fmt.Printf("server listen at %s\n", mainHandler.Config.ServerAddr)
 	log.Fatal(httpServer.ListenAndServe())
 }
