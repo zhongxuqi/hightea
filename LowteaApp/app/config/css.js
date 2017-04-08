@@ -17,6 +17,7 @@ export default {
         white: "#ffffff",
         yellow_green: "#8bc34a",
         blue: "#4285f4",
+        bg_login: "#273238",
     },
     font: {
         titleSize: 20,

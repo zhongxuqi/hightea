@@ -10,7 +10,7 @@ import {
     ScrollView,
     ToastAndroid,
 } from 'react-native';
-
+import Icon from 'react-native-vector-icons/FontAwesome'
 import Server from '../server/index.js'
 import Language from '../language/index.js'
 import BaseCSS from '../config/css.js'
@@ -107,9 +107,9 @@ export default class LoginScene extends Component {
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView style={{flex: 1, backgroundColor: BaseCSS.colors.bg_login}}>
                 <View style={styles.container}>
-                    <Image style={{width:100,height:100,marginBottom:16}} source={require("../../img/icon.png")}/>
+                    <Image style={{width:150, height: 150,marginBottom:16}} source={require("../../img/icon_white.png")}/>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={styles.title}>
                             {Language.textMap("Welcome to lowtea")}
@@ -119,11 +119,12 @@ export default class LoginScene extends Component {
                         {
                             login: (
                                 <View style={styles.form}>
-                                    <Text style={styles.subtitle}>{Language.textMap("Account")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="user" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Account")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             keyboardType={"ascii-capable"}
@@ -132,11 +133,12 @@ export default class LoginScene extends Component {
                                                 this.setState({account: text})
                                             }).bind(this)}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("Password")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="lock" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Password")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             secureTextEntry={true}
@@ -154,11 +156,12 @@ export default class LoginScene extends Component {
                             ),
                             register: (
                                 <View style={styles.form}>
-                                    <Text style={styles.subtitle}>{Language.textMap("Account")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="user" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Account")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             keyboardType={"ascii-capable"}
@@ -167,11 +170,12 @@ export default class LoginScene extends Component {
                                                 this.setState({register_account: text})
                                             }).bind(this)}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("NickName")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="id-badge" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("NickName")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             value={this.state.register_nickname}
@@ -179,11 +183,12 @@ export default class LoginScene extends Component {
                                                 this.setState({register_nickname: text})
                                             }).bind(this)}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("Email")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="envelope" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Email")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             value={this.state.register_email}
@@ -191,11 +196,12 @@ export default class LoginScene extends Component {
                                                 this.setState({register_email: text})
                                             }).bind(this)}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("Resume")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="address-card" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Resume")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             value={this.state.register_resume}
@@ -204,11 +210,12 @@ export default class LoginScene extends Component {
                                             }).bind(this)}
                                             multiline={true}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("Password")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="lock" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Password")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             secureTextEntry={true}
@@ -217,11 +224,12 @@ export default class LoginScene extends Component {
                                                 this.setState({register_password: text})
                                             }).bind(this)}/>
                                     </View>
-                                    <Text style={styles.subtitle}>{Language.textMap("Repeat Password")}</Text>
-                                    <View style={styles.textInputBg}>
+                                    <View style={styles.form_item}>
+                                        <Icon name="lock" size={25} style={styles.form_icon}/>
                                         <TextInput
                                             style={styles.textInput}
                                             underlineColorAndroid={BaseCSS.colors.transparent}
+                                            placeholder={Language.textMap("Repeat Password")}
                                             placeholderTextColor={'grey'}
                                             selectionColor={'white'}
                                             secureTextEntry={true}
@@ -258,57 +266,49 @@ export default class LoginScene extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        backgroundColor: BaseCSS.colors.bg_grey,
         paddingTop: "8%",
-        overflow: 'scroll',
     },
     title: {
         flex:1,
         fontSize: 25,
         textAlign: 'center',
-        color: 'black',
+        color: 'white',
         marginBottom: 16,
     },
     form: {
         flexDirection:'column',
-        borderColor:"#d8dee2",
-        borderRadius:4,
-        borderWidth:1,
         width: "80%",
         maxWidth: 400,
         paddingVertical: 15,
-        backgroundColor: "#fff",
     },
-    subtitle: {
-        fontWeight: 'bold',
-        marginHorizontal: 40,
-        marginBottom: 10,
-        fontSize: 15,
-        color: "black",
-    },
-    textInputBg: {
+    form_item: {
         flexDirection: 'row',
-        marginHorizontal: 40,
-        backgroundColor: BaseCSS.colors.transparent_white,
-        marginBottom: 10,
+        padding: 10,
+        marginBottom: 5,
+        borderBottomWidth: 1,
+        borderBottomColor: BaseCSS.colors.separation_line,
+    },
+    form_icon: {
+        color: 'white',
+        width: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
     },
     textInput: {
         flex: 1,
-        fontSize: 13,
-        color: 'black',
+        fontSize: 15,
+        color: 'white',
         paddingHorizontal: 3,
         paddingVertical: 0,
-        borderColor: "#d1d5da",
-        borderWidth: 1,
-        borderRadius: 4,
+        marginLeft: 15,
     },
     loginBtn: Object.assign(BaseCSS.button, {
-        marginHorizontal: 40,
         padding: 8,
         backgroundColor: BaseCSS.colors.green,
+        marginTop: 20,
     }),
     loginBtnText: {
         flex: 1,
@@ -321,13 +321,11 @@ const styles = StyleSheet.create({
     modeBtn: {
         width: "80%",
         maxWidth: 400,
-        marginHorizontal: 40,
         marginVertical: 15,
         padding: 8,
         backgroundColor: BaseCSS.colors.info,
         textAlign: 'center',
         color: 'white',
         fontSize: 15,
-        borderRadius: 4,
     },
 });

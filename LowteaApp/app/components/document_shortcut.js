@@ -10,7 +10,7 @@ import {
     Button,
 } from 'react-native'
 import BaseCSS from '../config/css.js'
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome'
 import DateUtils from '../utils/date.js'
 import PreviewScene from '../scenes/preview.js'
 import StatusView from '../components/status.js'

@@ -162,21 +162,24 @@ export default class DocEditorScene extends Component {
     toggleImage() {
         if (this.state.previewActive) return
         ImagePicker.showImagePicker({
-            title: 'Select Head Image',
+            title: 'Select Image',
             cancelButtonTitle: Language.textMap('CANCEL'),
-            takePhotoButtonTitle: Language.textMap('From Photo'),
-            chooseFromLibraryButtonTitle: Language.textMap('From Image'),
+            takePhotoButtonTitle: Language.textMap('From Camera'),
+            chooseFromLibraryButtonTitle: Language.textMap('From Photo'),
         }, ((resp)=>{
             if (resp.didCancel) {
             } else if (resp.error) {
             } else if ( resp.customButton) {
             } else {
+                EventUtils.Emit("showLoadingModal")
                 Server.PostImage(resp.uri, ((resp)=>{
                     let start = this.state.document.content.substring(0, this.state.cursorStart),
                         end = this.state.document.content.substring(this.state.cursorStart)
                     this.state.document.content = start + "\n<img src=\""+resp.imageUrl+"\" style=\"max-width:100%\"></img>\n" + end
                     this.setState({})
+                    EventUtils.Emit("hideLoadingModal")
                 }).bind(this), (resp)=>{
+                    EventUtils.Emit("hideLoadingModal")
                     Alert.alert(Language.textMap("Error"), JSON.stringify(resp))
                 })
             }
