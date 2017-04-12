@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"sort"
 	"strings"
-	"time"
 	"zhongxuqi/lowtea/errors"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
@@ -40,33 +39,27 @@ func (p *MainHandler) ActionFlag(w http.ResponseWriter, r *http.Request) {
 		}
 		utils.ReadReq2Struct(r, &reqData)
 
-		_, err := p.FlagColl.RemoveAll(&bson.M{"createTime": bson.M{"$lt": time.Now().Unix() - p.Config.FlagExpiredTime}})
+		err = p.FlagModel.ClearExpiredFlags()
 		if err != nil {
 			http.Error(w, "remove old flag error: "+err.Error(), 500)
 			return
 		}
 
 		if reqData.Action == "flag" {
-			_, err = p.FlagColl.Upsert(&bson.M{"account": accountCookie.Value, "documentId": documentId}, &bson.M{
-				"$set": bson.M{
-					"account":    accountCookie.Value,
-					"documentId": documentId,
-					"createTime": time.Now().Unix(),
-				},
-			})
+			err = p.FlagModel.Insert(accountCookie.Value, documentId)
 			if err != nil {
 				http.Error(w, "upsert error: "+err.Error(), 500)
 				return
 			}
 		} else if reqData.Action == "unflag" {
-			p.FlagColl.RemoveAll(&bson.M{"account": accountCookie.Value, "documentId": documentId})
+			p.FlagModel.RemoveByAccountAndDocumentId(accountCookie.Value, documentId)
 		}
 
 		var respBody struct {
 			model.RespBase
 			FlagNum int `json:"flagNum"`
 		}
-		respBody.FlagNum, err = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()
+		respBody.FlagNum, err = p.FlagModel.CountByDocumentId(documentId)
 		if err != nil {
 			http.Error(w, "find error: "+err.Error(), 500)
 			return
@@ -104,8 +97,7 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 			Documents flagDocuments `json:"documents"`
 			AdminNum  int           `json:"adminNum"`
 		}
-		documentIds := make([]string, 0)
-		err := p.FlagColl.Find(&bson.M{"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime}}).Distinct("documentId", &documentIds)
+		documentIds, err := p.FlagModel.ListDocumentIds()
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return
@@ -130,12 +122,12 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+					p.FlagModel.RemoveByDocumentId(documentId)
 				}
 				continue
 			}
-			flagdoc.FlagNum, _ = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()
-			flagdoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			flagdoc.FlagNum, _ = p.FlagModel.CountByDocumentId(documentId)
+			flagdoc.StarNum, _ = p.StarModel.CountByDocumentId(documentId)
 			respBody.Documents = append(respBody.Documents, &flagdoc)
 		}
 		sort.Sort(respBody.Documents)
@@ -157,8 +149,7 @@ func (p *MainHandler) ActionPublicTopFlagDocuments(w http.ResponseWriter, r *htt
 			Documents flagDocuments `json:"documents"`
 			AdminNum  int           `json:"adminNum"`
 		}
-		documentIds := make([]string, 0)
-		err := p.FlagColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		documentIds, err := p.FlagModel.ListDocumentIds()
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return
@@ -180,11 +171,11 @@ func (p *MainHandler) ActionPublicTopFlagDocuments(w http.ResponseWriter, r *htt
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+					p.FlagModel.RemoveByDocumentId(documentId)
 				}
 				continue
 			}
-			flagdoc.FlagNum, _ = p.FlagColl.Find(&bson.M{"documentId": documentId}).Count()
+			flagdoc.FlagNum, _ = p.FlagModel.CountByDocumentId(documentId)
 			respBody.Documents = append(respBody.Documents, &flagdoc)
 		}
 		sort.Sort(respBody.Documents)

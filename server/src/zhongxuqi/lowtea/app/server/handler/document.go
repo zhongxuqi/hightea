@@ -96,7 +96,7 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for i, _ := range respBody.Documents {
-			respBody.Documents[i].StarNum, _ = p.StarModal.CountByDocumentId(respBody.Documents[i].Id.Hex())
+			respBody.Documents[i].StarNum, _ = p.StarModel.CountByDocumentId(respBody.Documents[i].Id.Hex())
 		}
 
 		respBody.Status = 200
@@ -212,12 +212,12 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = p.StarModal.RemoveByDocumentId(documentId)
+		err = p.StarModel.RemoveByDocumentId(documentId)
 		if err != nil {
 			http.Error(w, "remove document star error: "+err.Error(), 500)
 			return
 		}
-		_, err = p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+		err = p.FlagModel.RemoveByDocumentId(documentId)
 		if err != nil {
 			http.Error(w, "remove document flag error: "+err.Error(), 500)
 			return
@@ -264,30 +264,23 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var n int
-		n, _ = p.StarColl.Find(&bson.M{"account": accountCookie.Value, "documentId": documentId}).Count()
+		n, _ = p.StarModel.CountByAccountAndDocumentId(accountCookie.Value, documentId)
 		if n > 0 {
 			respBody.Star = true
 		} else {
 			respBody.Star = false
 		}
 
-		n, _ = p.FlagColl.Find(&bson.M{
-			"account":    accountCookie.Value,
-			"documentId": documentId,
-			"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime},
-		}).Count()
+		n, _ = p.FlagModel.CountByAccountAndDocumentId(accountCookie.Value, documentId)
 		if n > 0 {
 			respBody.Flag = true
 		} else {
 			respBody.Flag = false
 		}
 
-		n, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+		n, _ = p.StarModel.CountByDocumentId(documentId)
 		respBody.Document.StarNum = n
-		n, _ = p.FlagColl.Find(&bson.M{
-			"documentId": documentId,
-			"createTime": bson.M{"$gte": time.Now().Unix() - p.Config.FlagExpiredTime},
-		}).Count()
+		n, _ = p.FlagModel.CountByDocumentId(documentId)
 		respBody.Document.FlagNum = n
 
 		respBody.Status = 200

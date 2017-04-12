@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	"crypto/md5"
@@ -31,13 +30,12 @@ type MainHandler struct {
 	SessModel     *model.SessionModel
 	Config        model.Config
 	Oss           oss.OssIBase
-	StarColl      *mgo.Collection
-	FlagColl      *mgo.Collection
 	AppConfModel  *model.AppConfigModel
 	UserModel     *model.UserModel
 	DocumentModel *model.DocumentModel
 	RegisterModel *model.RegisterModel
-	StarModal     *model.StarModel
+	StarModel     *model.StarModel
+	FlagModel     *model.FlagModel
 }
 
 // New new MainHandler

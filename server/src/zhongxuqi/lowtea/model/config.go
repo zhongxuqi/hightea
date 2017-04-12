@@ -23,15 +23,10 @@ type Config struct {
 
 // DBConfig env of the db
 type DBConfig struct {
-	Host         string `json:"host"`
-	User         string `json:"user"`
-	Password     string `json:"password"`
-	DBName       string `json:"dbname"`
-	UserColl     string `json:"userColl"`
-	RegisterColl string `json:"reqisterColl"`
-	DocumentColl string `json:"documentColl"`
-	StarColl     string `json:"starColl"`
-	FlagColl     string `json:"flagColl"`
+	Host     string `json:"host"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DBName   string `json:"dbname"`
 }
 
 type OSSConfig struct {

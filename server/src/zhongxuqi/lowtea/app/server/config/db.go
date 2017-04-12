@@ -48,12 +48,6 @@ func InitDB(mainHander *handler.MainHandler) {
 		mainHander.Config.FlagExpiredTime = appConf.FlagExpiredTime
 	}
 
-	mainHander.StarColl = appDB.C(mainHander.Config.DBConfig.StarColl)
-	mainHander.StarColl.EnsureIndexKey("account", "documentId")
-
-	mainHander.FlagColl = appDB.C(mainHander.Config.DBConfig.FlagColl)
-	mainHander.FlagColl.EnsureIndexKey("createTime", "account", "documentId")
-
 	// init session collection
 	mainHander.SessModel = model.NewSessionModel(appDB)
 
@@ -61,5 +55,6 @@ func InitDB(mainHander *handler.MainHandler) {
 	mainHander.UserModel = model.NewUserModel(appDB, mainHander.Config.RootLanguage)
 	mainHander.DocumentModel = model.NewDocumentModel(appDB)
 	mainHander.RegisterModel = model.NewRegisterModel(appDB)
-	mainHander.StarModal = model.NewStarModel(appDB)
+	mainHander.StarModel = model.NewStarModel(appDB)
+	mainHander.FlagModel = model.NewFlagModel(appDB, &mainHander.Config.FlagExpiredTime)
 }

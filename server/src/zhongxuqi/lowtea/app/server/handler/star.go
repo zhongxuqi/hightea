@@ -2,10 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"strings"
-	"time"
 	"zhongxuqi/lowtea/errors"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
@@ -36,19 +36,19 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 			DocTotal  int               `json:"docTotal"`
 		}
 
-		filter := bson.M{
-			"account": accountCookie.Value,
-		}
-
 		var n int
-		n, err = p.StarColl.Find(&filter).Count()
+		n, err = p.StarModel.CountByAccount(accountCookie.Value)
 		if err != nil {
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
 		}
 
-		stars := make([]model.Star, 0)
-		p.StarColl.Find(filter).Sort("-createTime").All(&stars)
+		var stars []model.Star
+		stars, err = p.StarModel.SortListByAccount(accountCookie.Value, "-createTime")
+		if err != nil {
+			fmt.Println("get stars error: " + err.Error())
+			return
+		}
 		respBody.Documents = make([]*model.Document, 0, len(stars))
 		for _, star := range stars {
 			var document model.Document
@@ -61,12 +61,12 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)})
+					p.StarModel.RemoveByDocumentId(star.DocumentId)
 				}
 				continue
 			}
 
-			n, _ = p.StarColl.Find(&bson.M{"documentId": document.Id.Hex()}).Count()
+			n, _ = p.StarModel.CountByDocumentId(document.Id.Hex())
 			document.StarNum = n
 
 			respBody.Documents = append(respBody.Documents, &document)
@@ -108,19 +108,13 @@ func (p *MainHandler) ActionStar(w http.ResponseWriter, r *http.Request) {
 		}
 		utils.ReadReq2Struct(r, &reqData)
 		if reqData.Action == "star" {
-			_, err := p.StarColl.Upsert(&bson.M{"account": accountCookie.Value, "documentId": documentId}, &bson.M{
-				"$set": bson.M{
-					"account":    accountCookie.Value,
-					"documentId": documentId,
-					"createTime": time.Now().Unix(),
-				},
-			})
+			err = p.StarModel.Insert(accountCookie.Value, documentId)
 			if err != nil {
 				http.Error(w, "upsert error: "+err.Error(), 500)
 				return
 			}
 		} else if reqData.Action == "unstar" {
-			_, err := p.StarColl.RemoveAll(&bson.M{"account": accountCookie.Value, "documentId": documentId})
+			err = p.StarModel.RemoveByAccountAndDocumentId(accountCookie.Value, documentId)
 			if err != nil {
 				http.Error(w, "remove error: "+err.Error(), 500)
 				return
@@ -131,7 +125,7 @@ func (p *MainHandler) ActionStar(w http.ResponseWriter, r *http.Request) {
 			model.RespBase
 			StarNum int `json:"starNum"`
 		}
-		respBody.StarNum, err = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+		respBody.StarNum, err = p.StarModel.CountByDocumentId(documentId)
 		if err != nil {
 			http.Error(w, "find error: "+err.Error(), 500)
 			return
@@ -169,8 +163,7 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 			Documents starDocuments `json:"documents"`
 			MemberNum int           `json:"memberNum"`
 		}
-		documentIds := make([]string, 0)
-		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		documentIds, err := p.StarModel.ListDocumentIds()
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return
@@ -195,11 +188,11 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+					p.StarModel.RemoveByDocumentId(documentId)
 				}
 				continue
 			}
-			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			stardoc.StarNum, _ = p.StarModel.CountByDocumentId(documentId)
 			respBody.Documents = append(respBody.Documents, &stardoc)
 		}
 		sort.Sort(respBody.Documents)
@@ -231,8 +224,7 @@ func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.
 			Documents starDocuments `json:"documents"`
 			MemberNum int           `json:"memberNum"`
 		}
-		documentIds := make([]string, 0)
-		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		documentIds, err := p.StarModel.ListDocumentIds()
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return
@@ -260,11 +252,11 @@ func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+					p.StarModel.RemoveByDocumentId(documentId)
 				}
 				continue
 			}
-			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			stardoc.StarNum, _ = p.StarModel.CountByDocumentId(documentId)
 			respBody.Documents = append(respBody.Documents, &stardoc)
 		}
 		sort.Sort(respBody.Documents)
@@ -286,8 +278,7 @@ func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *htt
 			Documents starDocuments `json:"documents"`
 			MemberNum int           `json:"memberNum"`
 		}
-		documentIds := make([]string, 0)
-		err := p.StarColl.Find(&bson.M{}).Distinct("documentId", &documentIds)
+		documentIds, err := p.StarModel.ListDocumentIds()
 		if err != nil {
 			http.Error(w, "find distinct documentId error: "+err.Error(), 500)
 			return
@@ -309,11 +300,11 @@ func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *htt
 			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
-					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+					p.StarModel.RemoveByDocumentId(documentId)
 				}
 				continue
 			}
-			stardoc.StarNum, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+			stardoc.StarNum, _ = p.StarModel.CountByDocumentId(documentId)
 			respBody.Documents = append(respBody.Documents, &stardoc)
 		}
 		sort.Sort(respBody.Documents)

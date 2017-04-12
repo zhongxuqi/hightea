@@ -72,7 +72,7 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 		}
 
 		for i, _ := range respBody.Documents {
-			n, _ = p.StarColl.Find(&bson.M{"documentId": respBody.Documents[i].Id.Hex()}).Count()
+			n, _ = p.StarModel.CountByDocumentId(respBody.Documents[i].Id.Hex())
 			respBody.Documents[i].StarNum = n
 		}
 
@@ -115,7 +115,7 @@ func (p *MainHandler) ActionPublicDocument(w http.ResponseWriter, r *http.Reques
 		}
 
 		var n int
-		n, _ = p.StarColl.Find(&bson.M{"documentId": documentId}).Count()
+		n, _ = p.StarModel.CountByDocumentId(documentId)
 		respBody.Document.StarNum = n
 
 		respBody.Status = 200
