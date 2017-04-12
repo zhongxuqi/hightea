@@ -1,6 +1,7 @@
 package model
 
 import "gopkg.in/mgo.v2/bson"
+import "gopkg.in/mgo.v2"
 
 const (
 	// ROOT the user flag for User.Role
@@ -30,6 +31,22 @@ type User struct {
 	Gender    string        `json:"gender" bson:"gender"`
 	Role      string        `json:"role" bson:"role"`
 	Language  string        `json:"language" bson:"language"`
+}
+
+type UserModel struct {
+	coll *mgo.Collection
+}
+
+func NewUserModel(db *mgo.Database) (userModel *UserModel) {
+	return &UserModel{
+		coll: db.C("users"),
+	}
+}
+
+func (p *UserModel) GetAllUser() (ret []User, err error) {
+	ret = make([]User, 0)
+	err = p.coll.Find(nil).All(&ret)
+	return
 }
 
 // Register the struct of register

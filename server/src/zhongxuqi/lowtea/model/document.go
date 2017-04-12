@@ -1,6 +1,7 @@
 package model
 
 import "gopkg.in/mgo.v2/bson"
+import "gopkg.in/mgo.v2"
 
 const (
 	STATUS_DRAFT          = "status_draft"
@@ -19,4 +20,20 @@ type Document struct {
 	Status     string        `json:"status" bson:"status"`
 	StarNum    int           `json:"starNum" bson:"-"`
 	FlagNum    int           `json:"flagNum" bson:"-"`
+}
+
+type DocumentModel struct {
+	coll *mgo.Collection
+}
+
+func NewDocumentModel(db *mgo.Database) (documentModel *DocumentModel) {
+	return &DocumentModel{
+		coll: db.C("documents"),
+	}
+}
+
+func (p *DocumentModel) GetAllDocument() (ret []Document, err error) {
+	ret = make([]Document, 0)
+	err = p.coll.Find(nil).All(&ret)
+	return
 }

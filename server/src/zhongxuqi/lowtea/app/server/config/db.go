@@ -59,4 +59,8 @@ func InitDB(mainHander *handler.MainHandler) {
 
 	// init session collection
 	mainHander.SessModel = model.NewSessionModel(appDB)
+
+	// init model
+	mainHander.UserModel = model.NewUserModel(appDB)
+	mainHander.DocumentModel = model.NewDocumentModel(appDB)
 }

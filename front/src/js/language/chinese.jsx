@@ -96,5 +96,7 @@ chineseTextMap["Documents"] = "文章"
 chineseTextMap["Whether to delete the dumpfile"] = "是否删除备份文件"
 chineseTextMap["Reset Password"] = "重置密码"
 chineseTextMap["Success to reset password"] = "成功重置密码"
+chineseTextMap["Clear Trash"] = "清理垃圾"
+chineseTextMap["Success to clear"] = "清理成功"
 
 export default chineseTextMap;

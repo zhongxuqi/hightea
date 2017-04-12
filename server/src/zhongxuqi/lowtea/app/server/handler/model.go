@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -26,16 +27,18 @@ var (
 
 // MainHandler ...
 type MainHandler struct {
-	Mux          *http.ServeMux
-	SessModel    *model.SessionModel
-	Config       model.Config
-	Oss          oss.OssIBase
-	AppConfColl  *mgo.Collection
-	UserColl     *mgo.Collection
-	RegisterColl *mgo.Collection
-	DocumentColl *mgo.Collection
-	StarColl     *mgo.Collection
-	FlagColl     *mgo.Collection
+	Mux           *http.ServeMux
+	SessModel     *model.SessionModel
+	Config        model.Config
+	Oss           oss.OssIBase
+	AppConfColl   *mgo.Collection
+	UserColl      *mgo.Collection
+	RegisterColl  *mgo.Collection
+	DocumentColl  *mgo.Collection
+	StarColl      *mgo.Collection
+	FlagColl      *mgo.Collection
+	UserModel     *model.UserModel
+	DocumentModel *model.DocumentModel
 }
 
 // New new MainHandler
@@ -202,4 +205,51 @@ func (p *MainHandler) ActionFlagExpiredTime(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	http.Error(w, "Not Found", 404)
+}
+
+func (p *MainHandler) ClearUselessMedia() {
+	fileMap, err := p.Oss.GetAllMedia()
+	if err != nil {
+		fmt.Println("oss get all media fail: ", err.Error())
+		return
+	}
+
+	// check user head image
+	var users []model.User
+	users, err = p.UserModel.GetAllUser()
+	if err != nil {
+		fmt.Println("get all user fail: ", err.Error())
+		return
+	}
+	for _, user := range users {
+		if _, ok := fileMap[user.HeadImg]; ok {
+			delete(fileMap, user.HeadImg)
+		}
+	}
+
+	// check document content
+	var documents []model.Document
+	documents, err = p.DocumentModel.GetAllDocument()
+	if err != nil {
+		fmt.Println("get all document fail: ", err.Error())
+		return
+	}
+	pattern := p.Oss.GetRegExpPattern()
+	for _, document := range documents {
+		mediaFileUrls := pattern.FindAllString(document.Content, -1)
+		for _, mediaFileUrl := range mediaFileUrls {
+			if _, ok := fileMap[mediaFileUrl]; ok {
+				delete(fileMap, mediaFileUrl)
+			}
+		}
+	}
+
+	// delete trash file
+	for fileUrl, _ := range fileMap {
+		var err error
+		err = p.Oss.DeleteMediaFile(fileUrl)
+		if err != nil {
+			fmt.Println("delete "+fileUrl+" fail: ", err.Error())
+		}
+	}
 }

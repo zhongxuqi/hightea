@@ -23,6 +23,14 @@ export default class SystemManager extends React.Component {
         })
     }
 
+    clearUselessMedia() {
+        HttpUtils.delete("/api/root/useless_media", {}, ((resp) => {
+            HttpUtils.notice(Language.textMap("Success to clear"))
+        }).bind(this), (data) => {
+            HttpUtils.alert("["+data.status+"]: "+data.responseText)
+        })
+    }
+
     dumpSystem() {
         HttpUtils.post("/api/root/dump_system", {}, ((resp) => {
             HttpUtils.notice(Language.textMap("Success to Dump"))
@@ -50,6 +58,9 @@ export default class SystemManager extends React.Component {
                         <div className="panel-heading lowtea-table" style={{width:"100%"}}>
                             <div className="lowtea-table-cell" style={{width:"99%"}}>
                                 {Language.textMap("Dump File")}
+                            </div>
+                            <div className="lowtea-table-cell">
+                                <button type="button" className="btn btn-warning" style={{marginRight:'10px'}} onClick={this.clearUselessMedia}>{Language.textMap("Clear Trash")}</button>
                             </div>
                             <div className="lowtea-table-cell">
                                 <button type="button" className="btn btn-primary" style={{marginRight:'10px'}} onClick={this.dumpSystem}>{Language.textMap("Dump")}</button>

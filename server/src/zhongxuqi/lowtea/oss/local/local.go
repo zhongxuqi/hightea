@@ -11,6 +11,8 @@ import (
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
 
+	"regexp"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -21,6 +23,7 @@ const (
 )
 
 type LocalOss struct {
+	RootPath  string
 	ImagePath string
 	AudioPath string
 	VideoPath string
@@ -28,6 +31,7 @@ type LocalOss struct {
 
 func NewOss(handler *http.ServeMux, cfg *model.OSSConfig) (ret *LocalOss) {
 	ret = &LocalOss{
+		RootPath:  cfg.MediaPath,
 		ImagePath: cfg.MediaPath + imagePathName,
 		AudioPath: cfg.MediaPath + audioPathName,
 		VideoPath: cfg.MediaPath + audioPathName,
@@ -85,21 +89,21 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 	}
 
 	// init img handler
-	imgFileHandler := http.FileServer(http.Dir("../media"))
+	imgFileHandler := http.FileServer(http.Dir(p.RootPath))
 	handler.HandleFunc("/lowtea_img/", func(w http.ResponseWriter, r *http.Request) {
 		imgFileHandler.ServeHTTP(w, r)
 		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	// init audio handler
-	audioFileHandler := http.FileServer(http.Dir("../media"))
+	audioFileHandler := http.FileServer(http.Dir(p.RootPath))
 	handler.HandleFunc("/lowtea_audio/", func(w http.ResponseWriter, r *http.Request) {
 		audioFileHandler.ServeHTTP(w, r)
 		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
 	})
 
 	// init video handler
-	videoFileHandler := http.FileServer(http.Dir("../media"))
+	videoFileHandler := http.FileServer(http.Dir(p.RootPath))
 	handler.HandleFunc("/lowtea_video/", func(w http.ResponseWriter, r *http.Request) {
 		videoFileHandler.ServeHTTP(w, r)
 		fmt.Printf("%s %s %s %s\n", time.Now().String(), utils.GetRemoteIp(r), r.Method, r.URL.Path)
@@ -109,7 +113,7 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var imagefile *os.File
-	imagefile, err = os.Create("../media/lowtea_img/" + filename)
+	imagefile, err = os.Create(p.ImagePath + filename)
 	if err != nil {
 		return
 	}
@@ -130,7 +134,7 @@ func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) 
 func (p *LocalOss) SaveAudio(audioBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var audiofile *os.File
-	audiofile, err = os.Create("../media/lowtea_audio/" + filename)
+	audiofile, err = os.Create(p.AudioPath + filename)
 	if err != nil {
 		return
 	}
@@ -151,7 +155,7 @@ func (p *LocalOss) SaveAudio(audioBody *multipart.File) (url string, err error) 
 func (p *LocalOss) SaveVideo(videoBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var videofile *os.File
-	videofile, err = os.Create("../media/lowtea_video/" + filename)
+	videofile, err = os.Create(p.VideoPath + filename)
 	if err != nil {
 		return
 	}
@@ -166,5 +170,50 @@ func (p *LocalOss) SaveVideo(videoBody *multipart.File) (url string, err error) 
 	}
 
 	url = "/lowtea_video/" + filename
+	return
+}
+
+func (p *LocalOss) GetAllMedia() (ret map[string]int, err error) {
+	ret = make(map[string]int)
+
+	// read image
+	var imagefiles []os.FileInfo
+	imagefiles, err = ioutil.ReadDir(p.ImagePath)
+	if err != nil {
+		return
+	}
+	for _, file := range imagefiles {
+		ret[imagePathName+"/"+file.Name()] = 1
+	}
+
+	// read audio
+	var audiofiles []os.FileInfo
+	audiofiles, err = ioutil.ReadDir(p.AudioPath)
+	if err != nil {
+		return
+	}
+	for _, file := range audiofiles {
+		ret[audioPathName+"/"+file.Name()] = 1
+	}
+
+	// read vedio
+	var videofiles []os.FileInfo
+	videofiles, err = ioutil.ReadDir(p.VideoPath)
+	if err != nil {
+		return
+	}
+	for _, file := range videofiles {
+		ret[videoPathName+"/"+file.Name()] = 1
+	}
+	return
+}
+
+func (p *LocalOss) GetRegExpPattern() (ret *regexp.Regexp) {
+	ret = regexp.MustCompile("(" + imagePathName + "|" + audioPathName + "|" + videoPathName + ")/[0-9a-z]+")
+	return
+}
+
+func (p *LocalOss) DeleteMediaFile(file string) (err error) {
+	err = os.Remove(p.RootPath + file)
 	return
 }
