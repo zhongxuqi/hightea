@@ -34,7 +34,7 @@ func NewOss(handler *http.ServeMux, cfg *model.OSSConfig) (ret *LocalOss) {
 		RootPath:  cfg.MediaPath,
 		ImagePath: cfg.MediaPath + imagePathName,
 		AudioPath: cfg.MediaPath + audioPathName,
-		VideoPath: cfg.MediaPath + audioPathName,
+		VideoPath: cfg.MediaPath + videoPathName,
 	}
 	ret.InitOss(handler, cfg)
 	return
@@ -113,7 +113,7 @@ func (p *LocalOss) InitOss(handler *http.ServeMux, cfg *model.OSSConfig) {
 func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var imagefile *os.File
-	imagefile, err = os.Create(p.ImagePath + filename)
+	imagefile, err = os.Create(p.ImagePath + "/" + filename)
 	if err != nil {
 		return
 	}
@@ -134,7 +134,7 @@ func (p *LocalOss) SaveImage(imageBody *multipart.File) (url string, err error) 
 func (p *LocalOss) SaveAudio(audioBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var audiofile *os.File
-	audiofile, err = os.Create(p.AudioPath + filename)
+	audiofile, err = os.Create(p.AudioPath + "/" + filename)
 	if err != nil {
 		return
 	}
@@ -155,7 +155,7 @@ func (p *LocalOss) SaveAudio(audioBody *multipart.File) (url string, err error) 
 func (p *LocalOss) SaveVideo(videoBody *multipart.File) (url string, err error) {
 	filename := bson.NewObjectId().Hex()
 	var videofile *os.File
-	videofile, err = os.Create(p.VideoPath + filename)
+	videofile, err = os.Create(p.VideoPath + "/" + filename)
 	if err != nil {
 		return
 	}
