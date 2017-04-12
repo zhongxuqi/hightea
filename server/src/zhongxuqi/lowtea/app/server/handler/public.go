@@ -53,7 +53,7 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 		}
 
 		var n int
-		n, err = p.DocumentColl.Find(filter).Count()
+		n, err = p.DocumentModel.CountByFilter(filter)
 		if err != nil {
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
@@ -65,7 +65,7 @@ func (p *MainHandler) ActionPublicDocuments(w http.ResponseWriter, r *http.Reque
 			respBody.PageTotal = 0
 		}
 
-		err = p.DocumentColl.Find(&filter).Sort("-createTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
+		respBody.Documents, err = p.DocumentModel.SortFindByFilterWithPage(filter, "-modifyTime", params.PageSize*params.PageIndex, params.PageSize)
 		if err != nil {
 			http.Error(w, "find documents error: "+err.Error(), 500)
 			return
@@ -102,7 +102,8 @@ func (p *MainHandler) ActionPublicDocument(w http.ResponseWriter, r *http.Reques
 			model.RespBase
 			Document model.Document `json:"document"`
 		}
-		err := p.DocumentColl.Find(bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&respBody.Document)
+		var err error
+		respBody.Document, err = p.DocumentModel.FindDocument(bson.ObjectIdHex(documentId))
 		if err != nil {
 			http.Error(w, "find document error: "+err.Error(), 500)
 			return

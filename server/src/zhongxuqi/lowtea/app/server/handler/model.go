@@ -31,14 +31,13 @@ type MainHandler struct {
 	SessModel     *model.SessionModel
 	Config        model.Config
 	Oss           oss.OssIBase
-	AppConfColl   *mgo.Collection
-	UserColl      *mgo.Collection
-	RegisterColl  *mgo.Collection
-	DocumentColl  *mgo.Collection
 	StarColl      *mgo.Collection
 	FlagColl      *mgo.Collection
+	AppConfModel  *model.AppConfigModel
 	UserModel     *model.UserModel
 	DocumentModel *model.DocumentModel
+	RegisterModel *model.RegisterModel
+	StarModal     *model.StarModel
 }
 
 // New new MainHandler
@@ -88,7 +87,7 @@ func (p *MainHandler) getSignStr(account string, expireTime int64) (rawStr strin
 		rawStr += model.ROOT + string(hex.EncodeToString(password[:])) + strconv.FormatInt(expireTime, 10)
 	} else {
 		var user model.User
-		err = p.UserColl.Find(bson.M{"account": account}).One(&user)
+		user, err = p.UserModel.FindByAccount(account)
 		if err != nil {
 			return
 		}
@@ -172,7 +171,7 @@ func (p *MainHandler) ActionFlagExpiredTime(w http.ResponseWriter, r *http.Reque
 			http.Error(w, "error: flag expired time setted to 0", 400)
 			return
 		}
-		err = p.AppConfColl.Update(&bson.M{"app": p.Config.DBConfig.DBName}, &bson.M{"$set": bson.M{"flagExpiredTime": params.FlagExpiredTime}})
+		err = p.AppConfModel.Update(p.Config.DBConfig.DBName, bson.M{"flagExpiredTime": params.FlagExpiredTime})
 		if err != nil {
 			http.Error(w, "update flag expired time error: "+err.Error(), 500)
 			return
@@ -187,7 +186,8 @@ func (p *MainHandler) ActionFlagExpiredTime(w http.ResponseWriter, r *http.Reque
 		return
 	} else if r.Method == http.MethodGet {
 		var appConf model.AppConfig
-		err := p.AppConfColl.Find(&bson.M{"app": p.Config.DBConfig.DBName}).One(&appConf)
+		var err error
+		appConf, err = p.AppConfModel.Find(p.Config.DBConfig.DBName)
 		if err != nil {
 			http.Error(w, "find flag expired time error: "+err.Error(), 500)
 			return
@@ -216,7 +216,7 @@ func (p *MainHandler) ClearUselessMedia() {
 
 	// check user head image
 	var users []model.User
-	users, err = p.UserModel.GetAllUser()
+	users, err = p.UserModel.GetAll()
 	if err != nil {
 		fmt.Println("get all user fail: ", err.Error())
 		return
@@ -229,7 +229,7 @@ func (p *MainHandler) ClearUselessMedia() {
 
 	// check document content
 	var documents []model.Document
-	documents, err = p.DocumentModel.GetAllDocument()
+	documents, err = p.DocumentModel.GetAll()
 	if err != nil {
 		fmt.Println("get all document fail: ", err.Error())
 		return

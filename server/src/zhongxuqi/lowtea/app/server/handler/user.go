@@ -31,7 +31,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 			Role:      model.ROOT,
 		}
 	} else {
-		err = p.UserColl.Find(bson.M{"account": accountCookie.Value}).One(&self)
+		self, err = p.UserModel.FindByAccount(accountCookie.Value)
 		if err != nil {
 			http.Error(w, "user find error: "+err.Error(), 500)
 			return
@@ -53,7 +53,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 				Language:  p.Config.RootLanguage,
 			}
 		} else {
-			err = p.UserColl.Find(bson.M{"account": accountCookie.Value}).One(&(ret.User))
+			ret.User, err = p.UserModel.FindByAccount(accountCookie.Value)
 			if err != nil {
 				http.Error(w, "[GetUserInfo] find account: "+err.Error(), 400)
 				return
@@ -83,7 +83,7 @@ func (p *MainHandler) ActionSelf(w http.ResponseWriter, r *http.Request) {
 		if self.Role == model.ROOT {
 			p.Config.RootLanguage = data.Language
 		} else {
-			err = p.UserColl.Update(bson.M{"account": self.Account}, bson.M{"$set": data})
+			err = p.UserModel.UpdateAccount(self.Account, data)
 			if err != nil {
 				http.Error(w, "user info update error: "+err.Error(), 500)
 				return
@@ -135,11 +135,7 @@ func (p *MainHandler) ActionSelfPassword(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		err = p.UserColl.Update(bson.M{"account": accountCookie.Value, "password": data.PassWord}, bson.M{
-			"$set": bson.M{
-				"password": data.NewPassWord,
-			},
-		})
+		err = p.UserModel.UpdatePassword(accountCookie.Value, data.PassWord, data.NewPassWord)
 		if err != nil {
 			http.Error(w, "password update error: "+err.Error(), 500)
 			return
@@ -165,7 +161,8 @@ func (p *MainHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		Users []model.User `json:"users"`
 	}
 	ret.Users = make([]model.User, 0)
-	err := p.UserColl.Find(bson.M{}).All(&(ret.Users))
+	var err error
+	ret.Users, err = p.UserModel.GetAll()
 	if err != nil {
 		http.Error(w, "users find error: "+err.Error(), 500)
 		return
@@ -179,13 +176,12 @@ func (p *MainHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 // AdminActionUser admins action to a user
 func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{}
 	cmds := strings.Split(r.URL.Path, "/")[4:]
 	if len(cmds) <= 0 {
 		http.Error(w, errors.ERROR_MISS_ACCOUNT.Error(), 400)
 		return
 	}
-	filter["account"] = cmds[0]
+	account := cmds[0]
 
 	// check permission
 	var accountCookie *http.Cookie
@@ -196,21 +192,14 @@ func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var self model.User
-	if accountCookie.Value == model.ROOT {
-		self = model.User{
-			Account: model.ROOT,
-			Role:    model.ROOT,
-		}
-	} else {
-		err = p.UserColl.Find(bson.M{"account": accountCookie.Value}).One(&self)
-		if err != nil {
-			http.Error(w, "user find error: "+err.Error(), 500)
-			return
-		}
+	self, err = p.UserModel.FindByAccount(accountCookie.Value)
+	if err != nil {
+		http.Error(w, "user find error: "+err.Error(), 500)
+		return
 	}
 
 	var user model.User
-	err = p.UserColl.Find(filter).One(&user)
+	user, err = p.UserModel.FindByAccount(account)
 	if err != nil {
 		http.Error(w, "user find error: "+err.Error(), 500)
 		return
@@ -234,7 +223,7 @@ func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "flag remove error: "+err.Error(), 500)
 			return
 		}
-		err = p.UserColl.Remove(filter)
+		err = p.UserModel.RemoveByAccount(account)
 		if err != nil {
 			http.Error(w, "user remove error: "+err.Error(), 500)
 			return
@@ -255,9 +244,9 @@ func (p *MainHandler) AdminActionUser(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "user post json unmarshal error: "+err.Error(), 400)
 			return
 		}
-		err = p.UserColl.Update(filter, bson.M{"$set": bson.M{
+		err = p.UserModel.UpdateAccount(account, bson.M{
 			"role": data.Role,
-		}})
+		})
 		if err != nil {
 			http.Error(w, "user info update error: "+err.Error(), 500)
 			return
@@ -283,7 +272,7 @@ func (p *MainHandler) ResetPassword(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "read params error: "+err.Error(), 400)
 			return
 		}
-		err = p.UserColl.Update(&bson.M{"account": params.Account}, &bson.M{"$set": bson.M{"password": params.Password}})
+		err = p.UserModel.ResetPassword(params.Account, params.Password)
 		if err != nil {
 			http.Error(w, "reset password error: "+err.Error(), 500)
 			return

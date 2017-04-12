@@ -52,12 +52,13 @@ func (p *MainHandler) ActionStarDocuments(w http.ResponseWriter, r *http.Request
 		respBody.Documents = make([]*model.Document, 0, len(stars))
 		for _, star := range stars {
 			var document model.Document
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)}).Select(bson.M{
+			document, err = p.DocumentModel.FindDocumentWithSelector(bson.ObjectIdHex(star.DocumentId), bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
-			}).One(&document)
+				"account":    1,
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(star.DocumentId)})
@@ -175,7 +176,7 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		respBody.MemberNum, err = p.UserColl.Count()
+		respBody.MemberNum, err = p.UserModel.Count()
 		if err != nil {
 			http.Error(w, "find users count error: "+err.Error(), 500)
 			return
@@ -184,14 +185,14 @@ func (p *MainHandler) ActionTopStarDocuments(w http.ResponseWriter, r *http.Requ
 
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
-			stardoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
+			var stardoc model.Document
+			stardoc, err = p.DocumentModel.FindDocumentWithSelector(bson.ObjectIdHex(documentId), bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
 				"account":    1,
-			}).One(&stardoc)
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
@@ -237,7 +238,7 @@ func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.
 			return
 		}
 
-		respBody.MemberNum, err = p.UserColl.Count()
+		respBody.MemberNum, err = p.UserModel.Count()
 		if err != nil {
 			http.Error(w, "find users count error: "+err.Error(), 500)
 			return
@@ -246,14 +247,17 @@ func (p *MainHandler) ActionUserTopStarDocuments(w http.ResponseWriter, r *http.
 
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
-			stardoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "account": account}).Select(bson.M{
+			var stardoc model.Document
+			stardoc, err = p.DocumentModel.FindByFilterWithSelector(bson.M{
+				"_id":     bson.ObjectIdHex(documentId),
+				"account": account,
+			}, bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
 				"account":    1,
-			}).One(&stardoc)
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
@@ -289,7 +293,7 @@ func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *htt
 			return
 		}
 
-		respBody.MemberNum, err = p.UserColl.Count()
+		respBody.MemberNum, err = p.UserModel.Count()
 		if err != nil {
 			http.Error(w, "find users count error: "+err.Error(), 500)
 			return
@@ -298,8 +302,11 @@ func (p *MainHandler) ActionPublicTopStarDocuments(w http.ResponseWriter, r *htt
 
 		respBody.Documents = starDocuments{}
 		for _, documentId := range documentIds {
-			stardoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "status": model.STATUS_PUBLISH_PUBLIC}).One(&stardoc)
+			var stardoc model.Document
+			stardoc, err = p.DocumentModel.FindByFilter(bson.M{
+				"_id":    bson.ObjectIdHex(documentId),
+				"status": model.STATUS_PUBLISH_PUBLIC,
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})

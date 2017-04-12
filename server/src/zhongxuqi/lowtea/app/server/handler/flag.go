@@ -111,7 +111,7 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 			return
 		}
 
-		respBody.AdminNum, err = p.UserColl.Find(&bson.M{"role": model.ADMIN}).Count()
+		respBody.AdminNum, err = p.UserModel.CountByRole(model.ADMIN)
 		if err != nil {
 			http.Error(w, "find users count error: "+err.Error(), 500)
 			return
@@ -120,14 +120,14 @@ func (p *MainHandler) ActionTopFlagDocuments(w http.ResponseWriter, r *http.Requ
 
 		respBody.Documents = flagDocuments{}
 		for _, documentId := range documentIds {
-			flagdoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId)}).Select(bson.M{
+			var flagdoc model.Document
+			flagdoc, err = p.DocumentModel.FindDocumentWithSelector(bson.ObjectIdHex(documentId), bson.M{
 				"_id":        1,
 				"title":      1,
 				"modifyTime": 1,
 				"status":     1,
 				"account":    1,
-			}).One(&flagdoc)
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
@@ -164,7 +164,7 @@ func (p *MainHandler) ActionPublicTopFlagDocuments(w http.ResponseWriter, r *htt
 			return
 		}
 
-		respBody.AdminNum, err = p.UserColl.Find(&bson.M{"role": model.ADMIN}).Count()
+		respBody.AdminNum, err = p.UserModel.CountByRole(model.ADMIN)
 		if err != nil {
 			http.Error(w, "find users count error: "+err.Error(), 500)
 			return
@@ -173,8 +173,11 @@ func (p *MainHandler) ActionPublicTopFlagDocuments(w http.ResponseWriter, r *htt
 
 		respBody.Documents = flagDocuments{}
 		for _, documentId := range documentIds {
-			flagdoc := model.Document{}
-			err = p.DocumentColl.Find(&bson.M{"_id": bson.ObjectIdHex(documentId), "status": model.STATUS_PUBLISH_PUBLIC}).One(&flagdoc)
+			var flagdoc model.Document
+			flagdoc, err = p.DocumentModel.FindByFilter(bson.M{
+				"_id":    bson.ObjectIdHex(documentId),
+				"status": model.STATUS_PUBLISH_PUBLIC,
+			})
 			if err != nil {
 				if err == mgo.ErrNotFound {
 					p.FlagColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})

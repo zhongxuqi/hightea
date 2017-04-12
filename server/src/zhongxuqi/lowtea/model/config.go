@@ -1,15 +1,14 @@
 package model
 
+import (
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
+)
+
 const (
 	LOCAL = "local"
 	QINIU = "qiniu"
 )
-
-type AppConfig struct {
-	App             string `json:"app" bson:"app"`
-	Version         string `json:"version" bson:"version"`
-	FlagExpiredTime int64  `json:"flagExpiredTime" bson:"flagExpiredTime"`
-}
 
 // Config env of the server
 type Config struct {
@@ -38,4 +37,35 @@ type DBConfig struct {
 type OSSConfig struct {
 	OssProvider string `json:"ossProvider"`
 	MediaPath   string `json:"mediaPath"`
+}
+
+type AppConfig struct {
+	App             string `json:"app" bson:"app"`
+	Version         string `json:"version" bson:"version"`
+	FlagExpiredTime int64  `json:"flagExpiredTime" bson:"flagExpiredTime"`
+}
+
+type AppConfigModel struct {
+	coll *mgo.Collection
+}
+
+func NewAppConfigModel(db *mgo.Database) (ret *AppConfigModel) {
+	return &AppConfigModel{
+		coll: db.C("lowtea"),
+	}
+}
+
+func (p *AppConfigModel) Init(appName, version string) (err error) {
+	_, err = p.coll.Upsert(bson.M{"app": appName}, bson.M{"$set": bson.M{"version": version}})
+	return
+}
+
+func (p *AppConfigModel) Update(appName string, filter bson.M) (err error) {
+	err = p.coll.Update(bson.M{"app": appName}, bson.M{"$set": filter})
+	return
+}
+
+func (p *AppConfigModel) Find(appName string) (appConfig AppConfig, err error) {
+	err = p.coll.Find(bson.M{"app": appName}).One(&appConfig)
+	return
 }

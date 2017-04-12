@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
-
 	"zhongxuqi/lowtea/errors"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
@@ -15,22 +13,14 @@ import (
 func (p *MainHandler) GetRegisters(w http.ResponseWriter, r *http.Request) {
 	var ret struct {
 		model.RespBase
-		Registers []bson.M `json:"registers"`
+		Registers []model.Register `json:"registers"`
 	}
-
-	err := p.RegisterColl.Find(bson.M{}).All(&(ret.Registers))
+	var err error
+	ret.Registers, err = p.RegisterModel.GetAll()
 	if err != nil {
 		http.Error(w, "find register error"+err.Error(), 500)
 		return
 	}
-
-	// delete password
-	for i := range ret.Registers {
-		ret.Registers[i]["id"] = ret.Registers[i]["_id"]
-		delete(ret.Registers[i], "password")
-		delete(ret.Registers[i], "_id")
-	}
-
 	ret.Status = 200
 	ret.Message = "success"
 	retStr, _ := json.Marshal(ret)
@@ -51,25 +41,25 @@ func (p *MainHandler) ActionRegister(w http.ResponseWriter, r *http.Request) {
 
 	if data.Action == "agree" {
 		var registerObj model.Register
-		err = p.RegisterColl.Find(bson.M{"account": data.Account}).One(&registerObj)
+		registerObj, err = p.RegisterModel.FindByAccount(data.Account)
 		if err != nil {
 			http.Error(w, "register find error: "+err.Error(), 400)
 			return
 		}
-		user := bson.M{}
-		user["account"] = registerObj.Account
-		user["password"] = registerObj.PassWord
-		user["nickname"] = registerObj.NickName
-		user["email"] = registerObj.Email
-		user["gender"] = ""
-		user["userintro"] = ""
-		user["role"] = model.MEMBER
-		err = p.UserColl.Insert(user)
+		var user model.User
+		user.Account = registerObj.Account
+		user.PassWord = registerObj.PassWord
+		user.NickName = registerObj.NickName
+		user.Email = registerObj.Email
+		user.Gender = ""
+		user.UserIntro = ""
+		user.Role = model.MEMBER
+		err = p.UserModel.Insert(user)
 		if err != nil {
 			http.Error(w, "user insert error: "+err.Error(), 400)
 			return
 		}
-		err = p.RegisterColl.Remove(bson.M{"account": data.Account})
+		err = p.RegisterModel.RemoveByAccount(data.Account)
 		if err != nil {
 			http.Error(w, "register remove error: "+err.Error(), 400)
 			return
@@ -80,7 +70,7 @@ func (p *MainHandler) ActionRegister(w http.ResponseWriter, r *http.Request) {
 		})
 		w.Write(retStr)
 	} else if data.Action == "deny" {
-		err = p.RegisterColl.Remove(bson.M{"account": data.Account})
+		err = p.RegisterModel.RemoveByAccount(data.Account)
 		if err != nil {
 			http.Error(w, "register remove error: "+err.Error(), 400)
 			return

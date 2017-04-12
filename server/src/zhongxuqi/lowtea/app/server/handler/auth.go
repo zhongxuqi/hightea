@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"gopkg.in/mgo.v2/bson"
-
 	"zhongxuqi/lowtea/errors"
 	"zhongxuqi/lowtea/model"
 	"zhongxuqi/lowtea/utils"
@@ -27,7 +25,7 @@ func (p *MainHandler) CheckAdmin(r *http.Request) (err error) {
 
 	// check admin
 	var user model.User
-	err = p.UserColl.Find(bson.M{"account": accountCookie.Value}).One(&user)
+	user, err = p.UserModel.FindByAccount(accountCookie.Value)
 	if err != nil {
 		return
 	}
@@ -80,19 +78,10 @@ func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
 	p.UpdateSession(w, dataStruct.Account)
 
 	var user model.User
-	if dataStruct.Account == model.ROOT {
-		user = model.User{
-			Account:  model.ROOT,
-			NickName: model.ROOT,
-			Role:     model.ROOT,
-			Language: p.Config.RootLanguage,
-		}
-	} else {
-		err = p.UserColl.Find(bson.M{"account": dataStruct.Account}).One(&user)
-		if err != nil {
-			http.Error(w, "find User error: "+err.Error(), 400)
-			return
-		}
+	user, err = p.UserModel.FindByAccount(dataStruct.Account)
+	if err != nil {
+		http.Error(w, "find User error: "+err.Error(), 400)
+		return
 	}
 
 	var ret struct {
@@ -109,19 +98,19 @@ func (p *MainHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // Register do register
 func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
-	data := bson.M{}
-	err := utils.ReadReq2Struct(r, &data)
+	var register model.Register
+	err := utils.ReadReq2Struct(r, &register)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
 	// check the account
-	if data["account"] == model.ROOT {
+	if register.Account == model.ROOT {
 		http.Error(w, errors.ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
-	n, err := p.UserColl.Find(bson.M{"account": data["account"]}).Count()
+	n, err := p.UserModel.CountByAccount(register.Account)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -129,7 +118,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errors.ERROR_USERNAME_EXISTS.Error(), 400)
 		return
 	}
-	n, err = p.RegisterColl.Find(bson.M{"account": data["account"]}).Count()
+	n, err = p.RegisterModel.CountByAccount(register.Account)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
 		return
@@ -138,9 +127,7 @@ func (p *MainHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	delete(data, "_id")
-	delete(data, "id")
-	err = p.RegisterColl.Insert(data)
+	err = p.RegisterModel.Insert(register)
 	if err != nil {
 		http.Error(w, "[Register] insert error: "+err.Error(), 400)
 		return

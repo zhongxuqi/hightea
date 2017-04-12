@@ -71,7 +71,7 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var n int
-		n, err = p.DocumentColl.Find(filter).Count()
+		n, err = p.DocumentModel.CountByFilter(filter)
 		if err != nil {
 			http.Error(w, "find document count error: "+err.Error(), 500)
 			return
@@ -83,20 +83,20 @@ func (p *MainHandler) ActionDocuments(w http.ResponseWriter, r *http.Request) {
 			respBody.PageTotal = 0
 		}
 
-		err = p.DocumentColl.Find(&filter).Select(bson.M{
+		respBody.Documents, err = p.DocumentModel.SortFindByFilterAndSelecterWithPage(filter, bson.M{
 			"_id":        1,
 			"title":      1,
 			"modifyTime": 1,
 			"status":     1,
 			"account":    1,
-		}).Sort("-modifyTime").Skip(params.PageSize * params.PageIndex).Limit(params.PageSize).All(&respBody.Documents)
+		}, "-modifyTime", params.PageSize*params.PageIndex, params.PageSize)
 		if err != nil {
 			http.Error(w, "find documents error: "+err.Error(), 500)
 			return
 		}
 
 		for i, _ := range respBody.Documents {
-			respBody.Documents[i].StarNum, _ = p.StarColl.Find(&bson.M{"documentId": respBody.Documents[i].Id.Hex()}).Count()
+			respBody.Documents[i].StarNum, _ = p.StarModal.CountByDocumentId(respBody.Documents[i].Id.Hex())
 		}
 
 		respBody.Status = 200
@@ -135,14 +135,15 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			reqData.Document.CreateTime = time.Now().Unix()
 			reqData.Document.ModifyTime = time.Now().Unix()
 			reqData.Document.Status = model.STATUS_DRAFT
-			documentByte, _ := bson.Marshal(&reqData.Document)
-			documentBson := make(bson.M, 0)
-			bson.Unmarshal(documentByte, &documentBson)
-			delete(documentBson, "_id")
-			p.DocumentColl.Upsert(documentBson, bson.M{"$set": documentBson})
+			p.DocumentModel.Insert(reqData.Document)
 
 			var document model.Document
-			p.DocumentColl.Find(documentBson).One(&document)
+			document, err = p.DocumentModel.FindByTimeAccountTitleContent(reqData.Document.ModifyTime, accountCookie.Value,
+				reqData.Document.Title, reqData.Document.Content)
+			if err != nil {
+				http.Error(w, "find document error: "+err.Error(), 400)
+				return
+			}
 
 			var respBody struct {
 				Status  int           `json:"status"`
@@ -157,7 +158,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if reqData.Action == "edit" {
 			var document model.Document
-			err = p.DocumentColl.Find(bson.M{"_id": reqData.Document.Id}).One(&document)
+			document, err = p.DocumentModel.FindDocument(reqData.Document.Id)
 			if err != nil {
 				http.Error(w, "document find error: "+err.Error(), 400)
 				return
@@ -166,14 +167,16 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, errors.ERROR_PERMISSION_DENIED.Error(), 401)
 				return
 			}
-			p.DocumentColl.Update(bson.M{"_id": reqData.Document.Id}, bson.M{
-				"$set": bson.M{
-					"title":      reqData.Document.Title,
-					"content":    reqData.Document.Content,
-					"modifyTime": time.Now().Unix(),
-					"status":     reqData.Document.Status,
-				},
+			err = p.DocumentModel.UpdateDocument(reqData.Document.Id, bson.M{
+				"title":      reqData.Document.Title,
+				"content":    reqData.Document.Content,
+				"modifyTime": time.Now().Unix(),
+				"status":     reqData.Document.Status,
 			})
+			if err != nil {
+				http.Error(w, "document update error: "+err.Error(), 400)
+				return
+			}
 
 			var respBody struct {
 				Status  int           `json:"status"`
@@ -199,7 +202,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		var document model.Document
-		err := p.DocumentColl.Find(bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&document)
+		document, err = p.DocumentModel.FindDocument(bson.ObjectIdHex(documentId))
 		if err != nil {
 			http.Error(w, "find document error: "+err.Error(), 500)
 			return
@@ -209,7 +212,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		_, err = p.StarColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+		err = p.StarModal.RemoveByDocumentId(documentId)
 		if err != nil {
 			http.Error(w, "remove document star error: "+err.Error(), 500)
 			return
@@ -219,7 +222,7 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "remove document flag error: "+err.Error(), 500)
 			return
 		}
-		_, err = p.DocumentColl.RemoveAll(&bson.M{"_id": bson.ObjectIdHex(documentId)})
+		err = p.DocumentModel.Remove(bson.ObjectIdHex(documentId))
 		if err != nil {
 			http.Error(w, "remove document error: "+err.Error(), 500)
 			return
@@ -248,7 +251,8 @@ func (p *MainHandler) ActionDocument(w http.ResponseWriter, r *http.Request) {
 			Star     bool           `json:"star"`
 			Flag     bool           `json:"flag"`
 		}
-		err := p.DocumentColl.Find(bson.M{"_id": bson.ObjectIdHex(documentId)}).One(&respBody.Document)
+		var err error
+		respBody.Document, err = p.DocumentModel.FindDocument(bson.ObjectIdHex(documentId))
 		if err != nil {
 			http.Error(w, "find document error: "+err.Error(), 500)
 			return
@@ -312,7 +316,7 @@ func (p *MainHandler) ActionDocumentStatus(w http.ResponseWriter, r *http.Reques
 		utils.ReadReq2Struct(r, &reqData)
 
 		var document model.Document
-		err = p.DocumentColl.Find(bson.M{"_id": reqData.Document.Id}).One(&document)
+		document, err = p.DocumentModel.FindDocument(reqData.Document.Id)
 		if err != nil {
 			http.Error(w, "document find error: "+err.Error(), 400)
 			return
@@ -321,11 +325,13 @@ func (p *MainHandler) ActionDocumentStatus(w http.ResponseWriter, r *http.Reques
 			http.Error(w, errors.ERROR_PERMISSION_DENIED.Error(), 401)
 			return
 		}
-		p.DocumentColl.Update(bson.M{"_id": reqData.Document.Id}, bson.M{
-			"$set": bson.M{
-				"status": reqData.Document.Status,
-			},
+		err = p.DocumentModel.UpdateDocument(reqData.Document.Id, bson.M{
+			"status": reqData.Document.Status,
 		})
+		if err != nil {
+			http.Error(w, "document update error: "+err.Error(), 500)
+			return
+		}
 
 		var respBody struct {
 			Status  int           `json:"status"`

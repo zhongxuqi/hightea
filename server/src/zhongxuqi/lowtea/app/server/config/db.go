@@ -23,33 +23,30 @@ func InitDB(mainHander *handler.MainHandler) {
 		}
 	}
 
-	// init db
-	mainHander.AppConfColl = sess.DB(mainHander.Config.DBConfig.DBName).C(APPNAME)
-	mainHander.AppConfColl.Upsert(bson.M{"app": APPNAME}, bson.M{"$set": bson.M{"version": VERSION}})
+	appDB := sess.DB(mainHander.Config.DBConfig.DBName)
 
-	appConf := model.AppConfig{}
-	err = mainHander.AppConfColl.Find(&bson.M{"app": APPNAME}).One(&appConf)
+	// init db
+	mainHander.AppConfModel = model.NewAppConfigModel(appDB)
+	err = mainHander.AppConfModel.Init(APPNAME, VERSION)
+	if err != nil {
+		panic(err)
+	}
+
+	var appConf model.AppConfig
+	appConf, err = mainHander.AppConfModel.Find(APPNAME)
 	if err != nil {
 		panic(err)
 	}
 
 	if appConf.FlagExpiredTime <= 0 {
 		mainHander.Config.FlagExpiredTime = FLAG_EXPIRED_TIME
-		err = mainHander.AppConfColl.Update(&bson.M{"app": APPNAME}, &bson.M{"$set": bson.M{"flagExpiredTime": FLAG_EXPIRED_TIME}})
+		err = mainHander.AppConfModel.Update(APPNAME, bson.M{"flagExpiredTime": FLAG_EXPIRED_TIME})
 		if err != nil {
 			panic(err)
 		}
 	} else {
 		mainHander.Config.FlagExpiredTime = appConf.FlagExpiredTime
 	}
-
-	appDB := sess.DB(mainHander.Config.DBConfig.DBName)
-
-	mainHander.UserColl = appDB.C(mainHander.Config.DBConfig.UserColl)
-	mainHander.RegisterColl = appDB.C(mainHander.Config.DBConfig.RegisterColl)
-
-	mainHander.DocumentColl = appDB.C(mainHander.Config.DBConfig.DocumentColl)
-	mainHander.DocumentColl.EnsureIndexKey("createTime")
 
 	mainHander.StarColl = appDB.C(mainHander.Config.DBConfig.StarColl)
 	mainHander.StarColl.EnsureIndexKey("account", "documentId")
@@ -61,6 +58,8 @@ func InitDB(mainHander *handler.MainHandler) {
 	mainHander.SessModel = model.NewSessionModel(appDB)
 
 	// init model
-	mainHander.UserModel = model.NewUserModel(appDB)
+	mainHander.UserModel = model.NewUserModel(appDB, mainHander.Config.RootLanguage)
 	mainHander.DocumentModel = model.NewDocumentModel(appDB)
+	mainHander.RegisterModel = model.NewRegisterModel(appDB)
+	mainHander.StarModal = model.NewStarModel(appDB)
 }
