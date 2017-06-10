@@ -2,19 +2,19 @@ import ChineseTextMap from './chinese.js'
 
 let languages = [
     {
-        value: "English",
-        short: "en",
-        textMap: (text) => {
-            return text
-        },
-    },
-    {
         value: "中文",
         short: "cn",
         textMap: (text) => {
             if (text in ChineseTextMap) {
                 return ChineseTextMap[text]
             }
+            return text
+        },
+    },
+    {
+        value: "English",
+        short: "en",
+        textMap: (text) => {
             return text
         },
     },

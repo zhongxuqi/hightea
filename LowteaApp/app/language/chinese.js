@@ -146,5 +146,10 @@ chineseTextMap["Please Input Account and Password"] = "请填写账号和密码"
 chineseTextMap["whether confirm to go back"] = "确认返回"
 chineseTextMap["delete the document"] = "是否删除文档"
 chineseTextMap["Document Content"] = "文章内容"
+chineseTextMap["Go to Login"] = "转到登录"
+chineseTextMap["Login"] = "登录"
+chineseTextMap["Go to Register"] = "转到注册"
+chineseTextMap["Register"] = "注册"
+chineseTextMap["NickName"] = "昵称"
 
 export default chineseTextMap;
