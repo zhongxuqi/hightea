@@ -12,4 +12,4 @@ run: build-server
 	cd ./bin && ./lowtea
 
 run-test: build-server
-	cd ./bin && ./lowtea -f ../configs/mylowtea.conf
+	cd ./bin && ./lowtea -f ../configs/default.conf

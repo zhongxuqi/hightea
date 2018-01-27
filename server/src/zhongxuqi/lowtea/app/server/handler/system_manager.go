@@ -15,7 +15,7 @@ import (
 
 const (
 	dumpFileName = "./dump-all.sh"
-	dumpPath     = "../dumps"
+	dumpPath     = "./dumps"
 	dumpSuffix   = ".tar.gz"
 )
 
@@ -49,24 +49,21 @@ func (a filename) Less(i, j int) bool { return a[i] > a[j] }
 
 func (p *MainHandler) DumpFiles(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		fileInfo, err := ioutil.ReadDir(dumpPath)
-		if err != nil {
-			http.Error(w, "read dumps dir error: "+err.Error(), 500)
-			return
-		}
-
 		var ret struct {
 			Status  int      `json:"status"`
 			Message string   `json:"message"`
 			Files   []string `json:"files"`
 		}
-		ret.Files = make([]string, 0, len(fileInfo))
-		for _, file := range fileInfo {
-			if strings.Contains(file.Name(), dumpSuffix) {
-				ret.Files = append(ret.Files, file.Name())
+		fileInfo, err := ioutil.ReadDir(dumpPath)
+		if err == nil {
+			ret.Files = make([]string, 0, len(fileInfo))
+			for _, file := range fileInfo {
+				if strings.Contains(file.Name(), dumpSuffix) {
+					ret.Files = append(ret.Files, file.Name())
+				}
 			}
+			sort.Sort(filename(ret.Files))
 		}
-		sort.Sort(filename(ret.Files))
 		ret.Status = 200
 		b, _ := json.Marshal(ret)
 		w.Write(b)
