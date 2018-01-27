@@ -19,8 +19,8 @@ module.exports = {
                     presets: ['latest', 'react'],
                 }
             }, 
-            {test: /\.less$/, loader: 'style!css!less'},
-            {test: /\.css$/, loader: 'style!css'},
+            {test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
+            {test: /\.css$/, loader: 'style-loader!css-loader'},
         ]
     },
     plugins: [
