@@ -8,7 +8,7 @@ module.exports = {
     },
     output: {
         filename: '[name].bundle.js',
-        //path: './dist/js'
+        path: __dirname + '/dist/js',
     },
     module: {
         loaders: [
@@ -25,9 +25,16 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            }
-        })
+            minimize: true
+        }),
     ],
+    devServer: {
+        contentBase: __dirname + "/dist",
+        compress: true,
+        port: 7060,
+        proxy: {
+            "/api": "http://127.0.0.1:7070",
+            "/openapi": "http://127.0.0.1:7070",
+        },
+    }
 }

@@ -22,7 +22,6 @@
     "less-loader": "^2.2.3",
     "style-loader": "^0.13.2",
     "webpack": "^1.15.0",
-    "webpack-stream": "^4.0.0",
     "yargs": "^7.1.0"
   },
   "dependencies": {

@@ -76,3 +76,5 @@ fastlane/screenshots
 musketeer_keysign
 /dumps
 /tmp
+
+/front/package-lock.json
