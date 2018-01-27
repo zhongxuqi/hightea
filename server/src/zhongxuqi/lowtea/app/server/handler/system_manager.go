@@ -22,7 +22,7 @@ const (
 func (p *MainHandler) DumpSystem(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		go func() {
-			cmd := exec.Command("bash", "-c", strings.Join([]string{"cd .. &&", dumpFileName, p.Config.DBConfig.Host, p.Config.DBConfig.DBName, p.Config.OssConfig.MediaPath}, " "))
+			cmd := exec.Command("bash", "-c", strings.Join([]string{dumpFileName, p.Config.DBConfig.Host, p.Config.DBConfig.DBName, p.Config.OssConfig.MediaPath}, " "))
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			err := cmd.Run()
